@@ -1,0 +1,26 @@
+namespace: '{{ .Release.Namespace }}'
+namePrefix: '{{ include "guardllama.fullname" . }}-'
+
+resources:
+- manifests.yaml
+#- service.yaml
+
+patchesStrategicMerge:
+- webhookcainjection_patch.yaml
+
+configurations:
+- kustomizeconfig.yaml
+
+patches:
+- patch: |-
+    - op: replace
+      path: /webhooks/0/clientConfig/service/name
+      value: '{{ include "guardllama.fullname" . }}-webhook'
+  target:
+    kind: MutatingWebhookConfiguration
+- patch: |-
+    - op: replace
+      path: /webhooks/0/clientConfig/service/name
+      value: '{{ include "guardllama.fullname" . }}-webhook'
+  target:
+    kind: ValidatingWebhookConfiguration

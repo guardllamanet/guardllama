@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-main-conf
+data:
+  unbound.conf: |-
+    {{ .Values.mainConf | nindent 4 }}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-a-records-conf
+data:
+  a-records.conf: |-
+    {{ .Values.aRecordsConf | nindent 4}}
+
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-forward-records-conf
+data:
+  forward-records.conf: |-
+    {{ .Values.forwardRecordsConf | nindent 4}}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-srv-records-conf
+data:
+  srv-records.conf: |-
+    {{ .Values.srvRecordsConf | nindent 4}}
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: unbound-conf
+data:
+{{ (.Files.Glob "files/*").AsConfig | indent 2 }}

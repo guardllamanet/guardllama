@@ -1,0 +1,10 @@
+#syntax=docker/dockerfile:1
+
+FROM base as base
+
+FROM wgtools
+
+COPY ./docker/tunnel/shim/* /shim/
+COPY --from=base /app/* /usr/bin/
+
+ENTRYPOINT ["/shim/entrypoint.sh", "glmmgr", "wg"]

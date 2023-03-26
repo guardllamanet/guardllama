@@ -1,0 +1,35 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  labels:
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/created-by: guardllama
+    app.kubernetes.io/instance: serving-cert
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: certificate
+    app.kubernetes.io/part-of: guardllama
+  name: '{{ include "guardllama.fullname" . }}-serving-cert'
+  namespace: '{{ .Release.Namespace }}'
+spec:
+  dnsNames:
+  - '{{ include "guardllama.fullname" . }}-webhook.{{ .Release.Namespace }}.svc'
+  - '{{ include "guardllama.fullname" . }}-webhook.{{ .Release.Namespace }}.svc.cluster.local'
+  issuerRef:
+    kind: Issuer
+    name: '{{ include "guardllama.fullname" . }}-selfsigned-issuer'
+  secretName: webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  labels:
+    app.kubernetes.io/component: certificate
+    app.kubernetes.io/created-by: guardllama
+    app.kubernetes.io/instance: selfsigned-issuer
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: issuer
+    app.kubernetes.io/part-of: guardllama
+  name: '{{ include "guardllama.fullname" . }}-selfsigned-issuer'
+  namespace: '{{ .Release.Namespace }}'
+spec:
+  selfSigned: {}

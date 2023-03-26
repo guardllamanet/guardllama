@@ -1,0 +1,281 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.11.1
+  creationTimestamp: null
+  name: tunnels.tunnel.guardllama.net
+spec:
+  group: tunnel.guardllama.net
+  names:
+    kind: Tunnel
+    listKind: TunnelList
+    plural: tunnels
+    singular: tunnel
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.protocol.wireGuard.interface.listenPort
+      name: Listen
+      type: integer
+    - jsonPath: .status.ingressPort
+      name: Ingress
+      type: integer
+    - jsonPath: .status.dns
+      name: DNS
+      type: string
+    - jsonPath: .status.conditions[?(@.type == "Ready")].status
+      name: Ready
+      type: string
+    - format: date-time
+      jsonPath: .status.updatedAt
+      name: Update
+      type: string
+    name: v1
+    schema:
+      openAPIV3Schema:
+        description: Tunnel is the Schema for the tunnels API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            properties:
+              dns:
+                properties:
+                  adGuard:
+                    properties:
+                      blockLists:
+                        items:
+                          properties:
+                            enabled:
+                              type: boolean
+                            id:
+                              format: int32
+                              type: integer
+                            name:
+                              type: string
+                            url:
+                              type: string
+                          required:
+                          - id
+                          - name
+                          - url
+                          type: object
+                        type: array
+                      filteringEnabled:
+                        type: boolean
+                      rules:
+                        items:
+                          type: string
+                        type: array
+                    type: object
+                type: object
+              protocol:
+                properties:
+                  wireGuard:
+                    properties:
+                      interface:
+                        properties:
+                          address:
+                            items:
+                              type: string
+                            type: array
+                          firewallMark:
+                            format: int32
+                            type: integer
+                          ingressPort:
+                            format: int32
+                            type: integer
+                          listenPort:
+                            format: int32
+                            maximum: 65535
+                            minimum: 1
+                            type: integer
+                          mtu:
+                            format: int32
+                            type: integer
+                          postDown:
+                            type: string
+                          postUp:
+                            type: string
+                          preDown:
+                            type: string
+                          preUp:
+                            type: string
+                          privateKey:
+                            properties:
+                              value:
+                                type: string
+                              valueFrom:
+                                properties:
+                                  secretKeyRef:
+                                    description: SecretKeySelector selects a key of
+                                      a Secret.
+                                    properties:
+                                      key:
+                                        description: The key of the secret to select
+                                          from.  Must be a valid secret key.
+                                        type: string
+                                      name:
+                                        description: 'Name of the referent. More info:
+                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                          TODO: Add other useful fields. apiVersion,
+                                          kind, uid?'
+                                        type: string
+                                      optional:
+                                        description: Specify whether the Secret or
+                                          its key must be defined
+                                        type: boolean
+                                    required:
+                                    - key
+                                    type: object
+                                    x-kubernetes-map-type: atomic
+                                required:
+                                - secretKeyRef
+                                type: object
+                            type: object
+                          table:
+                            format: int32
+                            type: integer
+                        required:
+                        - listenPort
+                        - privateKey
+                        type: object
+                      peers:
+                        items:
+                          properties:
+                            allowedIps:
+                              items:
+                                type: string
+                              type: array
+                            endpoint:
+                              type: string
+                            persistentKeepaliveInterval:
+                              format: int32
+                              type: integer
+                            presharedKey:
+                              properties:
+                                value:
+                                  type: string
+                                valueFrom:
+                                  properties:
+                                    secretKeyRef:
+                                      description: SecretKeySelector selects a key
+                                        of a Secret.
+                                      properties:
+                                        key:
+                                          description: The key of the secret to select
+                                            from.  Must be a valid secret key.
+                                          type: string
+                                        name:
+                                          description: 'Name of the referent. More
+                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                            TODO: Add other useful fields. apiVersion,
+                                            kind, uid?'
+                                          type: string
+                                        optional:
+                                          description: Specify whether the Secret
+                                            or its key must be defined
+                                          type: boolean
+                                      required:
+                                      - key
+                                      type: object
+                                      x-kubernetes-map-type: atomic
+                                  required:
+                                  - secretKeyRef
+                                  type: object
+                              type: object
+                            publicKey:
+                              properties:
+                                value:
+                                  type: string
+                                valueFrom:
+                                  properties:
+                                    secretKeyRef:
+                                      description: SecretKeySelector selects a key
+                                        of a Secret.
+                                      properties:
+                                        key:
+                                          description: The key of the secret to select
+                                            from.  Must be a valid secret key.
+                                          type: string
+                                        name:
+                                          description: 'Name of the referent. More
+                                            info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                            TODO: Add other useful fields. apiVersion,
+                                            kind, uid?'
+                                          type: string
+                                        optional:
+                                          description: Specify whether the Secret
+                                            or its key must be defined
+                                          type: boolean
+                                      required:
+                                      - key
+                                      type: object
+                                      x-kubernetes-map-type: atomic
+                                  required:
+                                  - secretKeyRef
+                                  type: object
+                              type: object
+                          required:
+                          - publicKey
+                          type: object
+                        type: array
+                      userspaceImpl:
+                        type: string
+                    required:
+                    - interface
+                    type: object
+                type: object
+            required:
+            - dns
+            - protocol
+            type: object
+          status:
+            description: TunnelStatus defines the observed state of Tunnel
+            properties:
+              conditions:
+                items:
+                  properties:
+                    lastTransitionTime:
+                      format: date-time
+                      type: string
+                    message:
+                      type: string
+                    reason:
+                      type: string
+                    status:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - status
+                  - type
+                  type: object
+                type: array
+              dns:
+                items:
+                  type: string
+                type: array
+              ingressPort:
+                format: int32
+                type: integer
+              updatedAt:
+                format: date-time
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

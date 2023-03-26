@@ -1,0 +1,572 @@
+syntax = "proto3";
+
+package api.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/guardllamanet/guardllama/proto/gen/api/v1";
+
+service WireGuardService {
+  rpc GetWireGuardDevice(GetWireGuardDeviceRequest) returns (GetWireGuardDeviceResponse) {
+    option (google.api.http) = {
+      get: "/device"
+    };
+  }
+}
+
+message GetWireGuardDeviceRequest {}
+
+message GetWireGuardDeviceResponse {
+  WireGuardDevice device = 1;
+}
+
+message WireGuardDevice {
+  enum DeviceType {
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
+      UNKNOWN = 0;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      LINUX = 1;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      OPEN_BSD = 2;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      FREE_BSD = 3;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      WINDOWS = 4;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      USERSPACE = 5;
+  }
+
+  string name = 1 [(validate.rules).string.min_len = 1];
+  DeviceType type = 2 [(validate.rules).enum.defined_only = true];
+  string public_key = 3 [(validate.rules).string.min_len = 1];
+  int32 listen_port = 4 [(validate.rules).int32.gte = 0];
+  int32 firewall_mark = 5;
+  repeated WireGuardDevicePeer peers = 6;
+}
+
+message WireGuardDevicePeer {
+  string public_key = 1 [(validate.rules).string.min_len = 1];
+  string preshared_key = 2 [(validate.rules).string.min_len = 1];
+  string endpoint = 3;
+  google.protobuf.Duration persistent_keepalive_interval = 4;
+  google.protobuf.Timestamp last_handshake_time = 5;
+  int64 receive_bytes = 6;
+  int64 transmit_bytes = 7;
+  repeated string allowed_ips = 8 [(validate.rules).repeated.items.string.min_len = 1]; // TODO: add cidr
+  int32 protocol_version = 9;
+}
+
+service ServerService {
+  rpc GetServerConfig(GetServerConfigRequest) returns (GetServerConfigResponse) {
+    option (google.api.http) = {
+      get: "/server/config"
+    };
+  }
+  rpc GetServer(GetServerRequest) returns (GetServerResponse) {
+    option (google.api.http) = {
+      get: "/server"
+    };
+  }
+}
+
+message Server {
+  ServerConfig config = 1 [(validate.rules).message.required = true];
+  ServerStatus status = 2 [(validate.rules).message.required = true];
+}
+
+message ServerConfig {
+  message Cluster {
+    message K3s {}
+
+    message K3d {
+      message NodePortRange {
+        enum Protocol {
+          // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
+          // buf:lint:ignore ENUM_VALUE_PREFIX
+          TCP = 0;
+          // buf:lint:ignore ENUM_VALUE_PREFIX
+          UDP = 1;
+        }
+
+        int32 from_port = 1 [(validate.rules).int32 = {
+          gte: 30000,
+          lte: 32767
+        }];
+        int32 to_port = 2 [(validate.rules).int32 = {
+          gte: 30000,
+          lte: 32767
+        }];
+        string host = 3;
+        Protocol protocol = 4 [(validate.rules).enum.defined_only = true];
+      }
+
+      string name = 1;
+      repeated NodePortRange node_port_ranges = 2;
+    }
+
+    string kube_config = 1 [(validate.rules).string.min_len = 1];
+    oneof distribution {
+      K3s k3s = 2;
+      K3d k3d = 3;
+    }
+    string host = 4;
+  }
+
+  message Image {
+    enum ImagePullPolicy {
+      // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      // buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+      IfNotPresent = 0;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      // buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+      Always = 1;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      // buf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE
+      Never = 2;
+    }
+
+    message ImagePullSecret {
+      string server = 1;
+      string username = 2;
+      string password = 3;
+    }
+
+    string image = 1 [(validate.rules).string.min_len = 1];
+    ImagePullPolicy image_pull_policy = 2 [(validate.rules).enum.defined_only = true];
+    ImagePullSecret image_pull_secret = 3;
+  }
+
+  message Credentials {
+    message Api {
+      string token = 1 [(validate.rules).string.min_len = 1];
+    }
+
+    Api api = 1;
+  }
+
+  Cluster cluster = 1;
+  Image manager = 2;
+  Image wg = 3;
+  Credentials credentials = 4;
+  bool debug = 5;
+}
+
+message ServerStatus {
+  string machine_ip = 1 [(validate.rules).string.ip = true];
+  string server_version = 2 [(validate.rules).string.min_len = 1];
+  string kubernetes_distribution = 3 [(validate.rules).string.min_len = 1];
+  string kubernetes_version = 4 [(validate.rules).string.min_len = 1];
+}
+
+message GetServerConfigRequest {
+}
+
+message GetServerConfigResponse {
+  ServerConfig config = 1;
+}
+
+message GetServerRequest {
+}
+
+message GetServerResponse {
+  Server server = 1;
+}
+
+service TunnelService {
+  rpc CreateTunnel(CreateTunnelRequest) returns (CreateTunnelResponse) {
+    option (google.api.http) = {
+      post: "/tunnels"
+      body: "*"
+    };
+  }
+
+  rpc GetTunnel(GetTunnelRequest) returns (GetTunnelResponse) {
+    option (google.api.http) = {
+      get: "/tunnels/{name}"
+    };
+  }
+
+  rpc ListTunnels(ListTunnelsRequest) returns (ListTunnelsResponse) {
+    option (google.api.http) = {
+      get: "/tunnels"
+    };
+  }
+
+  rpc RemoveTunnel(RemoveTunnelRequest) returns (RemoveTunnelResponse) {
+    option (google.api.http) = {
+      delete: "/tunnels/{name}"
+    };
+  }
+
+  rpc UpdateDNSFilteringEnabled(UpdateDNSFilteringEnabledRequest) returns (UpdateDNSFilteringEnabledResponse) {
+    option (google.api.http) = {
+      put: "/tunnels/{name}/dns_filtering_enabled"
+      body: "*"
+    };
+  }
+
+  rpc UpdateDNSBlockLists(UpdateDNSBlockListsRequest) returns (UpdateDNSBlockListsResponse) {
+    option (google.api.http) = {
+      put: "/tunnels/{name}/dns_block_lists"
+      body: "*"
+    };
+  }
+
+  rpc UpdateDNSFilteringRules(UpdateDNSFilteringRulesRequest) returns (UpdateDNSFilteringRulesResponse) {
+    option (google.api.http) = {
+      put: "/tunnels/{name}/dns_filtering_rules"
+      body: "*"
+    };
+  }
+}
+
+message CreateTunnelRequest {
+  string name = 1;
+  AdGuardConfig ag = 2;
+}
+
+message CreateTunnelResponse {
+  Tunnel tunnel = 1;
+}
+
+message GetTunnelRequest {
+  string name = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      required: [
+        "name"
+      ]
+    },
+    (validate.rules).string.min_len = 1
+  ];
+}
+
+message GetTunnelResponse {
+  Tunnel tunnel = 1;
+}
+
+message ListTunnelsRequest {}
+
+message ListTunnelsResponse {
+  repeated Tunnel tunnels = 1;
+}
+
+message RemoveTunnelRequest {
+  string name = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      required: [
+        "name"
+      ]
+    },
+    (validate.rules).string.min_len = 1
+  ];
+}
+
+message RemoveTunnelResponse {}
+
+message UpdateDNSFilteringEnabledRequest {
+  string name = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      required: [
+        "name"
+      ]
+    },
+    (validate.rules).string.min_len = 1
+  ];
+  bool filtering_enabled = 2;
+}
+
+message UpdateDNSFilteringEnabledResponse {}
+
+message UpdateDNSBlockListsRequest {
+  string name = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      required: [
+        "name"
+      ]
+    },
+    (validate.rules).string.min_len = 1
+  ];
+  repeated AdGuardConfig.BlockList block_lists = 2;
+}
+
+message UpdateDNSBlockListsResponse {}
+
+message UpdateDNSFilteringRulesRequest {
+  string name = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      required: [
+        "name"
+      ]
+    },
+    (validate.rules).string.min_len = 1
+  ];
+  repeated AdGuardConfig.Rule rules = 3;
+}
+
+message UpdateDNSFilteringRulesResponse {}
+
+message TunnelConfig {
+  oneof protocol {
+    option (validate.required) = true;
+
+    WireGuardConfig wg = 1;
+  }
+  oneof dns {
+    option (validate.required) = true;
+
+    AdGuardConfig ag = 2;
+  }
+}
+
+message WireGuardConfig {
+  WireGuardInterface interface = 1 [(validate.rules).message.required = true];
+  repeated WireGuardPeer peers = 2;
+  string wg_config = 3;
+}
+
+message WireGuardInterface {
+  string private_key = 1 [(validate.rules).string.min_len = 1];
+  int32 listen_port = 2 [(validate.rules).int32 = {
+    gte: 1,
+    lte: 65535
+  }];
+  int32 ingress_port = 3 [(validate.rules).int32 = {
+    ignore_empty: true,
+    gte: 30000,
+    lte: 32767
+  }]; // ingress_port should be in k8s node port range
+  int32 firewall_mark = 4;
+  repeated string address = 5 [(validate.rules).repeated.items.string.min_len = 1]; // TODO: add cidr
+  repeated string dns = 6 [(validate.rules).repeated.items.string.ip = true];
+  int32 mtu = 7 [(validate.rules).int32.gte = 0];
+  int32 table = 8 [(validate.rules).int32.gte = 0];
+  string pre_up = 9;
+  string post_up = 10;
+  string pre_down = 11;
+  string post_down = 12;
+}
+
+message WireGuardPeer {
+  string public_key = 1 [(validate.rules).string.min_len = 1];
+  string preshared_key = 2;
+  string endpoint = 3;
+  google.protobuf.Duration persistent_keepalive_interval = 4 [(validate.rules).duration = {
+    gte: {}
+  }];
+  repeated string allowed_ips = 5 [(validate.rules).repeated.items.string.min_len = 1]; // TODO: add cidr
+}
+
+message AdGuardConfig {
+  message BlockList {
+    int32 id = 1 [(validate.rules).int32.gte = 0];
+    string name = 2 [(validate.rules).string.min_len = 1];
+    string url = 3 [(validate.rules).string.uri = true];
+    bool enabled = 4;
+  }
+
+  message Rule {
+    string rule = 1 [(validate.rules).string.min_len = 1];
+  }
+
+  optional bool filtering_enabled = 1;
+  repeated BlockList block_lists = 3;
+  repeated Rule rules = 4;
+}
+
+message Tunnel {
+  string name = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      required: [
+        "name"
+      ]
+    },
+    (validate.rules).string.min_len = 1
+  ];
+  TunnelConfig config = 2;
+  TunnelStatus status = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
+}
+
+// -> Pending -> Ready/Error
+message TunnelStatus {
+  enum State {
+    // buf:lint:ignore ENUM_VALUE_PREFIX
+    // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
+    PENDING = 0;
+    // buf:lint:ignore ENUM_VALUE_PREFIX
+    READY = 1;
+    // buf:lint:ignore ENUM_VALUE_PREFIX
+    ERROR = 2;
+  }
+
+  State state = 1;
+  string details = 2;
+
+  oneof protocol {
+    WireGuardStatus wg = 3;
+  }
+
+  oneof dns {
+    AdGuardStatus ag = 4;
+  }
+}
+
+message WireGuardStatus {
+  WireGuardDevice device = 1;
+}
+
+message AdGuardStatus {
+  message QueryLog {
+    message Request {
+      string class = 1 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          required: [
+            "class"
+          ]
+        },
+        (validate.rules).string.min_len = 1
+      ];
+      string name = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          required: [
+            "name"
+          ]
+        },
+        (validate.rules).string.min_len = 1
+      ];
+      string type = 3 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          required: [
+            "type"
+          ]
+        },
+        (validate.rules).string.min_len = 1
+      ];
+    }
+
+    message Response {
+      message Answer {
+        string type = 1 [
+          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            required: [
+              "type"
+            ]
+          },
+          (validate.rules).string.min_len = 1
+        ];
+        string value = 2 [
+          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+            required: [
+              "value"
+            ]
+          },
+          (validate.rules).string.min_len = 1
+        ];
+        int32 ttl = 3 [(validate.rules).int32.gte = 0];
+      }
+
+      double elapsed_ms = 1 [(validate.rules).double.gte = 0];
+      string status = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          required: [
+            "status"
+          ]
+        },
+        (validate.rules).string.min_len = 1
+      ];
+      repeated Answer answers = 3;
+    }
+
+    enum Reason {
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
+      UNKNOWN = 0;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      FILTERED_BLOCK_LIST = 1;
+      // buf:lint:ignore ENUM_VALUE_PREFIX
+      ALLOWED = 2;
+    }
+
+    message Rule {
+      int64 filter_id = 1 [(validate.rules).int64.gte = 0];
+      string text = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          required: [
+            "text"
+          ]
+        },
+        (validate.rules).string.min_len = 1
+      ];
+    }
+
+    message Client {
+      string address = 1 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          required: [
+            "address"
+          ]
+        },
+        (validate.rules).string.min_len = 1
+      ];
+      string name = 2 [
+        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+          required: [
+            "name"
+          ]
+        },
+        (validate.rules).string.min_len = 1
+      ];
+    }
+
+    google.protobuf.Timestamp timestamp = 1 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        required: [
+          "timestamp"
+        ]
+      },
+      (validate.rules).timestamp.required = true
+    ];
+    Request request = 2 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        required: [
+          "request"
+        ]
+      },
+      (validate.rules).message.required = true
+    ];
+    Response response = 3 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        required: [
+          "response"
+        ]
+      },
+      (validate.rules).message.required = true
+    ];
+    Reason reason = 4 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        required: [
+          "reason"
+        ]
+      },
+      (validate.rules).enum.defined_only = true
+    ];
+    repeated Rule rules = 5;
+    Client client = 6 [
+      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+        required: [
+          "client"
+        ]
+      },
+      (validate.rules).message.required = true
+    ];
+  }
+
+  repeated QueryLog query_logs = 1;
+}

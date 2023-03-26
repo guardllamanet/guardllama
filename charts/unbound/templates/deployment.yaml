@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "unbound.fullname" . }}
+  labels:
+    {{- include "unbound.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "unbound.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum.config.main: {{ .Values.mainConf | sha256sum | trunc 63 | quote }}
+        checksum.config.a-records: {{ .Values.aRecordsConf | sha256sum | trunc 63 | quote }}
+        checksum.config.forward-records: {{ .Values.forwardRecordsConf | sha256sum | trunc 63 | quote }}
+        checksum.config.srv-records: {{ .Values.srvRecordsConf | sha256sum | trunc 63 | quote }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "unbound.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "unbound.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: dns-tcp
+              containerPort: 5353
+              protocol: TCP
+            - name: dns-udp
+              containerPort: 5353
+              protocol: UDP
+          volumeMounts:
+            - name: unbound-main-conf-volume
+              mountPath: /opt/unbound/etc/unbound/unbound-custom.conf
+              subPath: unbound.conf
+            - name: unbound-a-conf-volume
+              mountPath: /opt/unbound/etc/unbound/a-records.conf
+              subPath: a-records.conf
+            - name: unbound-forward-conf-volume
+              mountPath: /opt/unbound/etc/unbound/forward-records.conf
+              subPath: forward-records.conf
+            - name: unbound-srv-conf-volume
+              mountPath: /opt/unbound/etc/unbound/srv-records.conf
+              subPath: srv-records.conf
+            - name: unbound-conf
+              mountPath: /unbound.sh
+              subPath: unbound.sh
+            - name: unbound-conf
+              mountPath: /opt/unbound/etc/unbound/var/root.hints
+              subPath: root.hints
+          livenessProbe:
+            tcpSocket:
+              port: 5353
+          readinessProbe:
+            tcpSocket:
+              port: 5353
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      restartPolicy: Always
+      volumes:
+        - name: unbound-main-conf-volume
+          configMap:
+            name: unbound-main-conf
+        - name: unbound-a-conf-volume
+          configMap:
+            name: unbound-a-records-conf
+        - name: unbound-forward-conf-volume
+          configMap:
+            name: unbound-forward-records-conf
+        - name: unbound-srv-conf-volume
+          configMap:
+            name: unbound-srv-records-conf
+        - name: unbound-conf
+          configMap:
+            name: unbound-conf
+            defaultMode: 0777
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

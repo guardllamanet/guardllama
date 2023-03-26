@@ -1,0 +1,49 @@
+{
+  "$id": "https://github.com/k3d-io/k3d/tree/main/pkg/config/config.versions.schema.json",
+  "$schema": "https://raw.githubusercontent.com/k3d-io/k3d/main/pkg/config/config.versions.meta.schema.json#",
+  "title": "All k3d config versions",
+  "type": "object",
+  "oneOf": [
+    {
+      "allOf": [
+        {
+          "properties": {
+            "version": {
+              "const": "v1alpha4"
+            }
+          }
+        },
+        {
+          "$ref": "https://raw.githubusercontent.com/k3d-io/k3d/main/pkg/config/v1alpha4/schema.json"
+        }
+      ]
+    },{
+      "allOf": [
+        {
+          "properties": {
+            "version": {
+              "const": "v1alpha3"
+            }
+          }
+        },
+        {
+          "$ref": "https://raw.githubusercontent.com/k3d-io/k3d/main/pkg/config/v1alpha3/schema.json"
+        }
+      ]
+    },
+    {
+      "allOf": [
+        {
+          "properties": {
+            "version": {
+              "const": "v1alpha2"
+            }
+          }
+        },
+        {
+          "$ref": "https://raw.githubusercontent.com/k3d-io/k3d/main/pkg/config/v1alpha2/schema.json"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1054 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api/v1/api.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "WireGuardService"
+    },
+    {
+      "name": "ServerService"
+    },
+    {
+      "name": "TunnelService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/device": {
+      "get": {
+        "operationId": "WireGuardService_GetWireGuardDevice",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetWireGuardDeviceResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "WireGuardService"
+        ]
+      }
+    },
+    "/server": {
+      "get": {
+        "operationId": "ServerService_GetServer",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetServerResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ServerService"
+        ]
+      }
+    },
+    "/server/config": {
+      "get": {
+        "operationId": "ServerService_GetServerConfig",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetServerConfigResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ServerService"
+        ]
+      }
+    },
+    "/tunnels": {
+      "get": {
+        "operationId": "TunnelService_ListTunnels",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1ListTunnelsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "TunnelService"
+        ]
+      },
+      "post": {
+        "operationId": "TunnelService_CreateTunnel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1CreateTunnelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1CreateTunnelRequest"
+            }
+          }
+        ],
+        "tags": [
+          "TunnelService"
+        ]
+      }
+    },
+    "/tunnels/{name}": {
+      "get": {
+        "operationId": "TunnelService_GetTunnel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTunnelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TunnelService"
+        ]
+      },
+      "delete": {
+        "operationId": "TunnelService_RemoveTunnel",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1RemoveTunnelResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TunnelService"
+        ]
+      }
+    },
+    "/tunnels/{name}/dns_block_lists": {
+      "put": {
+        "operationId": "TunnelService_UpdateDNSBlockLists",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateDNSBlockListsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "block_lists": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/AdGuardConfigBlockList"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TunnelService"
+        ]
+      }
+    },
+    "/tunnels/{name}/dns_filtering_enabled": {
+      "put": {
+        "operationId": "TunnelService_UpdateDNSFilteringEnabled",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateDNSFilteringEnabledResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "filtering_enabled": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TunnelService"
+        ]
+      }
+    },
+    "/tunnels/{name}/dns_filtering_rules": {
+      "put": {
+        "operationId": "TunnelService_UpdateDNSFilteringRules",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1UpdateDNSFilteringRulesResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$ref": "#/definitions/v1AdGuardConfigRule"
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "TunnelService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "AdGuardConfigBlockList": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "enabled": {
+          "type": "boolean"
+        }
+      }
+    },
+    "AdGuardStatusQueryLog": {
+      "type": "object",
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "request": {
+          "$ref": "#/definitions/QueryLogRequest"
+        },
+        "response": {
+          "$ref": "#/definitions/AdGuardStatusQueryLogResponse"
+        },
+        "reason": {
+          "$ref": "#/definitions/QueryLogReason"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AdGuardStatusQueryLogRule"
+          }
+        },
+        "client": {
+          "$ref": "#/definitions/QueryLogClient"
+        }
+      },
+      "required": [
+        "timestamp",
+        "request",
+        "response",
+        "reason",
+        "client"
+      ]
+    },
+    "AdGuardStatusQueryLogResponse": {
+      "type": "object",
+      "properties": {
+        "elapsed_ms": {
+          "type": "number",
+          "format": "double"
+        },
+        "status": {
+          "type": "string"
+        },
+        "answers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/ResponseAnswer"
+          }
+        }
+      },
+      "required": [
+        "status"
+      ]
+    },
+    "AdGuardStatusQueryLogRule": {
+      "type": "object",
+      "properties": {
+        "filter_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ]
+    },
+    "ClusterK3d": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "node_port_ranges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/K3dNodePortRange"
+          }
+        }
+      }
+    },
+    "ClusterK3s": {
+      "type": "object"
+    },
+    "CredentialsApi": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "ImageImagePullPolicy": {
+      "type": "string",
+      "enum": [
+        "IfNotPresent",
+        "Always",
+        "Never"
+      ],
+      "default": "IfNotPresent",
+      "title": "- IfNotPresent: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\nbuf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - Always: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE\n - Never: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_VALUE_UPPER_SNAKE_CASE"
+    },
+    "ImageImagePullSecret": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "K3dNodePortRange": {
+      "type": "object",
+      "properties": {
+        "from_port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "to_port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "host": {
+          "type": "string"
+        },
+        "protocol": {
+          "$ref": "#/definitions/NodePortRangeProtocol"
+        }
+      }
+    },
+    "NodePortRangeProtocol": {
+      "type": "string",
+      "enum": [
+        "TCP",
+        "UDP"
+      ],
+      "default": "TCP",
+      "title": "- TCP: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\nbuf:lint:ignore ENUM_VALUE_PREFIX\n - UDP: buf:lint:ignore ENUM_VALUE_PREFIX"
+    },
+    "QueryLogClient": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "address",
+        "name"
+      ]
+    },
+    "QueryLogReason": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "FILTERED_BLOCK_LIST",
+        "ALLOWED"
+      ],
+      "default": "UNKNOWN",
+      "title": "- UNKNOWN: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\n - FILTERED_BLOCK_LIST: buf:lint:ignore ENUM_VALUE_PREFIX\n - ALLOWED: buf:lint:ignore ENUM_VALUE_PREFIX"
+    },
+    "QueryLogRequest": {
+      "type": "object",
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "class",
+        "name",
+        "type"
+      ]
+    },
+    "ResponseAnswer": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "ttl": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "ServerConfigCluster": {
+      "type": "object",
+      "properties": {
+        "kube_config": {
+          "type": "string"
+        },
+        "k3s": {
+          "$ref": "#/definitions/ClusterK3s"
+        },
+        "k3d": {
+          "$ref": "#/definitions/ClusterK3d"
+        },
+        "host": {
+          "type": "string"
+        }
+      }
+    },
+    "ServerConfigCredentials": {
+      "type": "object",
+      "properties": {
+        "api": {
+          "$ref": "#/definitions/CredentialsApi"
+        }
+      }
+    },
+    "ServerConfigImage": {
+      "type": "object",
+      "properties": {
+        "image": {
+          "type": "string"
+        },
+        "image_pull_policy": {
+          "$ref": "#/definitions/ImageImagePullPolicy"
+        },
+        "image_pull_secret": {
+          "$ref": "#/definitions/ImageImagePullSecret"
+        }
+      }
+    },
+    "TunnelStatusState": {
+      "type": "string",
+      "enum": [
+        "PENDING",
+        "READY",
+        "ERROR"
+      ],
+      "default": "PENDING",
+      "title": "- PENDING: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\n - READY: buf:lint:ignore ENUM_VALUE_PREFIX\n - ERROR: buf:lint:ignore ENUM_VALUE_PREFIX"
+    },
+    "WireGuardDeviceDeviceType": {
+      "type": "string",
+      "enum": [
+        "UNKNOWN",
+        "LINUX",
+        "OPEN_BSD",
+        "FREE_BSD",
+        "WINDOWS",
+        "USERSPACE"
+      ],
+      "default": "UNKNOWN",
+      "title": "- UNKNOWN: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\n - LINUX: buf:lint:ignore ENUM_VALUE_PREFIX\n - OPEN_BSD: buf:lint:ignore ENUM_VALUE_PREFIX\n - FREE_BSD: buf:lint:ignore ENUM_VALUE_PREFIX\n - WINDOWS: buf:lint:ignore ENUM_VALUE_PREFIX\n - USERSPACE: buf:lint:ignore ENUM_VALUE_PREFIX"
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1AdGuardConfig": {
+      "type": "object",
+      "properties": {
+        "filtering_enabled": {
+          "type": "boolean"
+        },
+        "block_lists": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AdGuardConfigBlockList"
+          }
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1AdGuardConfigRule"
+          }
+        }
+      }
+    },
+    "v1AdGuardConfigRule": {
+      "type": "object",
+      "properties": {
+        "rule": {
+          "type": "string"
+        }
+      }
+    },
+    "v1AdGuardStatus": {
+      "type": "object",
+      "properties": {
+        "query_logs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AdGuardStatusQueryLog"
+          }
+        }
+      }
+    },
+    "v1CreateTunnelRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "ag": {
+          "$ref": "#/definitions/v1AdGuardConfig"
+        }
+      }
+    },
+    "v1CreateTunnelResponse": {
+      "type": "object",
+      "properties": {
+        "tunnel": {
+          "$ref": "#/definitions/v1Tunnel"
+        }
+      }
+    },
+    "v1GetServerConfigResponse": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "$ref": "#/definitions/v1ServerConfig"
+        }
+      }
+    },
+    "v1GetServerResponse": {
+      "type": "object",
+      "properties": {
+        "server": {
+          "$ref": "#/definitions/v1Server"
+        }
+      }
+    },
+    "v1GetTunnelResponse": {
+      "type": "object",
+      "properties": {
+        "tunnel": {
+          "$ref": "#/definitions/v1Tunnel"
+        }
+      }
+    },
+    "v1GetWireGuardDeviceResponse": {
+      "type": "object",
+      "properties": {
+        "device": {
+          "$ref": "#/definitions/v1WireGuardDevice"
+        }
+      }
+    },
+    "v1ListTunnelsResponse": {
+      "type": "object",
+      "properties": {
+        "tunnels": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Tunnel"
+          }
+        }
+      }
+    },
+    "v1RemoveTunnelResponse": {
+      "type": "object"
+    },
+    "v1Server": {
+      "type": "object",
+      "properties": {
+        "config": {
+          "$ref": "#/definitions/v1ServerConfig"
+        },
+        "status": {
+          "$ref": "#/definitions/v1ServerStatus"
+        }
+      }
+    },
+    "v1ServerConfig": {
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "$ref": "#/definitions/ServerConfigCluster"
+        },
+        "manager": {
+          "$ref": "#/definitions/ServerConfigImage"
+        },
+        "wg": {
+          "$ref": "#/definitions/ServerConfigImage"
+        },
+        "credentials": {
+          "$ref": "#/definitions/ServerConfigCredentials"
+        },
+        "debug": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1ServerStatus": {
+      "type": "object",
+      "properties": {
+        "machine_ip": {
+          "type": "string"
+        },
+        "server_version": {
+          "type": "string"
+        },
+        "kubernetes_distribution": {
+          "type": "string"
+        },
+        "kubernetes_version": {
+          "type": "string"
+        }
+      }
+    },
+    "v1Tunnel": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "config": {
+          "$ref": "#/definitions/v1TunnelConfig"
+        },
+        "status": {
+          "$ref": "#/definitions/v1TunnelStatus"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "v1TunnelConfig": {
+      "type": "object",
+      "properties": {
+        "wg": {
+          "$ref": "#/definitions/v1WireGuardConfig"
+        },
+        "ag": {
+          "$ref": "#/definitions/v1AdGuardConfig"
+        }
+      }
+    },
+    "v1TunnelStatus": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "$ref": "#/definitions/TunnelStatusState"
+        },
+        "details": {
+          "type": "string"
+        },
+        "wg": {
+          "$ref": "#/definitions/v1WireGuardStatus"
+        },
+        "ag": {
+          "$ref": "#/definitions/v1AdGuardStatus"
+        }
+      },
+      "title": "-\u003e Pending -\u003e Ready/Error"
+    },
+    "v1UpdateDNSBlockListsResponse": {
+      "type": "object"
+    },
+    "v1UpdateDNSFilteringEnabledResponse": {
+      "type": "object"
+    },
+    "v1UpdateDNSFilteringRulesResponse": {
+      "type": "object"
+    },
+    "v1WireGuardConfig": {
+      "type": "object",
+      "properties": {
+        "interface": {
+          "$ref": "#/definitions/v1WireGuardInterface"
+        },
+        "peers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1WireGuardPeer"
+          }
+        },
+        "wg_config": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WireGuardDevice": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/WireGuardDeviceDeviceType"
+        },
+        "public_key": {
+          "type": "string"
+        },
+        "listen_port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "firewall_mark": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "peers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1WireGuardDevicePeer"
+          }
+        }
+      }
+    },
+    "v1WireGuardDevicePeer": {
+      "type": "object",
+      "properties": {
+        "public_key": {
+          "type": "string"
+        },
+        "preshared_key": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "persistent_keepalive_interval": {
+          "type": "string"
+        },
+        "last_handshake_time": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "receive_bytes": {
+          "type": "string",
+          "format": "int64"
+        },
+        "transmit_bytes": {
+          "type": "string",
+          "format": "int64"
+        },
+        "allowed_ips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "TODO: add cidr"
+        },
+        "protocol_version": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1WireGuardInterface": {
+      "type": "object",
+      "properties": {
+        "private_key": {
+          "type": "string"
+        },
+        "listen_port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ingress_port": {
+          "type": "integer",
+          "format": "int32",
+          "title": "ingress_port should be in k8s node port range"
+        },
+        "firewall_mark": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "address": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "TODO: add cidr"
+        },
+        "dns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "mtu": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "table": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pre_up": {
+          "type": "string"
+        },
+        "post_up": {
+          "type": "string"
+        },
+        "pre_down": {
+          "type": "string"
+        },
+        "post_down": {
+          "type": "string"
+        }
+      }
+    },
+    "v1WireGuardPeer": {
+      "type": "object",
+      "properties": {
+        "public_key": {
+          "type": "string"
+        },
+        "preshared_key": {
+          "type": "string"
+        },
+        "endpoint": {
+          "type": "string"
+        },
+        "persistent_keepalive_interval": {
+          "type": "string"
+        },
+        "allowed_ips": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "TODO: add cidr"
+        }
+      }
+    },
+    "v1WireGuardStatus": {
+      "type": "object",
+      "properties": {
+        "device": {
+          "$ref": "#/definitions/v1WireGuardDevice"
+        }
+      }
+    }
+  }
+}

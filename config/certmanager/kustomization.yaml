@@ -1,0 +1,19 @@
+namespace: '{{ .Release.Namespace }}'
+namePrefix: '{{ include "guardllama.fullname" . }}-'
+
+resources:
+- certificate.yaml
+
+configurations:
+- kustomizeconfig.yaml
+
+patches:
+- patch: |-
+    - op: replace
+      path: /spec/dnsNames/0
+      value: '{{ include "guardllama.fullname" . }}-webhook.{{ .Release.Namespace }}.svc'
+    - op: replace
+      path: /spec/dnsNames/1
+      value: '{{ include "guardllama.fullname" . }}-webhook.{{ .Release.Namespace }}.svc.cluster.local'
+  target:
+    kind: Certificate

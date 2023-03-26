@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+version="$1"
+
+git tag "v${version}"
+git push origin HEAD "v${version}"

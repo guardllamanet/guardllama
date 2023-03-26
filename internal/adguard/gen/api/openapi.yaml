@@ -1,0 +1,3375 @@
+openapi: 3.0.3
+info:
+  contact:
+    name: AdGuard Home
+    url: https://github.com/AdguardTeam/AdGuardHome
+  description: |
+    AdGuard Home REST-ish API.  Our admin web interface is built on top of this REST-ish API.
+  title: AdGuard Home
+  version: "0.107"
+servers:
+- url: /control
+security:
+- basicAuth: []
+tags:
+- description: Clients list operations
+  name: clients
+- description: Built-in DHCP server controls
+  name: dhcp
+- description: Rule-based filtering
+  name: filtering
+- description: AdGuard Home server general settings and controls
+  name: global
+- description: Application localization
+  name: i18n
+- description: First-time install configuration handlers
+  name: install
+- description: AdGuard Home query log
+  name: log
+- description: Apple .mobileconfig
+  name: mobileconfig
+- description: Blocking adult and explicit materials
+  name: parental
+- description: Blocking malware/phishing sites
+  name: safebrowsing
+- description: Enforce family-friendly results in search engines
+  name: safesearch
+- description: AdGuard Home statistics
+  name: stats
+- description: AdGuard Home HTTPS/DoH/DoQ/DoT settings
+  name: tls
+paths:
+  /status:
+    get:
+      operationId: status
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerStatus'
+          description: OK
+      summary: Get DNS server current status and general settings
+      tags:
+      - global
+  /dns_info:
+    get:
+      operationId: dnsInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/dnsInfo_200_response'
+          description: OK
+      summary: Get general DNS parameters
+      tags:
+      - global
+  /dns_config:
+    post:
+      operationId: dnsConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DNSConfig'
+      responses:
+        "200":
+          description: OK
+      summary: Set general DNS parameters
+      tags:
+      - global
+  /test_upstream_dns:
+    post:
+      operationId: testUpstreamDNS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpstreamsConfig'
+        description: Upstream configuration to be tested
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    "1.1.1.1": OK
+                    "1.0.0.1": OK
+                    "8.8.8.8": OK
+                    "8.8.4.4": OK
+                    "192.168.1.104:53535": "upstream \"192.168.1.104:1234\" fails\
+                      \ to exchange: couldn't communicate with upstream: read udp\
+                      \ 192.168.1.100:60675->8.8.8.8:1234: i/o timeout\n"
+              schema:
+                $ref: '#/components/schemas/UpstreamsConfigResponse'
+          description: "Status of testing each requested server, with \"OK\" meaning\
+            \ that server works, any other text means an error.\n"
+      summary: Test upstream configuration
+      tags:
+      - global
+  /version.json:
+    post:
+      operationId: getVersionJson
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetVersionRequest'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VersionInfo'
+          description: "Version info.  If response message is empty, UI does not show\
+            \ a version update message.\n"
+        "500":
+          description: Cannot write answer
+        "502":
+          description: Cannot retrieve the version.json file contents
+      summary: |
+        Gets information about the latest available version of AdGuard
+      tags:
+      - global
+  /update:
+    post:
+      operationId: beginUpdate
+      responses:
+        "200":
+          description: OK.
+        "500":
+          description: Failed
+      summary: Begin auto-upgrade procedure
+      tags:
+      - global
+  /querylog:
+    get:
+      operationId: queryLog
+      parameters:
+      - description: Filter by older than
+        explode: true
+        in: query
+        name: older_than
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: "Specify the ranking number of the first item on the page.  Even\
+          \ though it is possible to use \"offset\" and \"older_than\", we recommend\
+          \ choosing one of them and sticking to it.\n"
+        explode: true
+        in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Limit the number of records to be returned
+        explode: true
+        in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Filter by domain name or client IP
+        explode: true
+        in: query
+        name: search
+        required: false
+        schema:
+          type: string
+        style: form
+      - description: Filter by response status
+        explode: true
+        in: query
+        name: response_status
+        required: false
+        schema:
+          enum:
+          - all
+          - filtered
+          - blocked
+          - blocked_safebrowsing
+          - blocked_parental
+          - whitelisted
+          - rewritten
+          - safe_search
+          - processed
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryLog'
+          description: OK.
+      summary: Get DNS server query log.
+      tags:
+      - log
+  /querylog_info:
+    get:
+      operationId: queryLogInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueryLogConfig'
+          description: OK.
+      summary: Get query log parameters
+      tags:
+      - log
+  /querylog_config:
+    post:
+      operationId: queryLogConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueryLogConfig'
+      responses:
+        "200":
+          description: OK.
+      summary: Set query log parameters
+      tags:
+      - log
+  /querylog_clear:
+    post:
+      operationId: querylogClear
+      responses:
+        "200":
+          description: OK.
+      summary: Clear query log
+      tags:
+      - log
+  /stats:
+    get:
+      operationId: stats
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+          description: Returns statistics data
+      summary: Get DNS server statistics
+      tags:
+      - stats
+  /stats_reset:
+    post:
+      operationId: statsReset
+      responses:
+        "200":
+          description: OK.
+      summary: Reset all statistics to zeroes
+      tags:
+      - stats
+  /stats_info:
+    get:
+      operationId: statsInfo
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatsConfig'
+          description: OK.
+      summary: Get statistics parameters
+      tags:
+      - stats
+  /stats_config:
+    post:
+      operationId: statsConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatsConfig'
+      responses:
+        "200":
+          description: OK.
+      summary: Set statistics parameters
+      tags:
+      - stats
+  /tls/status:
+    get:
+      operationId: tlsStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TlsConfig'
+          description: OK.
+      summary: Returns TLS configuration and its status
+      tags:
+      - tls
+  /tls/configure:
+    post:
+      operationId: tlsConfigure
+      requestBody:
+        $ref: '#/components/requestBodies/TlsConfig'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TlsConfig'
+          description: TLS configuration and its status
+        "400":
+          description: Invalid configuration or unavailable port
+        "500":
+          description: Error occurred while applying configuration
+      summary: Updates current TLS configuration
+      tags:
+      - tls
+  /tls/validate:
+    post:
+      operationId: tlsValidate
+      requestBody:
+        $ref: '#/components/requestBodies/TlsConfig'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TlsConfig'
+          description: TLS configuration and its status
+        "400":
+          description: Invalid configuration or unavailable port
+      summary: Checks if the current TLS configuration is valid
+      tags:
+      - tls
+  /dhcp/status:
+    get:
+      operationId: dhcpStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DhcpStatus'
+          description: OK.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Gets the current DHCP settings and status
+      tags:
+      - dhcp
+  /dhcp/interfaces:
+    get:
+      operationId: dhcpInterfaces
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NetInterfaces'
+          description: OK.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Gets the available interfaces
+      tags:
+      - dhcp
+  /dhcp/set_config:
+    post:
+      operationId: dhcpSetConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DhcpConfig'
+      responses:
+        "200":
+          description: OK.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Updates the current DHCP server configuration
+      tags:
+      - dhcp
+  /dhcp/find_active_dhcp:
+    post:
+      operationId: checkActiveDhcp
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DhcpSearchResult'
+          description: OK.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Searches for an active DHCP server on the network
+      tags:
+      - dhcp
+  /dhcp/add_static_lease:
+    post:
+      operationId: dhcpAddStaticLease
+      requestBody:
+        $ref: '#/components/requestBodies/DhcpStaticLease'
+      responses:
+        "200":
+          description: OK.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Adds a static lease
+      tags:
+      - dhcp
+  /dhcp/remove_static_lease:
+    post:
+      operationId: dhcpRemoveStaticLease
+      requestBody:
+        $ref: '#/components/requestBodies/DhcpStaticLease'
+      responses:
+        "200":
+          description: OK.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Removes a static lease
+      tags:
+      - dhcp
+  /dhcp/reset:
+    post:
+      operationId: dhcpReset
+      responses:
+        "200":
+          description: OK.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Reset DHCP configuration
+      tags:
+      - dhcp
+  /dhcp/reset_leases:
+    post:
+      operationId: dhcpResetLeases
+      responses:
+        "200":
+          description: OK.
+        "501":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: "Not implemented (for example, on Windows)."
+      summary: Reset DHCP leases
+      tags:
+      - dhcp
+  /filtering/status:
+    get:
+      operationId: filteringStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterStatus'
+          description: OK.
+      summary: Get filtering parameters
+      tags:
+      - filtering
+  /filtering/config:
+    post:
+      operationId: filteringConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterConfig'
+        required: true
+      responses:
+        "200":
+          description: OK.
+      summary: Set filtering parameters
+      tags:
+      - filtering
+  /filtering/add_url:
+    post:
+      operationId: filteringAddURL
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddUrlRequest'
+        required: true
+      responses:
+        "200":
+          description: OK.
+      summary: Add filter URL or an absolute file path
+      tags:
+      - filtering
+  /filtering/remove_url:
+    post:
+      operationId: filteringRemoveURL
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RemoveUrlRequest'
+        required: true
+      responses:
+        "200":
+          description: OK.
+      summary: Remove filter URL
+      tags:
+      - filtering
+  /filtering/set_url:
+    post:
+      operationId: filteringSetURL
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterSetUrl'
+      responses:
+        "200":
+          description: OK.
+      summary: Set URL parameters
+      tags:
+      - filtering
+  /filtering/refresh:
+    post:
+      operationId: filteringRefresh
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FilterRefreshRequest'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterRefreshResponse'
+          description: OK.
+      summary: "Reload filtering rules from URLs.  This might be needed if new URL\
+        \ was just added and you don't want to wait for automatic refresh to kick\
+        \ in. This API request is ratelimited, so you can call it freely as often\
+        \ as you like, it wont create unnecessary burden on servers that host the\
+        \ URL.  This should work as intended, a `force` parameter is offered as last-resort\
+        \ attempt to make filter lists fresh.  If you ever find yourself using `force`\
+        \ to make something work that otherwise wont, this is a bug and report it\
+        \ accordingly.\n"
+      tags:
+      - filtering
+  /filtering/set_rules:
+    post:
+      operationId: filteringSetRules
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              example: '@@||yandex.ru^|'
+              type: string
+        description: "All filtering rules, one line per rule"
+      responses:
+        "200":
+          description: OK.
+      summary: Set user-defined filter rules
+      tags:
+      - filtering
+  /filtering/check_host:
+    get:
+      operationId: filteringCheckHost
+      parameters:
+      - description: Filter by host name
+        explode: true
+        in: query
+        name: name
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterCheckHostResponse'
+          description: OK.
+      summary: Check if host name is filtered
+      tags:
+      - filtering
+  /safebrowsing/enable:
+    post:
+      operationId: safebrowsingEnable
+      responses:
+        "200":
+          description: OK.
+      summary: Enable safebrowsing
+      tags:
+      - safebrowsing
+  /safebrowsing/disable:
+    post:
+      operationId: safebrowsingDisable
+      responses:
+        "200":
+          description: OK.
+      summary: Disable safebrowsing
+      tags:
+      - safebrowsing
+  /safebrowsing/status:
+    get:
+      operationId: safebrowsingStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: false
+              schema:
+                $ref: '#/components/schemas/safebrowsingStatus_200_response'
+          description: OK.
+      summary: Get safebrowsing status
+      tags:
+      - safebrowsing
+  /parental/enable:
+    post:
+      operationId: parentalEnable
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              enum:
+              - EARLY_CHILDHOOD
+              - YOUNG
+              - TEEN
+              - MATURE
+              example: sensitivity=TEEN
+              type: string
+        description: "Age sensitivity for parental filtering,\nEARLY_CHILDHOOD is\
+          \ 3\nYOUNG is 10\nTEEN is 13\nMATURE is 17\n"
+        required: true
+      responses:
+        "200":
+          description: OK.
+      summary: Enable parental filtering
+      tags:
+      - parental
+  /parental/disable:
+    post:
+      operationId: parentalDisable
+      responses:
+        "200":
+          description: OK.
+      summary: Disable parental filtering
+      tags:
+      - parental
+  /parental/status:
+    get:
+      operationId: parentalStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: true
+                    sensitivity: 13
+              schema:
+                $ref: '#/components/schemas/parentalStatus_200_response'
+          description: OK.
+      summary: Get parental filtering status
+      tags:
+      - parental
+  /safesearch/enable:
+    post:
+      operationId: safesearchEnable
+      responses:
+        "200":
+          description: OK.
+      summary: Enable safesearch
+      tags:
+      - safesearch
+  /safesearch/disable:
+    post:
+      operationId: safesearchDisable
+      responses:
+        "200":
+          description: OK.
+      summary: Disable safesearch
+      tags:
+      - safesearch
+  /safesearch/status:
+    get:
+      operationId: safesearchStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                response:
+                  value:
+                    enabled: false
+              schema:
+                $ref: '#/components/schemas/safebrowsingStatus_200_response'
+          description: OK.
+      summary: Get safesearch status
+      tags:
+      - safesearch
+  /clients:
+    get:
+      operationId: clientsStatus
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Clients'
+          description: OK.
+      summary: Get information about configured clients
+      tags:
+      - clients
+  /clients/add:
+    post:
+      operationId: clientsAdd
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
+        required: true
+      responses:
+        "200":
+          description: OK.
+      summary: Add a new client
+      tags:
+      - clients
+  /clients/delete:
+    post:
+      operationId: clientsDelete
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientDelete'
+        required: true
+      responses:
+        "200":
+          description: OK.
+      summary: Remove a client
+      tags:
+      - clients
+  /clients/update:
+    post:
+      operationId: clientsUpdate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientUpdate'
+        required: true
+      responses:
+        "200":
+          description: OK.
+      summary: Update client information
+      tags:
+      - clients
+  /clients/find:
+    get:
+      operationId: clientsFind
+      parameters:
+      - description: "Filter by IP address or ClientIDs.  Parameters with names `ip1`,\
+          \ `ip2`, and so on are also accepted and interpreted as \"ip0 OR ip1 OR\
+          \ ip2\".\nTODO(a.garipov): Replace with a better query API.\n"
+        explode: true
+        in: query
+        name: ip0
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientsFindResponse'
+          description: OK.
+      summary: |
+        Get information about clients by their IP addresses or ClientIDs.
+      tags:
+      - clients
+  /access/list:
+    get:
+      operationId: accessList
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessListResponse'
+          description: OK.
+      summary: "List (dis)allowed clients, blocked hosts, etc."
+      tags:
+      - clients
+  /access/set:
+    post:
+      operationId: accessSet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessSetRequest'
+        required: true
+      responses:
+        "200":
+          description: OK.
+        "400":
+          description: |
+            Failed to parse JSON or cannot save the list.
+        "500":
+          description: Internal error.
+      summary: "Set (dis)allowed clients, blocked hosts, etc."
+      tags:
+      - clients
+  /blocked_services/services:
+    get:
+      operationId: blockedServicesAvailableServices
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockedServicesArray'
+          description: OK.
+      summary: Get available services to use for blocking
+      tags:
+      - blocked_services
+  /blocked_services/list:
+    get:
+      operationId: blockedServicesList
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockedServicesArray'
+          description: OK.
+      summary: Get blocked services list
+      tags:
+      - blocked_services
+  /blocked_services/set:
+    post:
+      operationId: blockedServicesSet
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockedServicesArray'
+      responses:
+        "200":
+          description: OK.
+      summary: Set blocked services list
+      tags:
+      - blocked_services
+  /rewrite/list:
+    get:
+      operationId: rewriteList
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewriteList'
+          description: OK.
+      summary: Get list of Rewrite rules
+      tags:
+      - rewrite
+  /rewrite/add:
+    post:
+      operationId: rewriteAdd
+      requestBody:
+        $ref: '#/components/requestBodies/RewriteEntry'
+      responses:
+        "200":
+          description: OK.
+      summary: Add a new Rewrite rule
+      tags:
+      - rewrite
+  /rewrite/delete:
+    post:
+      operationId: rewriteDelete
+      requestBody:
+        $ref: '#/components/requestBodies/RewriteEntry'
+      responses:
+        "200":
+          description: OK.
+      summary: Remove a Rewrite rule
+      tags:
+      - rewrite
+  /i18n/change_language:
+    post:
+      operationId: changeLanguage
+      requestBody:
+        content:
+          text/plain:
+            schema:
+              example: en
+              type: string
+        description: |
+          New language.  It must be known to the server and must be an ISO 639-1 two-letter code.
+      responses:
+        "200":
+          description: OK.
+      summary: |
+        Change current language.  Argument must be an ISO 639-1 two-letter code.
+      tags:
+      - i18n
+  /i18n/current_language:
+    get:
+      operationId: currentLanguage
+      responses:
+        "200":
+          content:
+            text/plain:
+              examples:
+                response:
+                  value: en
+          description: OK.
+      summary: |
+        Get currently set language.  Result is ISO 639-1 two-letter code.  Empty result means default language.
+      tags:
+      - i18n
+  /install/get_addresses_beta:
+    get:
+      operationId: installGetAddressesBeta
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressesInfoBeta'
+          description: OK.
+      summary: "'UNSTABLE!: Gets the network interfaces information.'\n"
+      tags:
+      - install
+  /install/get_addresses:
+    get:
+      operationId: installGetAddresses
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddressesInfo'
+          description: OK.
+      summary: Gets the network interfaces information.
+      tags:
+      - install
+  /install/check_config_beta:
+    post:
+      operationId: installCheckConfigBeta
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckConfigRequestBeta'
+        description: Configuration to be checked
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckConfigResponse'
+          description: OK.
+        "400":
+          description: |
+            Failed to parse JSON or cannot listen on the specified address.
+      summary: "'UNSTABLE!: Checks configuration'\n"
+      tags:
+      - install
+  /install/check_config:
+    post:
+      operationId: installCheckConfig
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckConfigRequest'
+        description: Configuration to be checked
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckConfigResponse'
+          description: OK.
+        "400":
+          description: |
+            Failed to parse JSON or cannot listen on the specified address.
+      summary: Checks configuration
+      tags:
+      - install
+  /install/configure_beta:
+    post:
+      operationId: installConfigureBeta
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitialConfigurationBeta'
+        description: Initial configuration JSON
+        required: true
+      responses:
+        "200":
+          description: OK.
+        "400":
+          description: |
+            Failed to parse initial configuration or cannot listen to the specified addresses.
+        "500":
+          description: Cannot start the DNS server
+      summary: "'UNSTABLE!: Applies the initial configuration.'\n"
+      tags:
+      - install
+  /install/configure:
+    post:
+      operationId: installConfigure
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InitialConfiguration'
+        description: Initial configuration JSON
+        required: true
+      responses:
+        "200":
+          description: OK.
+        "400":
+          description: |
+            Failed to parse initial configuration or cannot listen to the specified addresses.
+        "422":
+          description: |
+            The specified password does not meet the strength requirements.
+        "500":
+          description: Cannot start the DNS server
+      summary: Applies the initial configuration.
+      tags:
+      - install
+  /login:
+    post:
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+        required: true
+      responses:
+        "200":
+          description: OK.
+        "400":
+          description: |
+            Invalid username or password.
+        "429":
+          description: |
+            Out of login attempts.
+      summary: Perform administrator log-in
+      tags:
+      - global
+  /logout:
+    get:
+      operationId: logout
+      responses:
+        "302":
+          description: OK.
+      summary: Perform administrator log-out
+      tags:
+      - global
+  /profile:
+    get:
+      operationId: getProfile
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileInfo'
+          description: OK.
+      summary: ""
+      tags:
+      - global
+  /apple/doh.mobileconfig:
+    get:
+      operationId: mobileConfigDoH
+      parameters:
+      - description: "Host for which the config is generated.  If no host is provided,\
+          \ `tls.server_name` from the configuration file is used.  If `tls.server_name`\
+          \ is not set, the API returns an error with a 500 status.\n"
+        example: example.org
+        explode: true
+        in: query
+        name: host
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: |
+          ClientID.
+        example: client-1
+        explode: true
+        in: query
+        name: client_id
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: DNS over HTTPS plist file.
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Server configuration error.
+      summary: Get DNS over HTTPS .mobileconfig.
+      tags:
+      - mobileconfig
+      - global
+  /apple/dot.mobileconfig:
+    get:
+      operationId: mobileConfigDoT
+      parameters:
+      - description: "Host for which the config is generated.  If no host is provided,\
+          \ `tls.server_name` from the configuration file is used.  If `tls.server_name`\
+          \ is not set, the API returns an error with a 500 status.\n"
+        example: example.org
+        explode: true
+        in: query
+        name: host
+        required: true
+        schema:
+          type: string
+        style: form
+      - description: |
+          ClientID.
+        example: client-1
+        explode: true
+        in: query
+        name: client_id
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: DNS over TLS plist file
+        "500":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Server configuration error.
+      summary: Get DNS over TLS .mobileconfig.
+      tags:
+      - mobileconfig
+      - global
+components:
+  requestBodies:
+    TlsConfig:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/TlsConfig'
+      description: TLS configuration JSON
+      required: true
+    DhcpStaticLease:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/DhcpStaticLease'
+      required: true
+    RewriteEntry:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/RewriteEntry'
+      required: true
+  schemas:
+    ServerStatus:
+      description: AdGuard Home server status and configuration
+      example:
+        running: true
+        protection_enabled: true
+        dns_port: 53
+        dhcp_available: true
+        language: en
+        dns_addresses:
+        - 127.0.0.1
+        version: v0.123.4
+        http_port: 80
+      properties:
+        dns_addresses:
+          example:
+          - 127.0.0.1
+          items:
+            type: string
+          type: array
+        dns_port:
+          example: 53
+          format: uint16
+          maximum: 65535
+          minimum: 1
+          type: integer
+        http_port:
+          example: 80
+          format: uint16
+          maximum: 65535
+          minimum: 1
+          type: integer
+        protection_enabled:
+          type: boolean
+        dhcp_available:
+          type: boolean
+        running:
+          type: boolean
+        version:
+          example: v0.123.4
+          type: string
+        language:
+          example: en
+          type: string
+      required:
+      - dns_addresses
+      - dns_port
+      - http_port
+      - language
+      - protection_enabled
+      - running
+      - version
+      type: object
+    DNSConfig:
+      description: Query log configuration
+      example:
+        ratelimit: 0
+        protection_enabled: true
+        cache_ttl_max: 5
+        edns_cs_enabled: true
+        dnssec_enabled: true
+        cache_size: 6
+        upstream_dns:
+        - tls://1.1.1.1
+        - tls://1.0.0.1
+        disable_ipv6: true
+        use_private_ptr_resolvers: true
+        blocking_ipv6: blocking_ipv6
+        bootstrap_dns:
+        - 8.8.8.8:53
+        - 1.1.1.1:53
+        blocking_ipv4: blocking_ipv4
+        blocking_mode: default
+        local_ptr_upstreams:
+        - tls://1.1.1.1
+        - tls://1.0.0.1
+        cache_ttl_min: 1
+        cache_optimistic: true
+        upstream_dns_file: upstream_dns_file
+        dhcp_available: true
+        resolve_clients: true
+        upstream_mode: ""
+      properties:
+        bootstrap_dns:
+          description: "Bootstrap servers, port is optional after colon.  Empty value\
+            \ will reset it to default values.\n"
+          example:
+          - 8.8.8.8:53
+          - 1.1.1.1:53
+          items:
+            type: string
+          type: array
+        upstream_dns:
+          description: "Upstream servers, port is optional after colon.  Empty value\
+            \ will reset it to default values.\n"
+          example:
+          - tls://1.1.1.1
+          - tls://1.0.0.1
+          items:
+            type: string
+          type: array
+        upstream_dns_file:
+          type: string
+        protection_enabled:
+          type: boolean
+        dhcp_available:
+          type: boolean
+        ratelimit:
+          type: integer
+        blocking_mode:
+          enum:
+          - default
+          - refused
+          - nxdomain
+          - null_ip
+          - custom_ip
+          type: string
+        blocking_ipv4:
+          type: string
+        blocking_ipv6:
+          type: string
+        edns_cs_enabled:
+          type: boolean
+        disable_ipv6:
+          type: boolean
+        dnssec_enabled:
+          type: boolean
+        cache_size:
+          type: integer
+        cache_ttl_min:
+          type: integer
+        cache_ttl_max:
+          type: integer
+        cache_optimistic:
+          type: boolean
+        upstream_mode:
+          enum:
+          - ""
+          - parallel
+          - fastest_addr
+          type: string
+        use_private_ptr_resolvers:
+          type: boolean
+        resolve_clients:
+          type: boolean
+        local_ptr_upstreams:
+          description: "Upstream servers, port is optional after colon.  Empty value\
+            \ will reset it to default values.\n"
+          example:
+          - tls://1.1.1.1
+          - tls://1.0.0.1
+          items:
+            type: string
+          type: array
+      type: object
+    UpstreamsConfig:
+      description: Upstreams configuration
+      example:
+        bootstrap_dns:
+        - 8.8.8.8:53
+        - 1.1.1.1:53
+        upstream_dns:
+        - tls://1.1.1.1
+        - tls://1.0.0.1
+        private_upstream:
+        - tls://1.1.1.1
+        - tls://1.0.0.1
+      properties:
+        bootstrap_dns:
+          description: "Bootstrap servers, port is optional after colon.  Empty value\
+            \ will reset it to default values.\n"
+          example:
+          - 8.8.8.8:53
+          - 1.1.1.1:53
+          items:
+            type: string
+          type: array
+        upstream_dns:
+          description: "Upstream servers, port is optional after colon.  Empty value\
+            \ will reset it to default values.\n"
+          example:
+          - tls://1.1.1.1
+          - tls://1.0.0.1
+          items:
+            type: string
+          type: array
+        private_upstream:
+          description: "Local PTR resolvers, port is optional after colon.  Empty\
+            \ value will reset it to default values.\n"
+          example:
+          - tls://1.1.1.1
+          - tls://1.0.0.1
+          items:
+            type: string
+          type: array
+      required:
+      - bootstrap_dns
+      - upstream_dns
+      type: object
+    UpstreamsConfigResponse:
+      additionalProperties:
+        type: string
+      description: Upstreams configuration response
+      type: object
+    Filter:
+      description: Filter subscription info
+      example:
+        last_updated: 2018-10-30T12:18:57+03:00
+        name: AdGuard Simplified Domain Names filter
+        rules_count: 5912
+        id: 1234
+        enabled: true
+        url: |
+          https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+      properties:
+        enabled:
+          type: boolean
+        id:
+          example: 1234
+          format: int64
+          type: integer
+        last_updated:
+          example: 2018-10-30T12:18:57+03:00
+          format: date-time
+          type: string
+        name:
+          example: AdGuard Simplified Domain Names filter
+          type: string
+        rules_count:
+          example: 5912
+          format: uint32
+          type: integer
+        url:
+          example: |
+            https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+          type: string
+      required:
+      - enabled
+      - id
+      - name
+      - rules_count
+      - url
+      type: object
+    FilterStatus:
+      description: Filtering settings
+      example:
+        whitelist_filters:
+        - last_updated: 2018-10-30T12:18:57+03:00
+          name: AdGuard Simplified Domain Names filter
+          rules_count: 5912
+          id: 1234
+          enabled: true
+          url: |
+            https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+        - last_updated: 2018-10-30T12:18:57+03:00
+          name: AdGuard Simplified Domain Names filter
+          rules_count: 5912
+          id: 1234
+          enabled: true
+          url: |
+            https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+        user_rules:
+        - user_rules
+        - user_rules
+        interval: 0
+        filters:
+        - last_updated: 2018-10-30T12:18:57+03:00
+          name: AdGuard Simplified Domain Names filter
+          rules_count: 5912
+          id: 1234
+          enabled: true
+          url: |
+            https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+        - last_updated: 2018-10-30T12:18:57+03:00
+          name: AdGuard Simplified Domain Names filter
+          rules_count: 5912
+          id: 1234
+          enabled: true
+          url: |
+            https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+        enabled: true
+      properties:
+        enabled:
+          type: boolean
+        interval:
+          type: integer
+        filters:
+          items:
+            $ref: '#/components/schemas/Filter'
+          type: array
+        whitelist_filters:
+          items:
+            $ref: '#/components/schemas/Filter'
+          type: array
+        user_rules:
+          items:
+            type: string
+          type: array
+      type: object
+    FilterConfig:
+      description: Filtering settings
+      example:
+        interval: 0
+        enabled: true
+      properties:
+        enabled:
+          type: boolean
+        interval:
+          type: integer
+      type: object
+    FilterSetUrl:
+      description: Filtering URL settings
+      example:
+        data:
+          name: AdGuard Simplified Domain Names filter
+          enabled: true
+          url: |
+            https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+        whitelist: true
+        url: url
+      properties:
+        data:
+          $ref: '#/components/schemas/FilterSetUrlData'
+        url:
+          type: string
+        whitelist:
+          type: boolean
+      type: object
+    FilterSetUrlData:
+      description: Filter update data
+      example:
+        name: AdGuard Simplified Domain Names filter
+        enabled: true
+        url: |
+          https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+      properties:
+        enabled:
+          type: boolean
+        name:
+          example: AdGuard Simplified Domain Names filter
+          type: string
+        url:
+          example: |
+            https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt
+          type: string
+      required:
+      - enabled
+      - name
+      - url
+      type: object
+    FilterRefreshRequest:
+      description: Refresh Filters request data
+      example:
+        whitelist: true
+      properties:
+        whitelist:
+          type: boolean
+      type: object
+    FilterCheckHostResponse:
+      description: Check Host Result
+      example:
+        reason: NotFilteredNotFound
+        filter_id: 0
+        service_name: service_name
+        cname: cname
+        rule: '||example.org^'
+        rules:
+        - text: '||example.org^'
+          filter_list_id: 123123
+        - text: '||example.org^'
+          filter_list_id: 123123
+        ip_addrs:
+        - ip_addrs
+        - ip_addrs
+      properties:
+        reason:
+          description: Request filtering status.
+          enum:
+          - NotFilteredNotFound
+          - NotFilteredWhiteList
+          - NotFilteredError
+          - FilteredBlackList
+          - FilteredSafeBrowsing
+          - FilteredParental
+          - FilteredInvalid
+          - FilteredSafeSearch
+          - FilteredBlockedService
+          - Rewrite
+          - RewriteEtcHosts
+          - RewriteRule
+          type: string
+        filter_id:
+          deprecated: true
+          description: "In case if there's a rule applied to this DNS request, this\
+            \ is ID of the filter list that the rule belongs to.\nDeprecated: use\
+            \ `rules[*].filter_list_id` instead.\n"
+          type: integer
+        rule:
+          deprecated: true
+          description: "Filtering rule applied to the request (if any).\nDeprecated:\
+            \ use `rules[*].text` instead.\n"
+          example: '||example.org^'
+          type: string
+        rules:
+          description: Applied rules.
+          items:
+            $ref: '#/components/schemas/ResultRule'
+          type: array
+        service_name:
+          description: Set if reason=FilteredBlockedService
+          type: string
+        cname:
+          description: Set if reason=Rewrite
+          type: string
+        ip_addrs:
+          description: Set if reason=Rewrite
+          items:
+            type: string
+          type: array
+      type: object
+    FilterRefreshResponse:
+      description: /filtering/refresh response data
+      example:
+        updated: 0
+      properties:
+        updated:
+          type: integer
+      type: object
+    GetVersionRequest:
+      description: /version.json request data
+      example:
+        recheck_now: true
+      properties:
+        recheck_now:
+          description: "If false, server will check for a new version data only once\
+            \ in several hours.\n"
+          type: boolean
+      type: object
+    VersionInfo:
+      description: |
+        Information about the latest available version of AdGuard Home.
+      example:
+        can_autoupdate: true
+        announcement_url: |
+          https://github.com/AdguardTeam/AdGuardHome/releases/tag/v0.9
+        disabled: true
+        new_version: v0.9
+        announcement: AdGuard Home v0.9 is now available!
+      properties:
+        disabled:
+          description: |
+            If true then other fields doesn't appear.
+          type: boolean
+        new_version:
+          example: v0.9
+          type: string
+        announcement:
+          example: AdGuard Home v0.9 is now available!
+          type: string
+        announcement_url:
+          example: |
+            https://github.com/AdguardTeam/AdGuardHome/releases/tag/v0.9
+          type: string
+        can_autoupdate:
+          type: boolean
+      required:
+      - disabled
+      type: object
+    Stats:
+      description: Server statistics data
+      example:
+        num_blocked_filtering: 50
+        replaced_safebrowsing:
+        - 5
+        - 5
+        dns_queries:
+        - 6
+        - 6
+        top_blocked_domains:
+        - domain_or_ip: 0
+        - domain_or_ip: 0
+        num_dns_queries: 123
+        num_replaced_safebrowsing: 5
+        replaced_parental:
+        - 5
+        - 5
+        time_units: hours
+        avg_processing_time: 0.34
+        blocked_filtering:
+        - 1
+        - 1
+        num_replaced_parental: 15
+        top_queried_domains:
+        - domain_or_ip: 0
+        - domain_or_ip: 0
+        top_clients:
+        - domain_or_ip: 0
+        - domain_or_ip: 0
+        num_replaced_safesearch: 5
+      properties:
+        time_units:
+          description: Time units
+          enum:
+          - hours
+          - days
+          example: hours
+          type: string
+        num_dns_queries:
+          description: Total number of DNS queries
+          example: 123
+          type: integer
+        num_blocked_filtering:
+          description: Number of requests blocked by filtering rules
+          example: 50
+          type: integer
+        num_replaced_safebrowsing:
+          description: Number of requests blocked by safebrowsing module
+          example: 5
+          type: integer
+        num_replaced_safesearch:
+          description: Number of requests blocked by safesearch module
+          example: 5
+          type: integer
+        num_replaced_parental:
+          description: Number of blocked adult websites
+          example: 15
+          type: integer
+        avg_processing_time:
+          description: Average time in milliseconds on processing a DNS
+          example: 0.34
+          format: float
+          type: number
+        top_queried_domains:
+          items:
+            $ref: '#/components/schemas/TopArrayEntry'
+          type: array
+        top_clients:
+          items:
+            $ref: '#/components/schemas/TopArrayEntry'
+          type: array
+        top_blocked_domains:
+          items:
+            $ref: '#/components/schemas/TopArrayEntry'
+          type: array
+        dns_queries:
+          items:
+            type: integer
+          type: array
+        blocked_filtering:
+          items:
+            type: integer
+          type: array
+        replaced_safebrowsing:
+          items:
+            type: integer
+          type: array
+        replaced_parental:
+          items:
+            type: integer
+          type: array
+      type: object
+    TopArrayEntry:
+      additionalProperties:
+        type: integer
+      description: |
+        Represent the number of hits per key (domain or client IP).
+      example:
+        domain_or_ip: 0
+      properties:
+        domain_or_ip:
+          type: integer
+      type: object
+    StatsConfig:
+      description: Statistics configuration
+      example:
+        interval: 0
+      properties:
+        interval:
+          description: |
+            Time period to keep the data.  `0` means that the statistics is disabled.
+          enum:
+          - 0
+          - 1
+          - 7
+          - 30
+          - 90
+          type: integer
+      type: object
+    DhcpConfig:
+      example:
+        v6:
+          range_start: range_start
+          lease_duration: 6
+        interface_name: interface_name
+        enabled: true
+        v4:
+          range_end: 192.168.10.50
+          subnet_mask: 255.255.255.0
+          range_start: 192.168.1.2
+          lease_duration: 0
+          gateway_ip: 192.168.1.1
+      properties:
+        enabled:
+          type: boolean
+        interface_name:
+          type: string
+        v4:
+          $ref: '#/components/schemas/DhcpConfigV4'
+        v6:
+          $ref: '#/components/schemas/DhcpConfigV6'
+      type: object
+    DhcpConfigV4:
+      example:
+        range_end: 192.168.10.50
+        subnet_mask: 255.255.255.0
+        range_start: 192.168.1.2
+        lease_duration: 0
+        gateway_ip: 192.168.1.1
+      properties:
+        gateway_ip:
+          example: 192.168.1.1
+          type: string
+        subnet_mask:
+          example: 255.255.255.0
+          type: string
+        range_start:
+          example: 192.168.1.2
+          type: string
+        range_end:
+          example: 192.168.10.50
+          type: string
+        lease_duration:
+          type: integer
+      type: object
+    DhcpConfigV6:
+      example:
+        range_start: range_start
+        lease_duration: 6
+      properties:
+        range_start:
+          type: string
+        lease_duration:
+          type: integer
+      type: object
+    DhcpLease:
+      description: DHCP lease information
+      example:
+        hostname: dell
+        expires: 2017-07-21T17:32:28Z
+        ip: 192.168.1.22
+        mac: 00:11:09:b3:b3:b8
+      properties:
+        mac:
+          example: 00:11:09:b3:b3:b8
+          type: string
+        ip:
+          example: 192.168.1.22
+          type: string
+        hostname:
+          example: dell
+          type: string
+        expires:
+          example: 2017-07-21T17:32:28Z
+          type: string
+      required:
+      - expires
+      - hostname
+      - ip
+      - mac
+      type: object
+    DhcpStaticLease:
+      description: DHCP static lease information
+      example:
+        hostname: dell
+        ip: 192.168.1.22
+        mac: 00:11:09:b3:b3:b8
+      properties:
+        mac:
+          example: 00:11:09:b3:b3:b8
+          type: string
+        ip:
+          example: 192.168.1.22
+          type: string
+        hostname:
+          example: dell
+          type: string
+      required:
+      - expires
+      - hostname
+      - ip
+      - mac
+      type: object
+    DhcpStatus:
+      description: Built-in DHCP server configuration and status
+      example:
+        v6:
+          range_start: range_start
+          lease_duration: 6
+        leases:
+        - hostname: dell
+          expires: 2017-07-21T17:32:28Z
+          ip: 192.168.1.22
+          mac: 00:11:09:b3:b3:b8
+        - hostname: dell
+          expires: 2017-07-21T17:32:28Z
+          ip: 192.168.1.22
+          mac: 00:11:09:b3:b3:b8
+        static_leases:
+        - hostname: dell
+          ip: 192.168.1.22
+          mac: 00:11:09:b3:b3:b8
+        - hostname: dell
+          ip: 192.168.1.22
+          mac: 00:11:09:b3:b3:b8
+        interface_name: interface_name
+        enabled: true
+        v4:
+          range_end: 192.168.10.50
+          subnet_mask: 255.255.255.0
+          range_start: 192.168.1.2
+          lease_duration: 0
+          gateway_ip: 192.168.1.1
+      properties:
+        enabled:
+          type: boolean
+        interface_name:
+          type: string
+        v4:
+          $ref: '#/components/schemas/DhcpConfigV4'
+        v6:
+          $ref: '#/components/schemas/DhcpConfigV6'
+        leases:
+          items:
+            $ref: '#/components/schemas/DhcpLease'
+          type: array
+        static_leases:
+          items:
+            $ref: '#/components/schemas/DhcpStaticLease'
+          type: array
+      required:
+      - config
+      - leases
+      type: object
+    NetInterfaces:
+      additionalProperties:
+        $ref: '#/components/schemas/NetInterface'
+      description: "Network interfaces dictionary, keys are interface names.\n"
+      type: object
+    DhcpSearchResult:
+      description: |
+        Information about a DHCP server discovered in the current network.
+      example:
+        v6:
+          other_server:
+            found: "no"
+            error: ""
+        v4:
+          static_ip:
+            static: "yes"
+            ip: ""
+          other_server:
+            found: "no"
+            error: ""
+      properties:
+        v4:
+          $ref: '#/components/schemas/DhcpSearchV4'
+        v6:
+          $ref: '#/components/schemas/DhcpSearchV6'
+      type: object
+    DhcpSearchV4:
+      example:
+        static_ip:
+          static: "yes"
+          ip: ""
+        other_server:
+          found: "no"
+          error: ""
+      properties:
+        other_server:
+          $ref: '#/components/schemas/DhcpSearchResultOtherServer'
+        static_ip:
+          $ref: '#/components/schemas/DhcpSearchResultStaticIP'
+      type: object
+    DhcpSearchV6:
+      example:
+        other_server:
+          found: "no"
+          error: ""
+      properties:
+        other_server:
+          $ref: '#/components/schemas/DhcpSearchResultOtherServer'
+      type: object
+    DhcpSearchResultOtherServer:
+      example:
+        found: "no"
+        error: ""
+      properties:
+        found:
+          description: |
+            The result of searching the other DHCP server.
+          enum:
+          - "yes"
+          - "no"
+          - error
+          example: "no"
+          type: string
+        error:
+          description: Set if found=error
+          example: ""
+          type: string
+      type: object
+    DhcpSearchResultStaticIP:
+      example:
+        static: "yes"
+        ip: ""
+      properties:
+        static:
+          description: |
+            The result of determining static IP address.
+          enum:
+          - "yes"
+          - "no"
+          - error
+          example: "yes"
+          type: string
+        ip:
+          description: Set if static=no
+          example: ""
+          type: string
+      type: object
+    DnsAnswer:
+      description: DNS answer section
+      example:
+        type: A
+        ttl: 55
+        value: 217.69.139.201
+      properties:
+        ttl:
+          example: 55
+          format: uint32
+          type: integer
+        type:
+          example: A
+          type: string
+        value:
+          example: 217.69.139.201
+          type: string
+      type: object
+    DnsQuestion:
+      description: DNS question section
+      example:
+        name: xn--d1abbgf6aiiy.xn--p1ai
+        unicode_name: президент.рф
+        type: A
+        class: IN
+      properties:
+        class:
+          example: IN
+          type: string
+        name:
+          example: xn--d1abbgf6aiiy.xn--p1ai
+          type: string
+        unicode_name:
+          example: президент.рф
+          type: string
+        type:
+          example: A
+          type: string
+      type: object
+    AddUrlRequest:
+      description: /add_url request data
+      example:
+        name: name
+        whitelist: true
+        url: https://filters.adtidy.org/windows/filters/15.txt
+      properties:
+        name:
+          type: string
+        url:
+          description: |
+            URL or an absolute path to the file containing filtering rules.
+          example: https://filters.adtidy.org/windows/filters/15.txt
+          type: string
+        whitelist:
+          type: boolean
+      type: object
+    RemoveUrlRequest:
+      description: /remove_url request data
+      example:
+        whitelist: true
+        url: https://filters.adtidy.org/windows/filters/15.txt
+      properties:
+        url:
+          description: Previously added URL containing filtering rules
+          example: https://filters.adtidy.org/windows/filters/15.txt
+          type: string
+        whitelist:
+          type: boolean
+      type: object
+    QueryLogItem:
+      description: Query log item
+      example:
+        reason: NotFilteredNotFound
+        client_info:
+          disallowed_rule: disallowed_rule
+          whois:
+            country: country
+            orgname: orgname
+            city: city
+          name: name
+          disallowed: true
+        upstream: upstream
+        question:
+          name: xn--d1abbgf6aiiy.xn--p1ai
+          unicode_name: президент.рф
+          type: A
+          class: IN
+        service_name: service_name
+        client_proto: dot
+        rule: '||example.org^'
+        rules:
+        - text: '||example.org^'
+          filter_list_id: 123123
+        - text: '||example.org^'
+          filter_list_id: 123123
+        original_answer:
+        - type: A
+          ttl: 55
+          value: 217.69.139.201
+        - type: A
+          ttl: 55
+          value: 217.69.139.201
+        client_id: cli123
+        filterId: 123123
+        answer_dnssec: true
+        answer:
+        - type: A
+          ttl: 55
+          value: 217.69.139.201
+        - type: A
+          ttl: 55
+          value: 217.69.139.201
+        ecs: 192.168.0.0/16
+        cached: true
+        client: 192.168.0.1
+        time: 2018-11-26T00:02:41+03:00
+        elapsedMs: "54.023928"
+        status: NOERROR
+      properties:
+        answer:
+          items:
+            $ref: '#/components/schemas/DnsAnswer'
+          type: array
+        original_answer:
+          description: Answer from upstream server (optional)
+          items:
+            $ref: '#/components/schemas/DnsAnswer'
+          type: array
+        cached:
+          description: |
+            Defines if the response has been served from cache.
+          type: boolean
+        upstream:
+          description: "Upstream URL starting with tcp://, tls://, https://, or with\
+            \ an IP address.\n"
+          type: string
+        answer_dnssec:
+          description: "If true, the response had the Authenticated Data (AD) flag\
+            \ set.\n"
+          type: boolean
+        client:
+          description: |
+            The client's IP address.
+          example: 192.168.0.1
+          type: string
+        client_id:
+          description: "The ClientID, if provided in DoH, DoQ, or DoT.\n"
+          example: cli123
+          type: string
+        client_info:
+          $ref: '#/components/schemas/QueryLogItemClient'
+        client_proto:
+          enum:
+          - dot
+          - doh
+          - doq
+          - dnscrypt
+          - ""
+          type: string
+        ecs:
+          description: |
+            The IP network defined by an EDNS Client-Subnet option in the request message if any.
+          example: 192.168.0.0/16
+          type: string
+        elapsedMs:
+          example: "54.023928"
+          type: string
+        question:
+          $ref: '#/components/schemas/DnsQuestion'
+        filterId:
+          deprecated: true
+          description: "In case if there's a rule applied to this DNS request, this\
+            \ is ID of the filter list that the rule belongs to.\nDeprecated: use\
+            \ `rules[*].filter_list_id` instead.\n"
+          example: 123123
+          type: integer
+        rule:
+          deprecated: true
+          description: "Filtering rule applied to the request (if any).\nDeprecated:\
+            \ use `rules[*].text` instead.\n"
+          example: '||example.org^'
+          type: string
+        rules:
+          description: Applied rules.
+          items:
+            $ref: '#/components/schemas/ResultRule'
+          type: array
+        reason:
+          description: Request filtering status.
+          enum:
+          - NotFilteredNotFound
+          - NotFilteredWhiteList
+          - NotFilteredError
+          - FilteredBlackList
+          - FilteredSafeBrowsing
+          - FilteredParental
+          - FilteredInvalid
+          - FilteredSafeSearch
+          - FilteredBlockedService
+          - Rewrite
+          - RewriteEtcHosts
+          - RewriteRule
+          type: string
+        service_name:
+          description: Set if reason=FilteredBlockedService
+          type: string
+        status:
+          description: DNS response status
+          example: NOERROR
+          type: string
+        time:
+          description: DNS request processing start time
+          example: 2018-11-26T00:02:41+03:00
+          type: string
+      type: object
+    QueryLogItemClient:
+      description: |
+        Client information for a query log item.
+      example:
+        disallowed_rule: disallowed_rule
+        whois:
+          country: country
+          orgname: orgname
+          city: city
+        name: name
+        disallowed: true
+      properties:
+        disallowed:
+          description: |
+            Whether the client's IP is blocked or not.
+          type: boolean
+        disallowed_rule:
+          description: |
+            The rule due to which the client is allowed or blocked.
+          type: string
+        name:
+          description: |
+            Persistent client's name or runtime client's hostname.  May be empty.
+          type: string
+        whois:
+          $ref: '#/components/schemas/QueryLogItemClientWhois'
+      required:
+      - disallowed
+      - disallowed_rule
+      - name
+      - whois
+      type: object
+    QueryLogItemClientWhois:
+      description: "Client WHOIS information, if any.\n"
+      example:
+        country: country
+        orgname: orgname
+        city: city
+      properties:
+        city:
+          description: "City, if any.\n"
+          type: string
+        country:
+          description: "Country, if any.\n"
+          type: string
+        orgname:
+          description: "Organization name, if any.\n"
+          type: string
+      type: object
+    QueryLog:
+      description: Query log
+      example:
+        data:
+        - reason: NotFilteredNotFound
+          client_info:
+            disallowed_rule: disallowed_rule
+            whois:
+              country: country
+              orgname: orgname
+              city: city
+            name: name
+            disallowed: true
+          upstream: upstream
+          question:
+            name: xn--d1abbgf6aiiy.xn--p1ai
+            unicode_name: президент.рф
+            type: A
+            class: IN
+          service_name: service_name
+          client_proto: dot
+          rule: '||example.org^'
+          rules:
+          - text: '||example.org^'
+            filter_list_id: 123123
+          - text: '||example.org^'
+            filter_list_id: 123123
+          original_answer:
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          client_id: cli123
+          filterId: 123123
+          answer_dnssec: true
+          answer:
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          ecs: 192.168.0.0/16
+          cached: true
+          client: 192.168.0.1
+          time: 2018-11-26T00:02:41+03:00
+          elapsedMs: "54.023928"
+          status: NOERROR
+        - reason: NotFilteredNotFound
+          client_info:
+            disallowed_rule: disallowed_rule
+            whois:
+              country: country
+              orgname: orgname
+              city: city
+            name: name
+            disallowed: true
+          upstream: upstream
+          question:
+            name: xn--d1abbgf6aiiy.xn--p1ai
+            unicode_name: президент.рф
+            type: A
+            class: IN
+          service_name: service_name
+          client_proto: dot
+          rule: '||example.org^'
+          rules:
+          - text: '||example.org^'
+            filter_list_id: 123123
+          - text: '||example.org^'
+            filter_list_id: 123123
+          original_answer:
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          client_id: cli123
+          filterId: 123123
+          answer_dnssec: true
+          answer:
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          - type: A
+            ttl: 55
+            value: 217.69.139.201
+          ecs: 192.168.0.0/16
+          cached: true
+          client: 192.168.0.1
+          time: 2018-11-26T00:02:41+03:00
+          elapsedMs: "54.023928"
+          status: NOERROR
+        oldest: 2018-11-26T00:02:41+03:00
+      properties:
+        oldest:
+          example: 2018-11-26T00:02:41+03:00
+          type: string
+        data:
+          items:
+            $ref: '#/components/schemas/QueryLogItem'
+          type: array
+      type: object
+    QueryLogConfig:
+      description: Query log configuration
+      example:
+        interval: 0.8008281904610115
+        anonymize_client_ip: true
+        enabled: true
+      properties:
+        enabled:
+          description: Is query log enabled
+          type: boolean
+        interval:
+          description: |
+            Time period for query log rotation.
+          enum:
+          - 0.25
+          - 1
+          - 7
+          - 30
+          - 90
+          type: number
+        anonymize_client_ip:
+          description: Anonymize clients' IP addresses
+          type: boolean
+      type: object
+    ResultRule:
+      description: Applied rule.
+      example:
+        text: '||example.org^'
+        filter_list_id: 123123
+      properties:
+        filter_list_id:
+          description: "In case if there's a rule applied to this DNS request, this\
+            \ is ID of the filter list that the rule belongs to.\n"
+          example: 123123
+          format: int64
+          type: integer
+        text:
+          description: |
+            The text of the filtering rule applied to the request (if any).
+          example: '||example.org^'
+          type: string
+      type: object
+    TlsConfig:
+      description: TLS configuration settings and status
+      example:
+        server_name: example.org
+        valid_cert: true
+        valid_key: true
+        key_type: RSA
+        subject: CN=example.org
+        not_before: 2019-01-31T10:47:32Z
+        private_key: private_key
+        private_key_saved: true
+        enabled: true
+        certificate_chain: certificate_chain
+        private_key_path: private_key_path
+        issuer: "CN=Let's Encrypt Authority X3,O=Let's Encrypt,C=US"
+        not_after: 2019-05-01T10:47:32Z
+        force_https: true
+        certificate_path: certificate_path
+        warning_validation: You have specified an empty certificate
+        dns_names:
+        - '*.example.org'
+        valid_pair: true
+        valid_chain: true
+        port_dns_over_tls: 853
+        port_dns_over_quic: 784
+        port_https: 443
+      properties:
+        enabled:
+          description: enabled is the encryption (DoT/DoH/HTTPS) status
+          example: true
+          type: boolean
+        server_name:
+          description: server_name is the hostname of your HTTPS/TLS server
+          example: example.org
+          type: string
+        force_https:
+          description: "if true, forces HTTP->HTTPS redirect"
+          example: true
+          type: boolean
+        port_https:
+          description: "HTTPS port. If 0, HTTPS will be disabled."
+          example: 443
+          format: uint16
+          type: integer
+        port_dns_over_tls:
+          description: "DNS-over-TLS port. If 0, DoT will be disabled."
+          example: 853
+          format: uint16
+          type: integer
+        port_dns_over_quic:
+          description: "DNS-over-QUIC port. If 0, DoQ will be disabled."
+          example: 784
+          format: uint16
+          type: integer
+        certificate_chain:
+          description: Base64 string with PEM-encoded certificates chain
+          type: string
+        private_key:
+          description: Base64 string with PEM-encoded private key
+          type: string
+        private_key_saved:
+          description: "Set to true if the user has previously saved a private key\
+            \ as a string.  This is used so that the server and the client don't have\
+            \ to send the private key between each other every time, which might lead\
+            \ to security issues.\n"
+          example: true
+          type: boolean
+        certificate_path:
+          description: Path to certificate file
+          type: string
+        private_key_path:
+          description: Path to private key file
+          type: string
+        valid_cert:
+          description: |
+            Set to true if the specified certificates chain is a valid chain of X509 certificates.
+          example: true
+          type: boolean
+        valid_chain:
+          description: |
+            Set to true if the specified certificates chain is verified and issued by a known CA.
+          example: true
+          type: boolean
+        subject:
+          description: The subject of the first certificate in the chain.
+          example: CN=example.org
+          type: string
+        issuer:
+          description: The issuer of the first certificate in the chain.
+          example: "CN=Let's Encrypt Authority X3,O=Let's Encrypt,C=US"
+          type: string
+        not_before:
+          description: |
+            The NotBefore field of the first certificate in the chain.
+          example: 2019-01-31T10:47:32Z
+          type: string
+        not_after:
+          description: |
+            The NotAfter field of the first certificate in the chain.
+          example: 2019-05-01T10:47:32Z
+          type: string
+        dns_names:
+          description: |
+            The value of SubjectAltNames field of the first certificate in the chain.
+          example:
+          - '*.example.org'
+          items:
+            type: string
+          type: array
+        valid_key:
+          description: Set to true if the key is a valid private key.
+          example: true
+          type: boolean
+        key_type:
+          description: Key type.
+          enum:
+          - RSA
+          - ECDSA
+          example: RSA
+          type: string
+        warning_validation:
+          description: |
+            A validation warning message with the issue description.
+          example: You have specified an empty certificate
+          type: string
+        valid_pair:
+          description: |
+            Set to true if both certificate and private key are correct.
+          example: true
+          type: boolean
+      type: object
+    NetInterface:
+      description: Network interface info
+      example:
+        hardware_address: 52:54:00:11:09:ba
+        ip_addresses:
+        - ip_addresses
+        - ip_addresses
+        flags: up|broadcast|multicast
+        name: eth0
+        mtu: 0
+      properties:
+        flags:
+          description: "Flags could be any combination of the following values, divided\
+            \ by the \"|\" character: \"up\", \"broadcast\", \"loopback\", \"pointtopoint\"\
+            \ and \"multicast\".\n"
+          example: up|broadcast|multicast
+          type: string
+        hardware_address:
+          example: 52:54:00:11:09:ba
+          type: string
+        name:
+          example: eth0
+          type: string
+        ip_addresses:
+          items:
+            type: string
+          type: array
+        mtu:
+          type: integer
+      required:
+      - flags
+      - hardware_address
+      - mtu
+      - name
+      type: object
+    AddressInfoBeta:
+      description: Port information
+      example:
+        port: 53
+        ip:
+        - 127.0.0.1
+      properties:
+        ip:
+          example:
+          - 127.0.0.1
+          items:
+            type: string
+          minItems: 1
+          type: array
+        port:
+          example: 53
+          format: uint16
+          type: integer
+      required:
+      - ip
+      - port
+      type: object
+    AddressInfo:
+      description: Port information
+      example:
+        port: 53
+        ip: 127.0.0.1
+      properties:
+        ip:
+          example: 127.0.0.1
+          type: string
+        port:
+          example: 53
+          format: uint16
+          type: integer
+      required:
+      - ip
+      - port
+      type: object
+    AddressesInfo:
+      description: AdGuard Home addresses configuration
+      example:
+        interfaces:
+          key:
+            hardware_address: 52:54:00:11:09:ba
+            ip_addresses:
+            - ip_addresses
+            - ip_addresses
+            flags: up|broadcast|multicast
+            name: eth0
+            mtu: 0
+        web_port: 80
+        dns_port: 53
+        version: v0.123.4
+      properties:
+        dns_port:
+          example: 53
+          format: uint16
+          type: integer
+        interfaces:
+          additionalProperties:
+            $ref: '#/components/schemas/NetInterface'
+          description: "Network interfaces dictionary, keys are interface names.\n"
+          type: object
+        version:
+          example: v0.123.4
+          type: string
+        web_port:
+          example: 80
+          format: uint16
+          type: integer
+      required:
+      - dns_port
+      - interfaces
+      - version
+      - web_port
+      type: object
+    AddressesInfoBeta:
+      description: AdGuard Home addresses configuration
+      example:
+        interfaces:
+        - hardware_address: 52:54:00:11:09:ba
+          ip_addresses:
+          - ip_addresses
+          - ip_addresses
+          flags: up|broadcast|multicast
+          name: eth0
+          mtu: 0
+        - hardware_address: 52:54:00:11:09:ba
+          ip_addresses:
+          - ip_addresses
+          - ip_addresses
+          flags: up|broadcast|multicast
+          name: eth0
+          mtu: 0
+        web_port: 80
+        dns_port: 53
+      properties:
+        dns_port:
+          example: 53
+          format: uint16
+          type: integer
+        web_port:
+          example: 80
+          format: uint16
+          type: integer
+        interfaces:
+          description: "Network interfaces dictionary, keys are interface names.\n"
+          items:
+            $ref: '#/components/schemas/NetInterface'
+          type: array
+      required:
+      - dns_port
+      - interfaces
+      - web_port
+      type: object
+    ProfileInfo:
+      description: Information about the current user
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      type: object
+    Client:
+      description: Client information.
+      example:
+        safebrowsing_enabled: true
+        blocked_services:
+        - blocked_services
+        - blocked_services
+        use_global_settings: true
+        safesearch_enabled: true
+        parental_enabled: true
+        upstreams:
+        - upstreams
+        - upstreams
+        name: localhost
+        ids:
+        - ids
+        - ids
+        use_global_blocked_services: true
+        filtering_enabled: true
+        tags:
+        - tags
+        - tags
+      properties:
+        name:
+          description: Name
+          example: localhost
+          type: string
+        ids:
+          description: "IP, CIDR, MAC, or ClientID."
+          items:
+            type: string
+          type: array
+        use_global_settings:
+          type: boolean
+        filtering_enabled:
+          type: boolean
+        parental_enabled:
+          type: boolean
+        safebrowsing_enabled:
+          type: boolean
+        safesearch_enabled:
+          type: boolean
+        use_global_blocked_services:
+          type: boolean
+        blocked_services:
+          items:
+            type: string
+          type: array
+        upstreams:
+          items:
+            type: string
+          type: array
+        tags:
+          items:
+            type: string
+          type: array
+      type: object
+    ClientAuto:
+      description: Auto-Client information
+      example:
+        ip: 127.0.0.1
+        name: localhost
+        source: etc/hosts
+        whois_info:
+          key: whois_info
+      properties:
+        ip:
+          description: IP address
+          example: 127.0.0.1
+          type: string
+        name:
+          description: Name
+          example: localhost
+          type: string
+        source:
+          description: The source of this information
+          example: etc/hosts
+          type: string
+        whois_info:
+          additionalProperties:
+            type: string
+          type: object
+      type: object
+    ClientUpdate:
+      description: Client update request
+      example:
+        data:
+          safebrowsing_enabled: true
+          blocked_services:
+          - blocked_services
+          - blocked_services
+          use_global_settings: true
+          safesearch_enabled: true
+          parental_enabled: true
+          upstreams:
+          - upstreams
+          - upstreams
+          name: localhost
+          ids:
+          - ids
+          - ids
+          use_global_blocked_services: true
+          filtering_enabled: true
+          tags:
+          - tags
+          - tags
+        name: name
+      properties:
+        name:
+          type: string
+        data:
+          $ref: '#/components/schemas/Client'
+      type: object
+    ClientDelete:
+      description: Client delete request
+      example:
+        name: name
+      properties:
+        name:
+          type: string
+      type: object
+    ClientsFindResponse:
+      description: Client search results.
+      example:
+      - cli42: null
+        name: Client 42
+        ids:
+        - cli42
+        use_global_settings: true
+        filtering_enabled: true
+        parental_enabled: true
+        safebrowsing_enabled: true
+        safesearch_enabled: true
+        use_global_blocked_services: true
+        blocked_services: null
+        upstreams: null
+        whois_info: {}
+        disallowed: false
+        disallowed_rule: ""
+      - "1.2.3.4": null
+        name: Client 1-2-3-4
+        ids:
+        - 1.2.3.4
+        use_global_settings: true
+        filtering_enabled: true
+        parental_enabled: true
+        safebrowsing_enabled: true
+        safesearch_enabled: true
+        use_global_blocked_services: true
+        blocked_services: null
+        upstreams: null
+        whois_info: {}
+        disallowed: false
+        disallowed_rule: ""
+      items:
+        $ref: '#/components/schemas/ClientsFindEntry'
+      type: array
+    AccessListResponse:
+      $ref: '#/components/schemas/AccessList'
+    AccessSetRequest:
+      $ref: '#/components/schemas/AccessList'
+    AccessList:
+      description: "Client and host access list.  Each of the lists should contain\
+        \ only unique elements.  In addition, allowed and disallowed lists cannot\
+        \ contain the same elements.\n"
+      example:
+        allowed_clients:
+        - allowed_clients
+        - allowed_clients
+        disallowed_clients:
+        - disallowed_clients
+        - disallowed_clients
+        blocked_hosts:
+        - blocked_hosts
+        - blocked_hosts
+      properties:
+        allowed_clients:
+          description: "The allowlist of clients: IP addresses, CIDRs, or ClientIDs.\n"
+          items:
+            type: string
+          type: array
+        disallowed_clients:
+          description: "The blocklist of clients: IP addresses, CIDRs, or ClientIDs.\n"
+          items:
+            type: string
+          type: array
+        blocked_hosts:
+          description: The blocklist of hosts.
+          items:
+            type: string
+          type: array
+      type: object
+    ClientsFindEntry:
+      additionalProperties:
+        $ref: '#/components/schemas/ClientFindSubEntry'
+      type: object
+    ClientFindSubEntry:
+      description: Client information.
+      properties:
+        name:
+          description: Name
+          example: localhost
+          type: string
+        ids:
+          description: "IP, CIDR, MAC, or ClientID."
+          items:
+            type: string
+          type: array
+        use_global_settings:
+          type: boolean
+        filtering_enabled:
+          type: boolean
+        parental_enabled:
+          type: boolean
+        safebrowsing_enabled:
+          type: boolean
+        safesearch_enabled:
+          type: boolean
+        use_global_blocked_services:
+          type: boolean
+        blocked_services:
+          items:
+            type: string
+          type: array
+        upstreams:
+          items:
+            type: string
+          type: array
+        whois_info:
+          additionalProperties:
+            type: string
+          type: object
+        disallowed:
+          description: |
+            Whether the client's IP is blocked or not.
+          type: boolean
+        disallowed_rule:
+          description: "The rule due to which the client is disallowed.  If disallowed\
+            \ is set to true, and this string is empty, then the client IP is disallowed\
+            \ by the \"allowed IP list\", that is it is not included in the allowed\
+            \ list.\n"
+          type: string
+      type: object
+    WhoisInfo:
+      additionalProperties:
+        type: string
+      type: object
+    Clients:
+      example:
+        clients:
+        - safebrowsing_enabled: true
+          blocked_services:
+          - blocked_services
+          - blocked_services
+          use_global_settings: true
+          safesearch_enabled: true
+          parental_enabled: true
+          upstreams:
+          - upstreams
+          - upstreams
+          name: localhost
+          ids:
+          - ids
+          - ids
+          use_global_blocked_services: true
+          filtering_enabled: true
+          tags:
+          - tags
+          - tags
+        - safebrowsing_enabled: true
+          blocked_services:
+          - blocked_services
+          - blocked_services
+          use_global_settings: true
+          safesearch_enabled: true
+          parental_enabled: true
+          upstreams:
+          - upstreams
+          - upstreams
+          name: localhost
+          ids:
+          - ids
+          - ids
+          use_global_blocked_services: true
+          filtering_enabled: true
+          tags:
+          - tags
+          - tags
+        supported_tags:
+        - supported_tags
+        - supported_tags
+        auto_clients:
+        - ip: 127.0.0.1
+          name: localhost
+          source: etc/hosts
+          whois_info:
+            key: whois_info
+        - ip: 127.0.0.1
+          name: localhost
+          source: etc/hosts
+          whois_info:
+            key: whois_info
+      properties:
+        clients:
+          description: Clients array
+          items:
+            $ref: '#/components/schemas/Client'
+          type: array
+        auto_clients:
+          description: Auto-Clients array
+          items:
+            $ref: '#/components/schemas/ClientAuto'
+          type: array
+        supported_tags:
+          items:
+            type: string
+          type: array
+      type: object
+    ClientsArray:
+      description: Clients array
+      items:
+        $ref: '#/components/schemas/Client'
+      type: array
+    ClientsAutoArray:
+      description: Auto-Clients array
+      items:
+        $ref: '#/components/schemas/ClientAuto'
+      type: array
+    RewriteList:
+      description: Rewrite rules array
+      items:
+        $ref: '#/components/schemas/RewriteEntry'
+      type: array
+    RewriteEntry:
+      description: Rewrite rule
+      example:
+        answer: 127.0.0.1
+        domain: example.org
+      properties:
+        domain:
+          description: Domain name
+          example: example.org
+          type: string
+        answer:
+          description: "value of A, AAAA or CNAME DNS record"
+          example: 127.0.0.1
+          type: string
+      type: object
+    BlockedServicesArray:
+      items:
+        type: string
+      type: array
+    CheckConfigRequestBeta:
+      description: Configuration to be checked
+      example:
+        set_static_ip: false
+        web:
+          port: 53
+          ip:
+          - 127.0.0.1
+          autofix: false
+        dns:
+          port: 53
+          ip:
+          - 127.0.0.1
+          autofix: false
+      properties:
+        dns:
+          $ref: '#/components/schemas/CheckConfigRequestInfoBeta'
+        web:
+          $ref: '#/components/schemas/CheckConfigRequestInfoBeta'
+        set_static_ip:
+          example: false
+          type: boolean
+      type: object
+    CheckConfigRequest:
+      description: Configuration to be checked
+      example:
+        set_static_ip: false
+        web:
+          port: 53
+          ip: 127.0.0.1
+          autofix: false
+        dns:
+          port: 53
+          ip: 127.0.0.1
+          autofix: false
+      properties:
+        dns:
+          $ref: '#/components/schemas/CheckConfigRequestInfo'
+        web:
+          $ref: '#/components/schemas/CheckConfigRequestInfo'
+        set_static_ip:
+          example: false
+          type: boolean
+      type: object
+    CheckConfigRequestInfoBeta:
+      example:
+        port: 53
+        ip:
+        - 127.0.0.1
+        autofix: false
+      properties:
+        ip:
+          example:
+          - 127.0.0.1
+          items:
+            type: string
+          minItems: 1
+          type: array
+        port:
+          example: 53
+          format: uint16
+          type: integer
+        autofix:
+          example: false
+          type: boolean
+      type: object
+    CheckConfigRequestInfo:
+      example:
+        port: 53
+        ip: 127.0.0.1
+        autofix: false
+      properties:
+        ip:
+          example: 127.0.0.1
+          type: string
+        port:
+          example: 53
+          format: uint16
+          type: integer
+        autofix:
+          example: false
+          type: boolean
+      type: object
+    CheckConfigResponse:
+      example:
+        static_ip:
+          static: "no"
+          ip: 192.168.1.1
+          error: error
+        web:
+          can_autofix: false
+          status: status
+        dns:
+          can_autofix: false
+          status: status
+      properties:
+        dns:
+          $ref: '#/components/schemas/CheckConfigResponseInfo'
+        web:
+          $ref: '#/components/schemas/CheckConfigResponseInfo'
+        static_ip:
+          $ref: '#/components/schemas/CheckConfigStaticIpInfo'
+      required:
+      - dns
+      - static_ip
+      - web
+      type: object
+    CheckConfigResponseInfo:
+      example:
+        can_autofix: false
+        status: status
+      properties:
+        status:
+          default: ""
+          type: string
+        can_autofix:
+          example: false
+          type: boolean
+      required:
+      - can_autofix
+      - status
+      type: object
+    CheckConfigStaticIpInfoStatic:
+      description: "Can be: yes, no, error"
+      enum:
+      - "yes"
+      - "no"
+      - error
+      example: "no"
+      type: string
+    CheckConfigStaticIpInfo:
+      example:
+        static: "no"
+        ip: 192.168.1.1
+        error: error
+      properties:
+        static:
+          $ref: '#/components/schemas/CheckConfigStaticIpInfoStatic'
+        ip:
+          default: ""
+          description: Current dynamic IP address. Set if static=no
+          example: 192.168.1.1
+          type: string
+        error:
+          default: ""
+          description: Error text. Set if static=error
+          type: string
+      type: object
+    InitialConfigurationBeta:
+      description: |
+        AdGuard Home initial configuration for the first-install wizard.
+      example:
+        password: password
+        web:
+          port: 53
+          ip:
+          - 127.0.0.1
+        dns:
+          port: 53
+          ip:
+          - 127.0.0.1
+        username: admin
+      properties:
+        dns:
+          $ref: '#/components/schemas/AddressInfoBeta'
+        web:
+          $ref: '#/components/schemas/AddressInfoBeta'
+        username:
+          description: Basic auth username
+          example: admin
+          type: string
+        password:
+          description: Basic auth password
+          example: password
+          type: string
+      required:
+      - dns
+      - password
+      - username
+      - web
+      type: object
+    InitialConfiguration:
+      description: |
+        AdGuard Home initial configuration for the first-install wizard.
+      example:
+        password: password
+        web:
+          port: 53
+          ip: 127.0.0.1
+        dns:
+          port: 53
+          ip: 127.0.0.1
+        username: admin
+      properties:
+        dns:
+          $ref: '#/components/schemas/AddressInfo'
+        web:
+          $ref: '#/components/schemas/AddressInfo'
+        username:
+          description: Basic auth username
+          example: admin
+          type: string
+        password:
+          description: Basic auth password
+          example: password
+          type: string
+      required:
+      - dns
+      - password
+      - username
+      - web
+      type: object
+    Login:
+      description: Login request data
+      example:
+        password: password
+        name: name
+      properties:
+        name:
+          description: User name
+          type: string
+        password:
+          description: Password
+          type: string
+      type: object
+    Error:
+      description: A generic JSON error response.
+      properties:
+        message:
+          description: "The error message, an opaque string."
+          type: string
+      type: object
+    dnsInfo_200_response_allOf:
+      properties:
+        default_local_ptr_upstreams:
+          example:
+          - 192.168.168.192
+          - 10.0.0.10
+          items:
+            type: string
+          type: array
+      type: object
+    dnsInfo_200_response:
+      allOf:
+      - $ref: '#/components/schemas/DNSConfig'
+      - $ref: '#/components/schemas/dnsInfo_200_response_allOf'
+    safebrowsingStatus_200_response:
+      example:
+        enabled: true
+      properties:
+        enabled:
+          type: boolean
+      type: object
+    parentalStatus_200_response:
+      example:
+        enable: true
+        sensitivity: 0
+      properties:
+        enable:
+          type: boolean
+        sensitivity:
+          type: integer
+      type: object
+  securitySchemes:
+    basicAuth:
+      scheme: basic
+      type: http

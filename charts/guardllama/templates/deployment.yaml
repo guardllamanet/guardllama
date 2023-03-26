@@ -1,0 +1,169 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guardllama.fullname" . }}-ctrl
+  labels:
+    {{- include "guardllama.labels.ctrl" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "guardllama.selectorLabels.ctrl" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "guardllama.selectorLabels.ctrl" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "guardllama.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - ctrl
+          env:
+            - name: GLMMGR_PROBE_ADDR
+              value: ":{{ .Values.service.controller.port.probe }}"
+            - name: GLMMGR_METRICS_ADDR
+              value: ":{{ .Values.service.controller.port.metrics }}"
+            - name: GLMMGR_TUNNEL_IMAGE
+              value: {{ .Values.tunnelImage.image }}
+            {{- if .Values.tunnelImage.pullPolicy }}
+            - name: GLMMGR_TUNNEL_IMAGE_PULL_POLICY
+              value: {{ .Values.tunnelImage.pullPolicy }}
+            {{- end }}
+            {{- if .Values.tunnelImage.pullSecret }}
+            - name: GLMMGR_TUNNEL_IMAGE_PULL_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "guardllama.fullname" . }}-tunnel-imagepullsecret
+                  key: .dockerconfigjson
+            {{- end}}
+            - name: DEBUG
+              value: "true"
+          ports:
+            - name: webhook
+              containerPort: {{ .Values.service.controller.port.webhook }}
+              protocol: TCP
+            - name: probe
+              containerPort: {{ .Values.service.controller.port.probe }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.service.controller.port.metrics }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: probe
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: probe
+          volumeMounts:
+            - mountPath: /tmp/k8s-webhook-server/serving-certs
+              name: cert
+              readOnly: true
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: cert
+          secret:
+            defaultMode: 420
+            secretName: webhook-server-cert
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "guardllama.fullname" . }}-web
+  labels:
+    {{- include "guardllama.labels.web" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "guardllama.selectorLabels.web" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "guardllama.selectorLabels.web" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "guardllama.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: web
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - web
+          env:
+            - name: GLMMGR_WEB_ADDR
+              value: ":{{ .Values.service.web.port }}"
+          ports:
+            - name: web
+              containerPort: {{ .Values.service.web.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: web
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: web
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      terminationGracePeriodSeconds: 10
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

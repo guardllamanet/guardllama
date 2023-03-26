@@ -1,0 +1,39 @@
+project_name: guardllama
+builds:
+  - <<: &build_defaults
+      ldflags:
+        - -s -w -X github.com/guardllamanet/guardllama/internal/build.Version={{.Version}} -X github.com/guardllamanet/guardllama/internal/build.Date={{time "2006-01-02"}} -X github.com/guardllamanet/guardllama/internal/tele.TeleServerUsername={{.Env.TELE_SERVER_USERNAME}} -X github.com/guardllamanet/guardllama/internal/tele.TeleServerPassword={{.Env.TELE_SERVER_PASSWORD}}
+      goos: [darwin, linux]
+      goarch: [386, amd64, arm, arm64]
+      tags:
+        - tele
+      env:
+        - CGO_ENABLED=0
+    id: glm-installer
+    binary: bin/glm-installer
+    main: ./cmd/glm-installer
+archives:
+  - id: nix
+    builds: [glm-installer]
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    wrap_in_directory: false
+    format: tar.gz
+    # TODO: remove after https://goreleaser.com/deprecations/#archivesrlcp is official
+    rlcp: true
+    files:
+      - LICENSE*
+      - README*
+      - CHANGELOG*
+      - etc/*
+      - docs/glm/*
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-snapshot"
+changelog:
+  skip: true
+release:
+  github:
+    owner: guardllamanet
+    name: guardllama
+  prerelease: auto

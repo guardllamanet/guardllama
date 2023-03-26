@@ -1,0 +1,24 @@
+FROM --platform=$BUILDPLATFORM golang:latest as builder
+ARG TARGETOS TARGETARCH
+
+ARG BUILD_VERSION BUILD_DATE
+
+WORKDIR /src
+ENV CGO_ENABLED=0
+RUN --mount=target=. \
+    --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg \
+    GOOS=$TARGETOS GOARCH=$TARGETARCH go install \
+    -ldflags "-s -w -X github.com/guardllamanet/guardllama/internal/build.Version=$BUILD_VERSION -X github.com/guardllamanet/guardllama/internal/build.Date=$BUILD_DATE" \
+    ./cmd/glmmgr/...
+
+FROM gcr.io/distroless/static
+
+USER nonroot:nonroot
+
+WORKDIR /app
+ENV PATH="/app:${PATH}"
+
+COPY --from=builder /go/bin/* /app
+
+ENTRYPOINT ["glmmgr"]

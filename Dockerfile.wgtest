@@ -1,0 +1,17 @@
+#syntax=docker/dockerfile:1
+
+FROM --platform=$BUILDPLATFORM golang:latest as builder
+ARG TARGETOS TARGETARCH
+
+WORKDIR /src
+ENV CGO_ENABLED=0
+RUN --mount=target=. \
+    --mount=type=cache,target=/root/.cache/go-build \
+    --mount=type=cache,target=/go/pkg \
+    go test ./internal/e2etest/wgtest/... --tags=wgtest -o /go/bin/wgtest.test
+
+FROM wgtools
+
+COPY --from=builder /go/bin/* /usr/bin/
+
+ENTRYPOINT ["wgtest.test", "-test.v"]

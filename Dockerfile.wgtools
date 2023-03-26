@@ -1,0 +1,58 @@
+FROM --platform=$BUILDPLATFORM golang:latest as gobuilder
+ARG TARGETOS TARGETARCH
+
+ARG wg_go_tag=bb719d3a6e2cd20ec00f26d65c0073c1dde6b529
+
+RUN apt-get update && apt-get install git -y
+
+# Build wireguard-go
+RUN git clone https://git.zx2c4.com/wireguard-go && \
+    cd wireguard-go && \
+    git checkout $wg_go_tag && \
+    make && \
+    GOOS=$TARGETOS GOARCH=$TARGETARCH make install
+
+# Build boringtun
+# FROM ${ARCH}rust:slim as rust-builder
+
+# ARG boringtun_ver=0.5.2
+
+# RUN cargo install boringtun-cli --version $boringtun_ver
+
+# Final image
+FROM ubuntu:jammy
+
+ARG wg_tools_tag=139aac59a5ab7da913d4b6dd62692fa90e2ccad4
+
+RUN set -eux \
+    && echo 'APT::Install-Recommends "false";' >/etc/apt/apt.conf.d/00recommends \
+    && echo 'APT::Install-Suggests "false";' >>/etc/apt/apt.conf.d/00recommends \
+    && echo 'APT::Get::Install-Recommends "false";' >>/etc/apt/apt.conf.d/00recommends \
+    && echo 'APT::Get::Install-Suggests "false";' >>/etc/apt/apt.conf.d/00recommends \
+    && apt-get -qq update \
+    # install essentials
+    && apt-get install -y \
+       bash ca-certificates dnsutils iptables openresolv iproute2 curl build-essential git \
+    && mkdir /app && cd /app \
+    # for dynamic compile in init-wireguard-module.sh
+    && git clone https://git.zx2c4.com/wireguard-linux-compat \
+    # compile wireguard-tools in the final image to make sure arch matches
+    # TODO: figure out how to cross compile
+    && git clone https://git.zx2c4.com/wireguard-tools \
+    && cd wireguard-tools \
+    && git checkout $wg_tools_tag \
+    && make -C src -j$(nproc) \
+    && make -C src install \
+    # clean up
+    && apt-get remove -y \
+       build-essential git \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && apt-get autoremove -y \
+    && apt-get clean \
+    && rm -rf \
+       /tmp/* \
+       /var/lib/apt/lists/* \
+       /var/tmp/
+
+COPY --from=gobuilder /go/bin/* /usr/bin/wireguard-go /usr/bin/
+#COPY --from=rust-builder /usr/local/cargo/bin/boringtun-cli /usr/bin/

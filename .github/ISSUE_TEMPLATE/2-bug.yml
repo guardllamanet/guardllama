@@ -1,0 +1,93 @@
+name: 🐛 Bug
+description: Report a bug.
+title: "Bug: <title>"
+labels: [bug, triage]
+body:
+- type: markdown
+  attributes:
+    value: "## Description"
+
+- type: textarea
+  attributes:
+    label: Please provide a clear and concise description of the issue you are experiencing with GuardLlama.
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: "## Steps to Reproduce"
+
+- type: textarea
+  attributes:
+    label: Please provide the steps to reproduce the issue.
+    placeholder: "1. Step 1\n2. Step 2\n3. Step 3 (and so on...)"
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: "## Expected Behavior"
+
+- type: textarea
+  attributes:
+    label: Please describe the behavior you expected when performing the steps above.
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: "## Actual Behavior"
+
+- type: textarea
+  attributes:
+    label: Please describe the actual behavior you observed when performing the steps above.
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: "## Additional Information"
+
+- type: textarea
+  attributes:
+    label: Please provide any additional information or screenshots that might help us understand and resolve the issue.
+
+- type: markdown
+  attributes:
+    value: "## GuardLlama Version"
+
+- type: input
+  attributes:
+    label: Please provide the version of GuardLlama you are using.
+    placeholder: "Get it with `glm-installer version`"
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: "## Server Environment"
+
+- type: input
+  attributes:
+    label: OS
+    placeholder: "e.g., Ubuntu 22.04"
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: Cloud Provider
+    placeholder: "e.g., DigitalOcean"
+  validations:
+    required: true
+
+- type: input
+  attributes:
+    label: VPN Client
+    placeholder: "e.g., WireGuard for Mac"
+  validations:
+    required: true
+
+- type: markdown
+  attributes:
+    value: "Thanks for taking the time to report this issue. We appreciate your help in improving GuardLlama!"
