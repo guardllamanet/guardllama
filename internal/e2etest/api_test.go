@@ -164,14 +164,18 @@ func Test_APITunnel(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
-				if err != nil {
-					t.Fatal(err)
-				}
+				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
+					resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+					if err != nil {
+						return err
+					}
 
-				if resp.Payload.Tunnel.Config.Ag.FilteringEnabled {
-					t.Fatalf("dns filering should be disabled")
-				}
+					if resp.Payload.Tunnel.Config.Ag.FilteringEnabled {
+						return fmt.Errorf("dns filering should be disabled")
+					}
+
+					return nil
+				})
 			},
 		},
 		{
@@ -210,14 +214,18 @@ func Test_APITunnel(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
-				if err != nil {
-					t.Fatal(err)
-				}
+				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
+					resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+					if err != nil {
+						return err
+					}
 
-				if diff := cmp.Diff(2, len(resp.Payload.Tunnel.Config.Ag.BlockLists)); diff != "" {
-					t.Fatalf("mismatch of number of blocklists (-want +got): %s", diff)
-				}
+					if diff := cmp.Diff(2, len(resp.Payload.Tunnel.Config.Ag.BlockLists)); diff != "" {
+						return fmt.Errorf("mismatch of number of blocklists (-want +got): %s", diff)
+					}
+
+					return nil
+				})
 			},
 		},
 		{
@@ -247,14 +255,18 @@ func Test_APITunnel(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
-				if err != nil {
-					t.Fatal(err)
-				}
+				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
+					resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+					if err != nil {
+						return err
+					}
 
-				if diff := cmp.Diff([]*models.V1AdGuardConfigRule{{Rule: "||example.org^"}}, resp.Payload.Tunnel.Config.Ag.Rules); diff != "" {
-					t.Fatalf("mismatch of filtering rules (-want +got): %s", diff)
-				}
+					if diff := cmp.Diff([]*models.V1AdGuardConfigRule{{Rule: "||example.org^"}}, resp.Payload.Tunnel.Config.Ag.Rules); diff != "" {
+						return fmt.Errorf("mismatch of filtering rules (-want +got): %s", diff)
+					}
+
+					return nil
+				})
 			},
 		},
 		{
