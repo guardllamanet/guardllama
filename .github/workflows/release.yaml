@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{secrets.CI_GITHUB_TOKEN}}
           GORELEASER_CURRENT_TAG: ${{ env.tag_name }}
         run: |
-          gh release upload ${GORELEASER_CURRENT_TAG} $PWD/install.sh -R guardllamanet/release --clobber
+          gh release upload ${GORELEASER_CURRENT_TAG} $PWD/install.sh -R guardllamanet/guardllama --clobber
   docker:
     name: Docker
     runs-on: ubuntu-latest
