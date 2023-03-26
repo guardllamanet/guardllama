@@ -12,6 +12,10 @@ GuardLlama is an open-source privacy and security gateway that combines the func
 - Built-in validating, recursive, and caching DNS resolver
 - Transparent, open-source, and community-driven
 
+## Demo :tada:
+
+[![GuardLlama Demo](http://img.youtube.com/vi/yxgyDOk0BvA/0.jpg)](http://www.youtube.com/watch?v=yxgyDOk0BvA "GuardLlama Demo")
+
 ## Getting Started :rocket:
 
 ### Prerequisites
