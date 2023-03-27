@@ -1,12 +1,13 @@
-# GuardLlama - Your Privacy and Security Gateway :llama::shield:
+# GuardLlama - Open-Source Privacy and Security Gateway :llama::shield:
 
 ![GuardLlama Logo](https://raw.githubusercontent.com/guardllamanet/.github/main/images/guardllama-logo.svg)
 
-GuardLlama is an open-source privacy and security gateway that combines the functionality of a VPN, a firewall, and an ad-blocker with a validating, recursive, and caching DNS resolver. It enables you to create a self-hosted WireGuard VPN with built-in firewall and ad-blocking capabilities, ensuring complete control over your online privacy and security.
+GuardLlama is an open-source privacy and security gateway that combines the functionality of a VPN, a firewall, and an ad-blocker with a validating, recursive, and caching DNS resolver. It enables you to create a self-hosted WireGuard VPN with a built-in firewall and ad-blocking capabilities, ensuring complete control over your online privacy and security.
 
 ## Features :star2:
 
 - Quick and easy installation and setup
+- End-to-end encryption with WireGuard VPN
 - Powerful ad-blocking capabilities
 - Robust firewall to block unwanted traffic and potential threats
 - Built-in validating, recursive, and caching DNS resolver
@@ -48,7 +49,7 @@ This software wouldn't have been possible without the incredible work of several
 
 ## Support :speech_balloon:
 
-Having trouble with GuardLlama? Check out the [documentation](https://guardllama.net/docs/intro) or open an issue on GitHub.
+Need help with GuardLlama? Check out the [documentation](https://guardllama.net/docs/intro) or open an issue on GitHub.
 
 ---
 
