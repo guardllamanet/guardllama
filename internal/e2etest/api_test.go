@@ -103,14 +103,18 @@ func Test_APITunnel(t *testing.T) {
 		{
 			Name: "list tunnel",
 			Step: func(t *testing.T) {
-				resp, err := c.TunnelService.TunnelServiceListTunnels(tunnel_service.NewTunnelServiceListTunnelsParams())
-				if err != nil {
-					t.Fatal(err)
-				}
+				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
+					resp, err := c.TunnelService.TunnelServiceListTunnels(tunnel_service.NewTunnelServiceListTunnelsParams())
+					if err != nil {
+						return err
+					}
 
-				if diff := cmp.Diff(1, len(resp.Payload.Tunnels)); diff != "" {
-					t.Fatalf("mismatch of number of tunnels (-want +got): %s", diff)
-				}
+					if diff := cmp.Diff(1, len(resp.Payload.Tunnels)); diff != "" {
+						return fmt.Errorf("mismatch of number of tunnels (-want +got): %s", diff)
+					}
+
+					return nil
+				})
 			},
 		},
 		{
@@ -129,7 +133,6 @@ func Test_APITunnel(t *testing.T) {
 
 					return fmt.Errorf("tunnel status not ready: %v", resp.Payload.Tunnel)
 				})
-
 			},
 		},
 		{
