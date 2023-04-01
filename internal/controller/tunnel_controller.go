@@ -43,6 +43,10 @@ const (
 	annotationDNSConfigVersion    = SystemLabelPrefix + "/dns-config-version"
 )
 
+var (
+	volumeMountDefaultMode int32 = 420
+)
+
 type TunnelReconciler struct {
 	client.Client
 	logr.Logger
@@ -236,93 +240,88 @@ func (r *TunnelReconciler) upsertTunnelDeploy(ctx context.Context, tun *glmv1.Tu
 		},
 	}
 	deployFn := func() error {
-		deploy.Spec = appsv1.DeploymentSpec{
-			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
-			},
-			Template: corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels:      labels,
-					Annotations: annosTunnelWithAssociatedObject(tun, cfg, annotationTunnelConfigVersion),
-				},
-				Spec: corev1.PodSpec{
-					Containers: []corev1.Container{
-						{
-							Name:            "tunnel",
-							Image:           r.TunnelImage,
-							ImagePullPolicy: corev1.PullPolicy(r.TunnelImagePullPolicy),
-							SecurityContext: &corev1.SecurityContext{
-								Capabilities: &corev1.Capabilities{
-									Add: []corev1.Capability{
-										"NET_ADMIN",
-										"SYS_MODULE",
-									},
-								},
-							},
-							Ports: []corev1.ContainerPort{
-								{
-									Name:          "http",
-									ContainerPort: tunnelHTTPAddr,
-									Protocol:      corev1.ProtocolTCP,
-								},
-								{
-									Name:          "wg",
-									ContainerPort: tun.Spec.Protocol.WireGuard.Interface.ListenPort,
-									Protocol:      corev1.ProtocolUDP,
-								},
-							},
-							Env: []corev1.EnvVar{
-								{
-									Name:  "LOG_LEVEL",
-									Value: "debug",
-								},
-								{
-									Name:  "GLMMGR_HTTP_ADDR",
-									Value: fmt.Sprintf(":%d", tunnelHTTPAddr),
-								},
-								{
-									Name:  "GLMMGR_TUNNEL_CONFIG",
-									Value: "/etc/tunnel/wg.yaml",
-								},
-								{
-									Name:  "WG_QUICK_USERSPACE_IMPLEMENTATION",
-									Value: tun.Spec.Protocol.WireGuard.UserspaceImpl,
-								},
-							},
-							LivenessProbe: &corev1.Probe{
-								ProbeHandler: corev1.ProbeHandler{
-									HTTPGet: &corev1.HTTPGetAction{
-										Path: "/health",
-										Port: intstr.FromString("http"),
-									},
-								},
-							},
-							ReadinessProbe: &corev1.Probe{
-								ProbeHandler: corev1.ProbeHandler{
-									HTTPGet: &corev1.HTTPGetAction{
-										Path: "/health",
-										Port: intstr.FromString("http"),
-									},
-								},
-							},
-							VolumeMounts: []corev1.VolumeMount{
-								{
-									Name:      "tunnel-secret",
-									MountPath: "/etc/tunnel",
-									ReadOnly:  true,
-								},
-							},
+		deploy.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: labels,
+		}
+		deploy.Spec.Template.ObjectMeta = metav1.ObjectMeta{
+			Labels:      labels,
+			Annotations: annosTunnelWithAssociatedObject(tun, cfg, annotationTunnelConfigVersion),
+		}
+		deploy.Spec.Template.Spec.Containers = []corev1.Container{
+			{
+				Name:            "tunnel",
+				Image:           r.TunnelImage,
+				ImagePullPolicy: corev1.PullPolicy(r.TunnelImagePullPolicy),
+				SecurityContext: &corev1.SecurityContext{
+					Capabilities: &corev1.Capabilities{
+						Add: []corev1.Capability{
+							"NET_ADMIN",
+							"SYS_MODULE",
 						},
 					},
-					Volumes: []corev1.Volume{
-						{
-							Name: "tunnel-secret",
-							VolumeSource: corev1.VolumeSource{
-								Secret: &corev1.SecretVolumeSource{
-									SecretName: tun.WireGuardTypedName(), // secret is tunnel typed name
-								},
-							},
+				},
+				Ports: []corev1.ContainerPort{
+					{
+						Name:          "http",
+						ContainerPort: tunnelHTTPAddr,
+						Protocol:      corev1.ProtocolTCP,
+					},
+					{
+						Name:          "wg",
+						ContainerPort: tun.Spec.Protocol.WireGuard.Interface.ListenPort,
+						Protocol:      corev1.ProtocolUDP,
+					},
+				},
+				Env: []corev1.EnvVar{
+					{
+						Name:  "LOG_LEVEL",
+						Value: "debug",
+					},
+					{
+						Name:  "GLMMGR_HTTP_ADDR",
+						Value: fmt.Sprintf(":%d", tunnelHTTPAddr),
+					},
+					{
+						Name:  "GLMMGR_TUNNEL_CONFIG",
+						Value: "/etc/tunnel/wg.yaml",
+					},
+					{
+						Name:  "WG_QUICK_USERSPACE_IMPLEMENTATION",
+						Value: tun.Spec.Protocol.WireGuard.UserspaceImpl,
+					},
+				},
+				LivenessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/health",
+							Port: intstr.FromString("http"),
 						},
+					},
+				},
+				ReadinessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/health",
+							Port: intstr.FromString("http"),
+						},
+					},
+				},
+				VolumeMounts: []corev1.VolumeMount{
+					{
+						Name:      "tunnel-secret",
+						MountPath: "/etc/tunnel",
+						ReadOnly:  true,
+					},
+				},
+			},
+		}
+		deploy.Spec.Template.Spec.Volumes = []corev1.Volume{
+			{
+				Name: "tunnel-secret",
+				VolumeSource: corev1.VolumeSource{
+					Secret: &corev1.SecretVolumeSource{
+						DefaultMode: &volumeMountDefaultMode,
+						SecretName:  tun.WireGuardTypedName(), // secret is tunnel typed name
 					},
 				},
 			},
@@ -538,121 +537,115 @@ func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1
 		},
 	}
 	deployFn := func() error {
-		deploy.Spec = appsv1.DeploymentSpec{
-			Selector: &metav1.LabelSelector{
-				MatchLabels: labels,
-			},
-			Template: corev1.PodTemplateSpec{
-				ObjectMeta: metav1.ObjectMeta{
-					Labels:      labels,
-					Annotations: annosTunnelWithAssociatedObject(tun, cfg, annotationDNSConfigVersion),
+		deploy.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: labels,
+		}
+		deploy.Spec.Template.ObjectMeta = metav1.ObjectMeta{
+			Labels:      labels,
+			Annotations: annosTunnelWithAssociatedObject(tun, cfg, annotationDNSConfigVersion),
+		}
+		deploy.Spec.Template.Spec.InitContainers = []corev1.Container{
+			{
+				Name:  "copy-configmap",
+				Image: "busybox",
+				Command: []string{
+					"sh",
+					"-c",
+					`mkdir -p /opt/adguardhome/conf && [[ -f "/opt/adguardhome/conf/AdGuardHome.yaml" ]] && echo "AdGuardHome.yaml exists, skip copying" || cp /tmp/AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml`,
 				},
-				Spec: corev1.PodSpec{
-					InitContainers: []corev1.Container{
-						{
-							Name:  "copy-configmap",
-							Image: "busybox",
-							Command: []string{
-								"sh",
-								"-c",
-								`mkdir -p /opt/adguardhome/conf && [[ -f "/opt/adguardhome/conf/AdGuardHome.yaml" ]] && echo "AdGuardHome.yaml exists, skip copying" || cp /tmp/AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml`,
-							},
-							VolumeMounts: []corev1.VolumeMount{
-								{
-									Name:      "adguardhome-ro-config",
-									SubPath:   "AdGuardHome.yaml",
-									MountPath: "/tmp/AdGuardHome.yaml",
-									ReadOnly:  true,
-								},
-								{
-									Name:      "adguardhome-config",
-									MountPath: "/opt/adguardhome/conf",
-								},
-							},
-						},
+				VolumeMounts: []corev1.VolumeMount{
+					{
+						Name:      "adguardhome-ro-config",
+						SubPath:   "AdGuardHome.yaml",
+						MountPath: "/tmp/AdGuardHome.yaml",
+						ReadOnly:  true,
 					},
-					Containers: []corev1.Container{
-						{
-							Name:  "adguardhome",
-							Image: adGuardHomeImage,
-							Args: []string{
-								"--config",
-								"/opt/adguardhome/conf/AdGuardHome.yaml",
-								"--work-dir",
-								"/opt/adguardhome/work",
-								"--no-check-update",
-							},
-							Ports: []corev1.ContainerPort{
-								{
-									Name:          "dns-tcp",
-									ContainerPort: 5353,
-									Protocol:      corev1.ProtocolTCP,
-								},
-								{
-									Name:          "dns-udp",
-									ContainerPort: 5353,
-									Protocol:      corev1.ProtocolUDP,
-								},
-								{
-									Name:          "http",
-									ContainerPort: 3000,
-									Protocol:      corev1.ProtocolTCP,
-								},
-							},
-							Env: []corev1.EnvVar{
-								{
-									Name:  "TZ",
-									Value: "UTC",
-								},
-							},
-							LivenessProbe: &corev1.Probe{
-								ProbeHandler: corev1.ProbeHandler{
-									HTTPGet: &corev1.HTTPGetAction{
-										Path: "/",
-										Port: intstr.FromString("http"),
-									},
-								},
-							},
-							ReadinessProbe: &corev1.Probe{
-								ProbeHandler: corev1.ProbeHandler{
-									HTTPGet: &corev1.HTTPGetAction{
-										Path: "/",
-										Port: intstr.FromString("http"),
-									},
-								},
-							},
-							VolumeMounts: []corev1.VolumeMount{
-								{
-									Name:      "adguardhome-config",
-									MountPath: "/opt/adguardhome/conf",
-								},
-							},
-						},
-					},
-					Volumes: []corev1.Volume{
-						{
-							Name: "adguardhome-ro-config",
-							VolumeSource: corev1.VolumeSource{
-								ConfigMap: &corev1.ConfigMapVolumeSource{
-									LocalObjectReference: corev1.LocalObjectReference{
-										Name: tun.AdGuardTypedName(),
-									},
-								},
-							},
-						},
-						{
-							Name: "adguardhome-config",
-							VolumeSource: corev1.VolumeSource{
-								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-									ClaimName: tun.AdGuardServicePVCName(),
-								},
-							},
-						},
+					{
+						Name:      "adguardhome-config",
+						MountPath: "/opt/adguardhome/conf",
 					},
 				},
 			},
 		}
-
+		deploy.Spec.Template.Spec.Containers = []corev1.Container{
+			{
+				Name:  "adguardhome",
+				Image: adGuardHomeImage,
+				Args: []string{
+					"--config",
+					"/opt/adguardhome/conf/AdGuardHome.yaml",
+					"--work-dir",
+					"/opt/adguardhome/work",
+					"--no-check-update",
+				},
+				Ports: []corev1.ContainerPort{
+					{
+						Name:          "dns-tcp",
+						ContainerPort: 5353,
+						Protocol:      corev1.ProtocolTCP,
+					},
+					{
+						Name:          "dns-udp",
+						ContainerPort: 5353,
+						Protocol:      corev1.ProtocolUDP,
+					},
+					{
+						Name:          "http",
+						ContainerPort: 3000,
+						Protocol:      corev1.ProtocolTCP,
+					},
+				},
+				Env: []corev1.EnvVar{
+					{
+						Name:  "TZ",
+						Value: "UTC",
+					},
+				},
+				LivenessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/",
+							Port: intstr.FromString("http"),
+						},
+					},
+				},
+				ReadinessProbe: &corev1.Probe{
+					ProbeHandler: corev1.ProbeHandler{
+						HTTPGet: &corev1.HTTPGetAction{
+							Path: "/",
+							Port: intstr.FromString("http"),
+						},
+					},
+				},
+				VolumeMounts: []corev1.VolumeMount{
+					{
+						Name:      "adguardhome-config",
+						MountPath: "/opt/adguardhome/conf",
+					},
+				},
+			},
+		}
+		deploy.Spec.Template.Spec.Volumes = []corev1.Volume{
+			{
+				Name: "adguardhome-ro-config",
+				VolumeSource: corev1.VolumeSource{
+					ConfigMap: &corev1.ConfigMapVolumeSource{
+						DefaultMode: &volumeMountDefaultMode,
+						LocalObjectReference: corev1.LocalObjectReference{
+							Name: tun.AdGuardTypedName(),
+						},
+					},
+				},
+			},
+			{
+				Name: "adguardhome-config",
+				VolumeSource: corev1.VolumeSource{
+					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+						ClaimName: tun.AdGuardServicePVCName(),
+					},
+				},
+			},
+		}
 		// Update dns pod status
 		setDeployStatus(tun, glmv1.ConditionDNSPodReady, deploy.Status)
 
