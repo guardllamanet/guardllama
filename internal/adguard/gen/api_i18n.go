@@ -24,24 +24,37 @@ type I18nApi interface {
 	/*
 	ChangeLanguage Change current language.  Argument must be an ISO 639-1 two-letter code. 
 
+	Deprecated: Use `PUT /control/profile` instead.
+
+
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@return I18nApiChangeLanguageRequest
+
+	Deprecated
 	*/
 	ChangeLanguage(ctx context.Context) I18nApiChangeLanguageRequest
 
 	// ChangeLanguageExecute executes the request
+	// Deprecated
 	ChangeLanguageExecute(r I18nApiChangeLanguageRequest) (*http.Response, error)
 
 	/*
 	CurrentLanguage Get currently set language.  Result is ISO 639-1 two-letter code.  Empty result means default language. 
 
+	Deprecated: Use `GET /control/profile` instead.
+
+
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
 	@return I18nApiCurrentLanguageRequest
+
+	Deprecated
 	*/
 	CurrentLanguage(ctx context.Context) I18nApiCurrentLanguageRequest
 
 	// CurrentLanguageExecute executes the request
-	CurrentLanguageExecute(r I18nApiCurrentLanguageRequest) (*http.Response, error)
+	//  @return LanguageSettings
+	// Deprecated
+	CurrentLanguageExecute(r I18nApiCurrentLanguageRequest) (*LanguageSettings, *http.Response, error)
 }
 
 // I18nApiService I18nApi service
@@ -50,12 +63,12 @@ type I18nApiService service
 type I18nApiChangeLanguageRequest struct {
 	ctx context.Context
 	ApiService I18nApi
-	body *string
+	languageSettings *LanguageSettings
 }
 
 // New language.  It must be known to the server and must be an ISO 639-1 two-letter code. 
-func (r I18nApiChangeLanguageRequest) Body(body string) I18nApiChangeLanguageRequest {
-	r.body = &body
+func (r I18nApiChangeLanguageRequest) LanguageSettings(languageSettings LanguageSettings) I18nApiChangeLanguageRequest {
+	r.languageSettings = &languageSettings
 	return r
 }
 
@@ -66,8 +79,13 @@ func (r I18nApiChangeLanguageRequest) Execute() (*http.Response, error) {
 /*
 ChangeLanguage Change current language.  Argument must be an ISO 639-1 two-letter code. 
 
+Deprecated: Use `PUT /control/profile` instead.
+
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return I18nApiChangeLanguageRequest
+
+Deprecated
 */
 func (a *I18nApiService) ChangeLanguage(ctx context.Context) I18nApiChangeLanguageRequest {
 	return I18nApiChangeLanguageRequest{
@@ -77,6 +95,7 @@ func (a *I18nApiService) ChangeLanguage(ctx context.Context) I18nApiChangeLangua
 }
 
 // Execute executes the request
+// Deprecated
 func (a *I18nApiService) ChangeLanguageExecute(r I18nApiChangeLanguageRequest) (*http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
@@ -96,7 +115,7 @@ func (a *I18nApiService) ChangeLanguageExecute(r I18nApiChangeLanguageRequest) (
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"text/plain"}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -113,7 +132,7 @@ func (a *I18nApiService) ChangeLanguageExecute(r I18nApiChangeLanguageRequest) (
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.languageSettings
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err
@@ -147,15 +166,20 @@ type I18nApiCurrentLanguageRequest struct {
 	ApiService I18nApi
 }
 
-func (r I18nApiCurrentLanguageRequest) Execute() (*http.Response, error) {
+func (r I18nApiCurrentLanguageRequest) Execute() (*LanguageSettings, *http.Response, error) {
 	return r.ApiService.CurrentLanguageExecute(r)
 }
 
 /*
 CurrentLanguage Get currently set language.  Result is ISO 639-1 two-letter code.  Empty result means default language. 
 
+Deprecated: Use `GET /control/profile` instead.
+
+
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return I18nApiCurrentLanguageRequest
+
+Deprecated
 */
 func (a *I18nApiService) CurrentLanguage(ctx context.Context) I18nApiCurrentLanguageRequest {
 	return I18nApiCurrentLanguageRequest{
@@ -165,16 +189,19 @@ func (a *I18nApiService) CurrentLanguage(ctx context.Context) I18nApiCurrentLang
 }
 
 // Execute executes the request
-func (a *I18nApiService) CurrentLanguageExecute(r I18nApiCurrentLanguageRequest) (*http.Response, error) {
+//  @return LanguageSettings
+// Deprecated
+func (a *I18nApiService) CurrentLanguageExecute(r I18nApiCurrentLanguageRequest) (*LanguageSettings, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
 		formFiles            []formFile
+		localVarReturnValue  *LanguageSettings
 	)
 
 	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "I18nApiService.CurrentLanguage")
 	if err != nil {
-		return nil, &GenericOpenAPIError{error: err.Error()}
+		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
 
 	localVarPath := localBasePath + "/i18n/current_language"
@@ -193,7 +220,7 @@ func (a *I18nApiService) CurrentLanguageExecute(r I18nApiCurrentLanguageRequest)
 	}
 
 	// to determine the Accept header
-	localVarHTTPHeaderAccepts := []string{"text/plain"}
+	localVarHTTPHeaderAccepts := []string{"application/json"}
 
 	// set Accept header
 	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
@@ -202,19 +229,19 @@ func (a *I18nApiService) CurrentLanguageExecute(r I18nApiCurrentLanguageRequest)
 	}
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
-		return nil, err
+		return localVarReturnValue, nil, err
 	}
 
 	localVarHTTPResponse, err := a.client.callAPI(req)
 	if err != nil || localVarHTTPResponse == nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
 	localVarHTTPResponse.Body.Close()
 	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
 	if err != nil {
-		return localVarHTTPResponse, err
+		return localVarReturnValue, localVarHTTPResponse, err
 	}
 
 	if localVarHTTPResponse.StatusCode >= 300 {
@@ -222,8 +249,17 @@ func (a *I18nApiService) CurrentLanguageExecute(r I18nApiCurrentLanguageRequest)
 			body:  localVarBody,
 			error: localVarHTTPResponse.Status,
 		}
-		return localVarHTTPResponse, newErr
+		return localVarReturnValue, localVarHTTPResponse, newErr
 	}
 
-	return localVarHTTPResponse, nil
+	err = a.client.decode(&localVarReturnValue, localVarBody, localVarHTTPResponse.Header.Get("Content-Type"))
+	if err != nil {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: err.Error(),
+		}
+		return localVarReturnValue, localVarHTTPResponse, newErr
+	}
+
+	return localVarReturnValue, localVarHTTPResponse, nil
 }

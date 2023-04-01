@@ -119,6 +119,12 @@ type DhcpApiService service
 type DhcpApiCheckActiveDhcpRequest struct {
 	ctx context.Context
 	ApiService DhcpApi
+	dhcpFindActiveReq *DhcpFindActiveReq
+}
+
+func (r DhcpApiCheckActiveDhcpRequest) DhcpFindActiveReq(dhcpFindActiveReq DhcpFindActiveReq) DhcpApiCheckActiveDhcpRequest {
+	r.dhcpFindActiveReq = &dhcpFindActiveReq
+	return r
 }
 
 func (r DhcpApiCheckActiveDhcpRequest) Execute() (*DhcpSearchResult, *http.Response, error) {
@@ -160,7 +166,7 @@ func (a *DhcpApiService) CheckActiveDhcpExecute(r DhcpApiCheckActiveDhcpRequest)
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -176,6 +182,8 @@ func (a *DhcpApiService) CheckActiveDhcpExecute(r DhcpApiCheckActiveDhcpRequest)
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
+	// body params
+	localVarPostBody = r.dhcpFindActiveReq
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return localVarReturnValue, nil, err

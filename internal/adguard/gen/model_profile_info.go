@@ -16,15 +16,21 @@ import (
 
 // ProfileInfo Information about the current user
 type ProfileInfo struct {
-	Name *string `json:"name,omitempty"`
+	Name string `json:"name"`
+	Language string `json:"language"`
+	// Interface theme
+	Theme string `json:"theme"`
 }
 
 // NewProfileInfo instantiates a new ProfileInfo object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewProfileInfo() *ProfileInfo {
+func NewProfileInfo(name string, language string, theme string) *ProfileInfo {
 	this := ProfileInfo{}
+	this.Name = name
+	this.Language = language
+	this.Theme = theme
 	return &this
 }
 
@@ -36,42 +42,88 @@ func NewProfileInfoWithDefaults() *ProfileInfo {
 	return &this
 }
 
-// GetName returns the Name field value if set, zero value otherwise.
+// GetName returns the Name field value
 func (o *ProfileInfo) GetName() string {
-	if o == nil || o.Name == nil {
+	if o == nil {
 		var ret string
 		return ret
 	}
-	return *o.Name
+
+	return o.Name
 }
 
-// GetNameOk returns a tuple with the Name field value if set, nil otherwise
+// GetNameOk returns a tuple with the Name field value
 // and a boolean to check if the value has been set.
 func (o *ProfileInfo) GetNameOk() (*string, bool) {
-	if o == nil || o.Name == nil {
+	if o == nil {
 		return nil, false
 	}
-	return o.Name, true
+	return &o.Name, true
 }
 
-// HasName returns a boolean if a field has been set.
-func (o *ProfileInfo) HasName() bool {
-	if o != nil && o.Name != nil {
-		return true
+// SetName sets field value
+func (o *ProfileInfo) SetName(v string) {
+	o.Name = v
+}
+
+// GetLanguage returns the Language field value
+func (o *ProfileInfo) GetLanguage() string {
+	if o == nil {
+		var ret string
+		return ret
 	}
 
-	return false
+	return o.Language
 }
 
-// SetName gets a reference to the given string and assigns it to the Name field.
-func (o *ProfileInfo) SetName(v string) {
-	o.Name = &v
+// GetLanguageOk returns a tuple with the Language field value
+// and a boolean to check if the value has been set.
+func (o *ProfileInfo) GetLanguageOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Language, true
+}
+
+// SetLanguage sets field value
+func (o *ProfileInfo) SetLanguage(v string) {
+	o.Language = v
+}
+
+// GetTheme returns the Theme field value
+func (o *ProfileInfo) GetTheme() string {
+	if o == nil {
+		var ret string
+		return ret
+	}
+
+	return o.Theme
+}
+
+// GetThemeOk returns a tuple with the Theme field value
+// and a boolean to check if the value has been set.
+func (o *ProfileInfo) GetThemeOk() (*string, bool) {
+	if o == nil {
+		return nil, false
+	}
+	return &o.Theme, true
+}
+
+// SetTheme sets field value
+func (o *ProfileInfo) SetTheme(v string) {
+	o.Theme = v
 }
 
 func (o ProfileInfo) MarshalJSON() ([]byte, error) {
 	toSerialize := map[string]interface{}{}
-	if o.Name != nil {
+	if true {
 		toSerialize["name"] = o.Name
+	}
+	if true {
+		toSerialize["language"] = o.Language
+	}
+	if true {
+		toSerialize["theme"] = o.Theme
 	}
 	return json.Marshal(toSerialize)
 }

@@ -8,27 +8,22 @@ import (
 )
 
 const (
-	adGuardHomeImage      = "adguard/adguardhome:v0.107.11"
+	adGuardHomeImage      = "adguard/adguardhome:v0.107.26"
 	adGuardHomeConfigTmpl = `
 bind_host: 0.0.0.0
 bind_port: 3000
-beta_bind_port: 0
 users: []
 auth_attempts: 5
 block_auth_min: 15
 http_proxy: ""
 language: en
+theme: auto
 debug_pprof: false
 web_session_ttl: 720
 dns:
   bind_hosts:
     - 0.0.0.0
   port: 5353
-  statistics_interval: 1
-  querylog_enabled: true
-  querylog_file_enabled: true
-  querylog_interval: 24h
-  querylog_size_memory: 1000
   anonymize_client_ip: false
   protection_enabled: true
   blocking_mode: default
@@ -67,10 +62,14 @@ dns:
   bogus_nxdomain: []
   aaaa_disabled: false
   enable_dnssec: false
-  edns_client_subnet: false
+  edns_client_subnet:
+    custom_ip: ""
+    enabled: false
+    use_custom: false
   max_goroutines: 300
   handle_ddr: true
   ipset: []
+  ipset_file: ""
 {{- if deref_bool .FilteringEnabled }}
   filtering_enabled: true
   filters_update_interval: 24
@@ -91,6 +90,10 @@ dns:
   private_networks: []
   use_private_ptr_resolvers: true
   local_ptr_upstreams: []
+  use_dns64: false
+  dns64_prefixes: []
+  serve_http3: false
+  use_http3_upstreams: false
 tls:
   enabled: false
   server_name: ""
@@ -101,11 +104,21 @@ tls:
   port_dnscrypt: 0
   dnscrypt_config_file: ""
   allow_unencrypted_doh: false
-  strict_sni_check: false
   certificate_chain: ""
   private_key: ""
   certificate_path: ""
   private_key_path: ""
+  strict_sni_check: false
+querylog:
+  enabled: true
+  file_enabled: true
+  interval: 24h
+  size_memory: 1000
+  ignored: []
+statistics:
+  enabled: true
+  interval: 1
+  ignored: []
 filters:
 {{- range .BlockLists }}
   - enabled: {{ deref_bool .Enabled }}
@@ -154,7 +167,7 @@ os:
   group: ""
   user: ""
   rlimit_nofile: 0
-schema_version: 14`
+schema_version: 17`
 )
 
 var (

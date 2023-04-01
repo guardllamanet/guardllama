@@ -11,9 +11,11 @@ Method | HTTP request | Description
 
 ## ChangeLanguage
 
-> ChangeLanguage(ctx).Body(body).Execute()
+> ChangeLanguage(ctx).LanguageSettings(languageSettings).Execute()
 
 Change current language.  Argument must be an ISO 639-1 two-letter code. 
+
+
 
 ### Example
 
@@ -28,11 +30,11 @@ import (
 )
 
 func main() {
-    body := "body_example" // string | New language.  It must be known to the server and must be an ISO 639-1 two-letter code.  (optional)
+    languageSettings := *openapiclient.NewLanguageSettings("Language_example") // LanguageSettings | New language.  It must be known to the server and must be an ISO 639-1 two-letter code.  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.I18nApi.ChangeLanguage(context.Background()).Body(body).Execute()
+    resp, r, err := apiClient.I18nApi.ChangeLanguage(context.Background()).LanguageSettings(languageSettings).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `I18nApi.ChangeLanguage``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -51,7 +53,7 @@ Other parameters are passed through a pointer to a apiChangeLanguageRequest stru
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **string** | New language.  It must be known to the server and must be an ISO 639-1 two-letter code.  | 
+ **languageSettings** | [**LanguageSettings**](LanguageSettings.md) | New language.  It must be known to the server and must be an ISO 639-1 two-letter code.  | 
 
 ### Return type
 
@@ -63,7 +65,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
-- **Content-Type**: text/plain
+- **Content-Type**: application/json
 - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
@@ -73,9 +75,11 @@ Name | Type | Description  | Notes
 
 ## CurrentLanguage
 
-> CurrentLanguage(ctx).Execute()
+> LanguageSettings CurrentLanguage(ctx).Execute()
 
 Get currently set language.  Result is ISO 639-1 two-letter code.  Empty result means default language. 
+
+
 
 ### Example
 
@@ -98,6 +102,8 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error when calling `I18nApi.CurrentLanguage``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
+    // response from `CurrentLanguage`: LanguageSettings
+    fmt.Fprintf(os.Stdout, "Response from `I18nApi.CurrentLanguage`: %v\n", resp)
 }
 ```
 
@@ -112,7 +118,7 @@ Other parameters are passed through a pointer to a apiCurrentLanguageRequest str
 
 ### Return type
 
- (empty response body)
+[**LanguageSettings**](LanguageSettings.md)
 
 ### Authorization
 
@@ -121,7 +127,7 @@ Other parameters are passed through a pointer to a apiCurrentLanguageRequest str
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: text/plain
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

@@ -69,7 +69,7 @@ Other parameters are passed through a pointer to a apiParentalDisableRequest str
 
 ## ParentalEnable
 
-> ParentalEnable(ctx).Body(body).Execute()
+> ParentalEnable(ctx).Execute()
 
 Enable parental filtering
 
@@ -86,11 +86,10 @@ import (
 )
 
 func main() {
-    body := "body_example" // string | Age sensitivity for parental filtering, EARLY_CHILDHOOD is 3 YOUNG is 10 TEEN is 13 MATURE is 17 
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.ParentalApi.ParentalEnable(context.Background()).Body(body).Execute()
+    resp, r, err := apiClient.ParentalApi.ParentalEnable(context.Background()).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `ParentalApi.ParentalEnable``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -100,16 +99,12 @@ func main() {
 
 ### Path Parameters
 
-
+This endpoint does not need any parameter.
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiParentalEnableRequest struct via the builder pattern
 
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **body** | **string** | Age sensitivity for parental filtering, EARLY_CHILDHOOD is 3 YOUNG is 10 TEEN is 13 MATURE is 17  | 
 
 ### Return type
 
@@ -121,7 +116,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
-- **Content-Type**: text/plain
+- **Content-Type**: Not defined
 - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

@@ -2,4 +2,4 @@ packageName: adguard
 generateInterfaces: true
 isGoSubmodule: true
 structPrefix: true
-packageVersion: v0.107.13
+packageVersion: v0.107.26

@@ -79,6 +79,15 @@ paths:
       summary: Set general DNS parameters
       tags:
       - global
+  /cache_clear:
+    post:
+      operationId: cacheClear
+      responses:
+        "200":
+          description: OK
+      summary: Clear DNS cache
+      tags:
+      - global
   /test_upstream_dns:
     post:
       operationId: testUpstreamDNS
@@ -406,6 +415,11 @@ paths:
   /dhcp/find_active_dhcp:
     post:
       operationId: checkActiveDhcp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DhcpFindActiveReq'
       responses:
         "200":
           content:
@@ -588,11 +602,10 @@ paths:
       operationId: filteringSetRules
       requestBody:
         content:
-          text/plain:
+          application/json:
             schema:
-              example: '@@||yandex.ru^|'
-              type: string
-        description: "All filtering rules, one line per rule"
+              $ref: '#/components/schemas/SetRulesRequest'
+        description: Custom filtering rules.
       responses:
         "200":
           description: OK.
@@ -659,20 +672,6 @@ paths:
   /parental/enable:
     post:
       operationId: parentalEnable
-      requestBody:
-        content:
-          text/plain:
-            schema:
-              enum:
-              - EARLY_CHILDHOOD
-              - YOUNG
-              - TEEN
-              - MATURE
-              example: sensitivity=TEEN
-              type: string
-        description: "Age sensitivity for parental filtering,\nEARLY_CHILDHOOD is\
-          \ 3\nYOUNG is 10\nTEEN is 13\nMATURE is 17\n"
-        required: true
       responses:
         "200":
           description: OK.
@@ -859,6 +858,8 @@ paths:
       - clients
   /blocked_services/services:
     get:
+      deprecated: true
+      description: "Deprecated: Use `GET /blocked_services/all` instead.\n"
       operationId: blockedServicesAvailableServices
       responses:
         "200":
@@ -866,6 +867,19 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BlockedServicesArray'
+          description: OK.
+      summary: Get available services to use for blocking
+      tags:
+      - blocked_services
+  /blocked_services/all:
+    get:
+      operationId: blockedServicesAll
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlockedServicesAll'
           description: OK.
       summary: Get available services to use for blocking
       tags:
@@ -934,13 +948,14 @@ paths:
       - rewrite
   /i18n/change_language:
     post:
+      deprecated: true
+      description: "Deprecated: Use `PUT /control/profile` instead.\n"
       operationId: changeLanguage
       requestBody:
         content:
-          text/plain:
+          application/json:
             schema:
-              example: en
-              type: string
+              $ref: '#/components/schemas/LanguageSettings'
         description: |
           New language.  It must be known to the server and must be an ISO 639-1 two-letter code.
       responses:
@@ -952,32 +967,20 @@ paths:
       - i18n
   /i18n/current_language:
     get:
+      deprecated: true
+      description: "Deprecated: Use `GET /control/profile` instead.\n"
       operationId: currentLanguage
-      responses:
-        "200":
-          content:
-            text/plain:
-              examples:
-                response:
-                  value: en
-          description: OK.
-      summary: |
-        Get currently set language.  Result is ISO 639-1 two-letter code.  Empty result means default language.
-      tags:
-      - i18n
-  /install/get_addresses_beta:
-    get:
-      operationId: installGetAddressesBeta
       responses:
         "200":
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AddressesInfoBeta'
+                $ref: '#/components/schemas/LanguageSettings'
           description: OK.
-      summary: "'UNSTABLE!: Gets the network interfaces information.'\n"
+      summary: |
+        Get currently set language.  Result is ISO 639-1 two-letter code.  Empty result means default language.
       tags:
-      - install
+      - i18n
   /install/get_addresses:
     get:
       operationId: installGetAddresses
@@ -989,29 +992,6 @@ paths:
                 $ref: '#/components/schemas/AddressesInfo'
           description: OK.
       summary: Gets the network interfaces information.
-      tags:
-      - install
-  /install/check_config_beta:
-    post:
-      operationId: installCheckConfigBeta
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CheckConfigRequestBeta'
-        description: Configuration to be checked
-        required: true
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CheckConfigResponse'
-          description: OK.
-        "400":
-          description: |
-            Failed to parse JSON or cannot listen on the specified address.
-      summary: "'UNSTABLE!: Checks configuration'\n"
       tags:
       - install
   /install/check_config:
@@ -1035,27 +1015,6 @@ paths:
           description: |
             Failed to parse JSON or cannot listen on the specified address.
       summary: Checks configuration
-      tags:
-      - install
-  /install/configure_beta:
-    post:
-      operationId: installConfigureBeta
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InitialConfigurationBeta'
-        description: Initial configuration JSON
-        required: true
-      responses:
-        "200":
-          description: OK.
-        "400":
-          description: |
-            Failed to parse initial configuration or cannot listen to the specified addresses.
-        "500":
-          description: Cannot start the DNS server
-      summary: "'UNSTABLE!: Applies the initial configuration.'\n"
       tags:
       - install
   /install/configure:
@@ -1110,6 +1069,20 @@ paths:
         "302":
           description: OK.
       summary: Perform administrator log-out
+      tags:
+      - global
+  /profile/update:
+    put:
+      operationId: updateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileInfo'
+      responses:
+        "200":
+          description: OK
+      summary: Updates current user info
       tags:
       - global
   /profile:
@@ -1650,6 +1623,19 @@ components:
         updated:
           type: integer
       type: object
+    SetRulesRequest:
+      description: Custom filtering rules setting request.
+      example:
+        rules:
+        - '||example.com^'
+        - '# comment'
+        - '@@||www.example.com^'
+      properties:
+        rules:
+          items:
+            type: string
+          type: array
+      type: object
     GetVersionRequest:
       description: /version.json request data
       example:
@@ -1969,6 +1955,17 @@ components:
       additionalProperties:
         $ref: '#/components/schemas/NetInterface'
       description: "Network interfaces dictionary, keys are interface names.\n"
+      type: object
+    DhcpFindActiveReq:
+      description: |
+        Request for checking for other DHCP servers in the network.
+      example:
+        interface: eth0
+      properties:
+        interface:
+          description: The name of the network interface
+          example: eth0
+          type: string
       type: object
     DhcpSearchResult:
       description: |
@@ -2630,28 +2627,6 @@ components:
       - mtu
       - name
       type: object
-    AddressInfoBeta:
-      description: Port information
-      example:
-        port: 53
-        ip:
-        - 127.0.0.1
-      properties:
-        ip:
-          example:
-          - 127.0.0.1
-          items:
-            type: string
-          minItems: 1
-          type: array
-        port:
-          example: 53
-          format: uint16
-          type: integer
-      required:
-      - ip
-      - port
-      type: object
     AddressInfo:
       description: Port information
       example:
@@ -2707,52 +2682,28 @@ components:
       - version
       - web_port
       type: object
-    AddressesInfoBeta:
-      description: AdGuard Home addresses configuration
-      example:
-        interfaces:
-        - hardware_address: 52:54:00:11:09:ba
-          ip_addresses:
-          - ip_addresses
-          - ip_addresses
-          flags: up|broadcast|multicast
-          name: eth0
-          mtu: 0
-        - hardware_address: 52:54:00:11:09:ba
-          ip_addresses:
-          - ip_addresses
-          - ip_addresses
-          flags: up|broadcast|multicast
-          name: eth0
-          mtu: 0
-        web_port: 80
-        dns_port: 53
-      properties:
-        dns_port:
-          example: 53
-          format: uint16
-          type: integer
-        web_port:
-          example: 80
-          format: uint16
-          type: integer
-        interfaces:
-          description: "Network interfaces dictionary, keys are interface names.\n"
-          items:
-            $ref: '#/components/schemas/NetInterface'
-          type: array
-      required:
-      - dns_port
-      - interfaces
-      - web_port
-      type: object
     ProfileInfo:
       description: Information about the current user
       example:
         name: name
+        language: language
+        theme: auto
       properties:
         name:
           type: string
+        language:
+          type: string
+        theme:
+          description: Interface theme
+          enum:
+          - auto
+          - dark
+          - light
+          type: string
+      required:
+      - language
+      - name
+      - theme
       type: object
     Client:
       description: Client information.
@@ -3106,28 +3057,61 @@ components:
       items:
         type: string
       type: array
-    CheckConfigRequestBeta:
-      description: Configuration to be checked
+    BlockedServicesAll:
       example:
-        set_static_ip: false
-        web:
-          port: 53
-          ip:
-          - 127.0.0.1
-          autofix: false
-        dns:
-          port: 53
-          ip:
-          - 127.0.0.1
-          autofix: false
+        blocked_services:
+        - icon_svg: icon_svg
+          name: name
+          rules:
+          - rules
+          - rules
+          id: id
+        - icon_svg: icon_svg
+          name: name
+          rules:
+          - rules
+          - rules
+          id: id
       properties:
-        dns:
-          $ref: '#/components/schemas/CheckConfigRequestInfoBeta'
-        web:
-          $ref: '#/components/schemas/CheckConfigRequestInfoBeta'
-        set_static_ip:
-          example: false
-          type: boolean
+        blocked_services:
+          items:
+            $ref: '#/components/schemas/BlockedService'
+          type: array
+      required:
+      - blocked_services
+      type: object
+    BlockedService:
+      example:
+        icon_svg: icon_svg
+        name: name
+        rules:
+        - rules
+        - rules
+        id: id
+      properties:
+        icon_svg:
+          description: |
+            The SVG icon as a Base64-encoded string to make it easier to embed it into a data URL.
+          type: string
+        id:
+          description: |
+            The ID of this service.
+          type: string
+        name:
+          description: |
+            The human-readable name of this service.
+          type: string
+        rules:
+          description: |
+            The array of the filtering rules.
+          items:
+            type: string
+          type: array
+      required:
+      - icon_svg
+      - id
+      - name
+      - rules
       type: object
     CheckConfigRequest:
       description: Configuration to be checked
@@ -3147,28 +3131,6 @@ components:
         web:
           $ref: '#/components/schemas/CheckConfigRequestInfo'
         set_static_ip:
-          example: false
-          type: boolean
-      type: object
-    CheckConfigRequestInfoBeta:
-      example:
-        port: 53
-        ip:
-        - 127.0.0.1
-        autofix: false
-      properties:
-        ip:
-          example:
-          - 127.0.0.1
-          items:
-            type: string
-          minItems: 1
-          type: array
-        port:
-          example: 53
-          format: uint16
-          type: integer
-        autofix:
           example: false
           type: boolean
       type: object
@@ -3254,39 +3216,6 @@ components:
           description: Error text. Set if static=error
           type: string
       type: object
-    InitialConfigurationBeta:
-      description: |
-        AdGuard Home initial configuration for the first-install wizard.
-      example:
-        password: password
-        web:
-          port: 53
-          ip:
-          - 127.0.0.1
-        dns:
-          port: 53
-          ip:
-          - 127.0.0.1
-        username: admin
-      properties:
-        dns:
-          $ref: '#/components/schemas/AddressInfoBeta'
-        web:
-          $ref: '#/components/schemas/AddressInfoBeta'
-        username:
-          description: Basic auth username
-          example: admin
-          type: string
-        password:
-          description: Basic auth password
-          example: password
-          type: string
-      required:
-      - dns
-      - password
-      - username
-      - web
-      type: object
     InitialConfiguration:
       description: |
         AdGuard Home initial configuration for the first-install wizard.
@@ -3337,6 +3266,17 @@ components:
         message:
           description: "The error message, an opaque string."
           type: string
+      type: object
+    LanguageSettings:
+      description: Language settings object.
+      example:
+        language: language
+      properties:
+        language:
+          description: The current language or the language to set.
+          type: string
+      required:
+      - language
       type: object
     dnsInfo_200_response_allOf:
       properties:

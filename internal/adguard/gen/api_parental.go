@@ -148,13 +148,6 @@ func (a *ParentalApiService) ParentalDisableExecute(r ParentalApiParentalDisable
 type ParentalApiParentalEnableRequest struct {
 	ctx context.Context
 	ApiService ParentalApi
-	body *string
-}
-
-// Age sensitivity for parental filtering, EARLY_CHILDHOOD is 3 YOUNG is 10 TEEN is 13 MATURE is 17 
-func (r ParentalApiParentalEnableRequest) Body(body string) ParentalApiParentalEnableRequest {
-	r.body = &body
-	return r
 }
 
 func (r ParentalApiParentalEnableRequest) Execute() (*http.Response, error) {
@@ -192,12 +185,9 @@ func (a *ParentalApiService) ParentalEnableExecute(r ParentalApiParentalEnableRe
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
 	localVarFormParams := url.Values{}
-	if r.body == nil {
-		return nil, reportError("body is required and must be specified")
-	}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"text/plain"}
+	localVarHTTPContentTypes := []string{}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -213,8 +203,6 @@ func (a *ParentalApiService) ParentalEnableExecute(r ParentalApiParentalEnableRe
 	if localVarHTTPHeaderAccept != "" {
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
-	// body params
-	localVarPostBody = r.body
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err

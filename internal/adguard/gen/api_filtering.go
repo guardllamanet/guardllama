@@ -622,12 +622,12 @@ func (a *FilteringApiService) FilteringRemoveURLExecute(r FilteringApiFilteringR
 type FilteringApiFilteringSetRulesRequest struct {
 	ctx context.Context
 	ApiService FilteringApi
-	body *string
+	setRulesRequest *SetRulesRequest
 }
 
-// All filtering rules, one line per rule
-func (r FilteringApiFilteringSetRulesRequest) Body(body string) FilteringApiFilteringSetRulesRequest {
-	r.body = &body
+// Custom filtering rules.
+func (r FilteringApiFilteringSetRulesRequest) SetRulesRequest(setRulesRequest SetRulesRequest) FilteringApiFilteringSetRulesRequest {
+	r.setRulesRequest = &setRulesRequest
 	return r
 }
 
@@ -668,7 +668,7 @@ func (a *FilteringApiService) FilteringSetRulesExecute(r FilteringApiFilteringSe
 	localVarFormParams := url.Values{}
 
 	// to determine the Content-Type header
-	localVarHTTPContentTypes := []string{"text/plain"}
+	localVarHTTPContentTypes := []string{"application/json"}
 
 	// set Content-Type header
 	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
@@ -685,7 +685,7 @@ func (a *FilteringApiService) FilteringSetRulesExecute(r FilteringApiFilteringSe
 		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
 	}
 	// body params
-	localVarPostBody = r.body
+	localVarPostBody = r.setRulesRequest
 	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
 	if err != nil {
 		return nil, err

@@ -17,7 +17,7 @@ Method | HTTP request | Description
 
 ## CheckActiveDhcp
 
-> DhcpSearchResult CheckActiveDhcp(ctx).Execute()
+> DhcpSearchResult CheckActiveDhcp(ctx).DhcpFindActiveReq(dhcpFindActiveReq).Execute()
 
 Searches for an active DHCP server on the network
 
@@ -34,10 +34,11 @@ import (
 )
 
 func main() {
+    dhcpFindActiveReq := *openapiclient.NewDhcpFindActiveReq() // DhcpFindActiveReq |  (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.DhcpApi.CheckActiveDhcp(context.Background()).Execute()
+    resp, r, err := apiClient.DhcpApi.CheckActiveDhcp(context.Background()).DhcpFindActiveReq(dhcpFindActiveReq).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `DhcpApi.CheckActiveDhcp``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -49,12 +50,16 @@ func main() {
 
 ### Path Parameters
 
-This endpoint does not need any parameter.
+
 
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiCheckActiveDhcpRequest struct via the builder pattern
 
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **dhcpFindActiveReq** | [**DhcpFindActiveReq**](DhcpFindActiveReq.md) |  | 
 
 ### Return type
 
@@ -66,7 +71,7 @@ Other parameters are passed through a pointer to a apiCheckActiveDhcpRequest str
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

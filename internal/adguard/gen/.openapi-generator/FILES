@@ -23,14 +23,12 @@ configuration.go
 docs/AccessList.md
 docs/AddUrlRequest.md
 docs/AddressInfo.md
-docs/AddressInfoBeta.md
 docs/AddressesInfo.md
-docs/AddressesInfoBeta.md
+docs/BlockedService.md
+docs/BlockedServicesAll.md
 docs/BlockedServicesApi.md
 docs/CheckConfigRequest.md
-docs/CheckConfigRequestBeta.md
 docs/CheckConfigRequestInfo.md
-docs/CheckConfigRequestInfoBeta.md
 docs/CheckConfigResponse.md
 docs/CheckConfigResponseInfo.md
 docs/CheckConfigStaticIpInfo.md
@@ -47,6 +45,7 @@ docs/DhcpApi.md
 docs/DhcpConfig.md
 docs/DhcpConfigV4.md
 docs/DhcpConfigV6.md
+docs/DhcpFindActiveReq.md
 docs/DhcpLease.md
 docs/DhcpSearchResult.md
 docs/DhcpSearchResultOtherServer.md
@@ -73,8 +72,8 @@ docs/GetVersionRequest.md
 docs/GlobalApi.md
 docs/I18nApi.md
 docs/InitialConfiguration.md
-docs/InitialConfigurationBeta.md
 docs/InstallApi.md
+docs/LanguageSettings.md
 docs/LogApi.md
 docs/Login.md
 docs/MobileconfigApi.md
@@ -95,6 +94,7 @@ docs/SafebrowsingApi.md
 docs/SafebrowsingStatus200Response.md
 docs/SafesearchApi.md
 docs/ServerStatus.md
+docs/SetRulesRequest.md
 docs/Stats.md
 docs/StatsApi.md
 docs/StatsConfig.md
@@ -109,13 +109,11 @@ go.sum
 model_access_list.go
 model_add_url_request.go
 model_address_info.go
-model_address_info_beta.go
 model_addresses_info.go
-model_addresses_info_beta.go
+model_blocked_service.go
+model_blocked_services_all.go
 model_check_config_request.go
-model_check_config_request_beta.go
 model_check_config_request_info.go
-model_check_config_request_info_beta.go
 model_check_config_response.go
 model_check_config_response_info.go
 model_check_config_static_ip_info.go
@@ -129,6 +127,7 @@ model_clients.go
 model_dhcp_config.go
 model_dhcp_config_v4.go
 model_dhcp_config_v6.go
+model_dhcp_find_active_req.go
 model_dhcp_lease.go
 model_dhcp_search_result.go
 model_dhcp_search_result_other_server.go
@@ -153,7 +152,7 @@ model_filter_set_url_data.go
 model_filter_status.go
 model_get_version_request.go
 model_initial_configuration.go
-model_initial_configuration_beta.go
+model_language_settings.go
 model_login.go
 model_net_interface.go
 model_parental_status_200_response.go
@@ -168,6 +167,7 @@ model_result_rule.go
 model_rewrite_entry.go
 model_safebrowsing_status_200_response.go
 model_server_status.go
+model_set_rules_request.go
 model_stats.go
 model_stats_config.go
 model_tls_config.go

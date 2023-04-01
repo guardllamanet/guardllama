@@ -5,6 +5,7 @@ All URIs are relative to */control*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**BeginUpdate**](GlobalApi.md#BeginUpdate) | **Post** /update | Begin auto-upgrade procedure
+[**CacheClear**](GlobalApi.md#CacheClear) | **Post** /cache_clear | Clear DNS cache
 [**DnsConfig**](GlobalApi.md#DnsConfig) | **Post** /dns_config | Set general DNS parameters
 [**DnsInfo**](GlobalApi.md#DnsInfo) | **Get** /dns_info | Get general DNS parameters
 [**GetProfile**](GlobalApi.md#GetProfile) | **Get** /profile | 
@@ -15,6 +16,7 @@ Method | HTTP request | Description
 [**MobileConfigDoT**](GlobalApi.md#MobileConfigDoT) | **Get** /apple/dot.mobileconfig | Get DNS over TLS .mobileconfig.
 [**Status**](GlobalApi.md#Status) | **Get** /status | Get DNS server current status and general settings
 [**TestUpstreamDNS**](GlobalApi.md#TestUpstreamDNS) | **Post** /test_upstream_dns | Test upstream configuration
+[**UpdateProfile**](GlobalApi.md#UpdateProfile) | **Put** /profile/update | Updates current user info
 
 
 
@@ -55,6 +57,63 @@ This endpoint does not need any parameter.
 ### Other Parameters
 
 Other parameters are passed through a pointer to a apiBeginUpdateRequest struct via the builder pattern
+
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[basicAuth](../README.md#basicAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## CacheClear
+
+> CacheClear(ctx).Execute()
+
+Clear DNS cache
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "./openapi"
+)
+
+func main() {
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.GlobalApi.CacheClear(context.Background()).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `GlobalApi.CacheClear``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiCacheClearRequest struct via the builder pattern
 
 
 ### Return type
@@ -683,6 +742,68 @@ Name | Type | Description  | Notes
 
 - **Content-Type**: application/json
 - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## UpdateProfile
+
+> UpdateProfile(ctx).ProfileInfo(profileInfo).Execute()
+
+Updates current user info
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "./openapi"
+)
+
+func main() {
+    profileInfo := *openapiclient.NewProfileInfo("Name_example", "Language_example", "Theme_example") // ProfileInfo |  (optional)
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.GlobalApi.UpdateProfile(context.Background()).ProfileInfo(profileInfo).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `GlobalApi.UpdateProfile``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiUpdateProfileRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **profileInfo** | [**ProfileInfo**](ProfileInfo.md) |  | 
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[basicAuth](../README.md#basicAuth)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../README.md#documentation-for-models)

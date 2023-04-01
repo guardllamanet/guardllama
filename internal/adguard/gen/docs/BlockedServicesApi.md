@@ -4,10 +4,70 @@ All URIs are relative to */control*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**BlockedServicesAll**](BlockedServicesApi.md#BlockedServicesAll) | **Get** /blocked_services/all | Get available services to use for blocking
 [**BlockedServicesAvailableServices**](BlockedServicesApi.md#BlockedServicesAvailableServices) | **Get** /blocked_services/services | Get available services to use for blocking
 [**BlockedServicesList**](BlockedServicesApi.md#BlockedServicesList) | **Get** /blocked_services/list | Get blocked services list
 [**BlockedServicesSet**](BlockedServicesApi.md#BlockedServicesSet) | **Post** /blocked_services/set | Set blocked services list
 
+
+
+## BlockedServicesAll
+
+> BlockedServicesAll BlockedServicesAll(ctx).Execute()
+
+Get available services to use for blocking
+
+### Example
+
+```go
+package main
+
+import (
+    "context"
+    "fmt"
+    "os"
+    openapiclient "./openapi"
+)
+
+func main() {
+
+    configuration := openapiclient.NewConfiguration()
+    apiClient := openapiclient.NewAPIClient(configuration)
+    resp, r, err := apiClient.BlockedServicesApi.BlockedServicesAll(context.Background()).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `BlockedServicesApi.BlockedServicesAll``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    // response from `BlockedServicesAll`: BlockedServicesAll
+    fmt.Fprintf(os.Stdout, "Response from `BlockedServicesApi.BlockedServicesAll`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+This endpoint does not need any parameter.
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiBlockedServicesAllRequest struct via the builder pattern
+
+
+### Return type
+
+[**BlockedServicesAll**](BlockedServicesAll.md)
+
+### Authorization
+
+[basicAuth](../README.md#basicAuth)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
 
 
 ## BlockedServicesAvailableServices
@@ -15,6 +75,8 @@ Method | HTTP request | Description
 > []string BlockedServicesAvailableServices(ctx).Execute()
 
 Get available services to use for blocking
+
+
 
 ### Example
 

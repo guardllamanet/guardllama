@@ -4,13 +4,15 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Name** | Pointer to **string** |  | [optional] 
+**Name** | **string** |  | 
+**Language** | **string** |  | 
+**Theme** | **string** | Interface theme | 
 
 ## Methods
 
 ### NewProfileInfo
 
-`func NewProfileInfo() *ProfileInfo`
+`func NewProfileInfo(name string, language string, theme string, ) *ProfileInfo`
 
 NewProfileInfo instantiates a new ProfileInfo object
 This constructor will assign default values to properties that have it defined,
@@ -44,11 +46,46 @@ and a boolean to check if the value has been set.
 
 SetName sets Name field to given value.
 
-### HasName
 
-`func (o *ProfileInfo) HasName() bool`
+### GetLanguage
 
-HasName returns a boolean if a field has been set.
+`func (o *ProfileInfo) GetLanguage() string`
+
+GetLanguage returns the Language field if non-nil, zero value otherwise.
+
+### GetLanguageOk
+
+`func (o *ProfileInfo) GetLanguageOk() (*string, bool)`
+
+GetLanguageOk returns a tuple with the Language field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetLanguage
+
+`func (o *ProfileInfo) SetLanguage(v string)`
+
+SetLanguage sets Language field to given value.
+
+
+### GetTheme
+
+`func (o *ProfileInfo) GetTheme() string`
+
+GetTheme returns the Theme field if non-nil, zero value otherwise.
+
+### GetThemeOk
+
+`func (o *ProfileInfo) GetThemeOk() (*string, bool)`
+
+GetThemeOk returns a tuple with the Theme field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetTheme
+
+`func (o *ProfileInfo) SetTheme(v string)`
+
+SetTheme sets Theme field to given value.
+
 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

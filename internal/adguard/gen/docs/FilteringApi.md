@@ -331,7 +331,7 @@ Name | Type | Description  | Notes
 
 ## FilteringSetRules
 
-> FilteringSetRules(ctx).Body(body).Execute()
+> FilteringSetRules(ctx).SetRulesRequest(setRulesRequest).Execute()
 
 Set user-defined filter rules
 
@@ -348,11 +348,11 @@ import (
 )
 
 func main() {
-    body := "body_example" // string | All filtering rules, one line per rule (optional)
+    setRulesRequest := *openapiclient.NewSetRulesRequest() // SetRulesRequest | Custom filtering rules. (optional)
 
     configuration := openapiclient.NewConfiguration()
     apiClient := openapiclient.NewAPIClient(configuration)
-    resp, r, err := apiClient.FilteringApi.FilteringSetRules(context.Background()).Body(body).Execute()
+    resp, r, err := apiClient.FilteringApi.FilteringSetRules(context.Background()).SetRulesRequest(setRulesRequest).Execute()
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `FilteringApi.FilteringSetRules``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -371,7 +371,7 @@ Other parameters are passed through a pointer to a apiFilteringSetRulesRequest s
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **body** | **string** | All filtering rules, one line per rule | 
+ **setRulesRequest** | [**SetRulesRequest**](SetRulesRequest.md) | Custom filtering rules. | 
 
 ### Return type
 
@@ -383,7 +383,7 @@ Name | Type | Description  | Notes
 
 ### HTTP request headers
 
-- **Content-Type**: text/plain
+- **Content-Type**: application/json
 - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)

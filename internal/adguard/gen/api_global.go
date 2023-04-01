@@ -33,6 +33,17 @@ type GlobalApi interface {
 	BeginUpdateExecute(r GlobalApiBeginUpdateRequest) (*http.Response, error)
 
 	/*
+	CacheClear Clear DNS cache
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return GlobalApiCacheClearRequest
+	*/
+	CacheClear(ctx context.Context) GlobalApiCacheClearRequest
+
+	// CacheClearExecute executes the request
+	CacheClearExecute(r GlobalApiCacheClearRequest) (*http.Response, error)
+
+	/*
 	DnsConfig Set general DNS parameters
 
 	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
@@ -146,6 +157,17 @@ type GlobalApi interface {
 	// TestUpstreamDNSExecute executes the request
 	//  @return map[string]string
 	TestUpstreamDNSExecute(r GlobalApiTestUpstreamDNSRequest) (map[string]string, *http.Response, error)
+
+	/*
+	UpdateProfile Updates current user info
+
+	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+	@return GlobalApiUpdateProfileRequest
+	*/
+	UpdateProfile(ctx context.Context) GlobalApiUpdateProfileRequest
+
+	// UpdateProfileExecute executes the request
+	UpdateProfileExecute(r GlobalApiUpdateProfileRequest) (*http.Response, error)
 }
 
 // GlobalApiService GlobalApi service
@@ -187,6 +209,92 @@ func (a *GlobalApiService) BeginUpdateExecute(r GlobalApiBeginUpdateRequest) (*h
 	}
 
 	localVarPath := localBasePath + "/update"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
+}
+
+type GlobalApiCacheClearRequest struct {
+	ctx context.Context
+	ApiService GlobalApi
+}
+
+func (r GlobalApiCacheClearRequest) Execute() (*http.Response, error) {
+	return r.ApiService.CacheClearExecute(r)
+}
+
+/*
+CacheClear Clear DNS cache
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return GlobalApiCacheClearRequest
+*/
+func (a *GlobalApiService) CacheClear(ctx context.Context) GlobalApiCacheClearRequest {
+	return GlobalApiCacheClearRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+func (a *GlobalApiService) CacheClearExecute(r GlobalApiCacheClearRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPost
+		localVarPostBody     interface{}
+		formFiles            []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "GlobalApiService.CacheClear")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/cache_clear"
 
 	localVarHeaderParams := make(map[string]string)
 	localVarQueryParams := url.Values{}
@@ -1249,4 +1357,98 @@ func (a *GlobalApiService) TestUpstreamDNSExecute(r GlobalApiTestUpstreamDNSRequ
 	}
 
 	return localVarReturnValue, localVarHTTPResponse, nil
+}
+
+type GlobalApiUpdateProfileRequest struct {
+	ctx context.Context
+	ApiService GlobalApi
+	profileInfo *ProfileInfo
+}
+
+func (r GlobalApiUpdateProfileRequest) ProfileInfo(profileInfo ProfileInfo) GlobalApiUpdateProfileRequest {
+	r.profileInfo = &profileInfo
+	return r
+}
+
+func (r GlobalApiUpdateProfileRequest) Execute() (*http.Response, error) {
+	return r.ApiService.UpdateProfileExecute(r)
+}
+
+/*
+UpdateProfile Updates current user info
+
+ @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
+ @return GlobalApiUpdateProfileRequest
+*/
+func (a *GlobalApiService) UpdateProfile(ctx context.Context) GlobalApiUpdateProfileRequest {
+	return GlobalApiUpdateProfileRequest{
+		ApiService: a,
+		ctx: ctx,
+	}
+}
+
+// Execute executes the request
+func (a *GlobalApiService) UpdateProfileExecute(r GlobalApiUpdateProfileRequest) (*http.Response, error) {
+	var (
+		localVarHTTPMethod   = http.MethodPut
+		localVarPostBody     interface{}
+		formFiles            []formFile
+	)
+
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "GlobalApiService.UpdateProfile")
+	if err != nil {
+		return nil, &GenericOpenAPIError{error: err.Error()}
+	}
+
+	localVarPath := localBasePath + "/profile/update"
+
+	localVarHeaderParams := make(map[string]string)
+	localVarQueryParams := url.Values{}
+	localVarFormParams := url.Values{}
+
+	// to determine the Content-Type header
+	localVarHTTPContentTypes := []string{"application/json"}
+
+	// set Content-Type header
+	localVarHTTPContentType := selectHeaderContentType(localVarHTTPContentTypes)
+	if localVarHTTPContentType != "" {
+		localVarHeaderParams["Content-Type"] = localVarHTTPContentType
+	}
+
+	// to determine the Accept header
+	localVarHTTPHeaderAccepts := []string{}
+
+	// set Accept header
+	localVarHTTPHeaderAccept := selectHeaderAccept(localVarHTTPHeaderAccepts)
+	if localVarHTTPHeaderAccept != "" {
+		localVarHeaderParams["Accept"] = localVarHTTPHeaderAccept
+	}
+	// body params
+	localVarPostBody = r.profileInfo
+	req, err := a.client.prepareRequest(r.ctx, localVarPath, localVarHTTPMethod, localVarPostBody, localVarHeaderParams, localVarQueryParams, localVarFormParams, formFiles)
+	if err != nil {
+		return nil, err
+	}
+
+	localVarHTTPResponse, err := a.client.callAPI(req)
+	if err != nil || localVarHTTPResponse == nil {
+		return localVarHTTPResponse, err
+	}
+
+	localVarBody, err := ioutil.ReadAll(localVarHTTPResponse.Body)
+	localVarHTTPResponse.Body.Close()
+	localVarHTTPResponse.Body = ioutil.NopCloser(bytes.NewBuffer(localVarBody))
+	if err != nil {
+		return localVarHTTPResponse, err
+	}
+
+	if localVarHTTPResponse.StatusCode >= 300 {
+		newErr := &GenericOpenAPIError{
+			body:  localVarBody,
+			error: localVarHTTPResponse.Status,
+		}
+		return localVarHTTPResponse, newErr
+	}
+
+	return localVarHTTPResponse, nil
 }
