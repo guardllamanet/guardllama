@@ -15,10 +15,11 @@ const (
 	ConditionTunnelPodReady     ConditionType = "TunnelPodReady"
 	ConditionTunnelServiceReady ConditionType = "TunnelServiceReady"
 
-	ConditionDNSConfigReady  ConditionType = "DNSConfigReady"
-	ConditionDNSDeployReady  ConditionType = "DNSDeployReady"
-	ConditionDNSPodReady     ConditionType = "DNSPodReady"
-	ConditionDNSServiceReady ConditionType = "DNSServiceReady"
+	ConditionDNSConfigReady    ConditionType = "DNSConfigReady"
+	ConditionDNSConfigPVCReady ConditionType = "DNSConfigPVCReady"
+	ConditionDNSDeployReady    ConditionType = "DNSDeployReady"
+	ConditionDNSPodReady       ConditionType = "DNSPodReady"
+	ConditionDNSServiceReady   ConditionType = "DNSServiceReady"
 )
 
 var (
@@ -31,6 +32,7 @@ var (
 		ConditionTunnelPodReady,
 
 		ConditionDNSConfigReady,
+		ConditionDNSConfigPVCReady,
 		ConditionDNSDeployReady,
 		ConditionDNSPodReady,
 		ConditionDNSServiceReady,
@@ -156,6 +158,10 @@ func (t Tunnel) AdGuardTypedName() string {
 }
 
 func (t Tunnel) AdGuardAdminServiceName() string {
+	return t.AdGuardTypedName()
+}
+
+func (t Tunnel) AdGuardServicePVCName() string {
 	return t.AdGuardTypedName()
 }
 

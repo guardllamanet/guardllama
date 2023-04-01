@@ -8,6 +8,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/durationpb"
 	"k8s.io/apimachinery/pkg/api/equality"
+	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -24,14 +25,16 @@ import (
 )
 
 const (
-	reasonConfigReady  = "ConfigReady"
-	reasonConfigError  = "ConfigError"
-	reasonDeployReady  = "DeployReady"
-	reasonDeployError  = "DeployError"
-	reasonServiceReady = "ServiceReady"
-	reasonServiceError = "ServiceError"
-	reasonPodRunning   = "PodRunning"
-	reasonPodPending   = "PodPending"
+	reasonConfigReady    = "ConfigReady"
+	reasonConfigError    = "ConfigError"
+	reasonConfigPVCReady = "ConfigPVCReady"
+	reasonConfigPVCError = "ConfigPVCError"
+	reasonDeployReady    = "DeployReady"
+	reasonDeployError    = "DeployError"
+	reasonServiceReady   = "ServiceReady"
+	reasonServiceError   = "ServiceError"
+	reasonPodRunning     = "PodRunning"
+	reasonPodPending     = "PodPending"
 
 	tunnelHTTPAddr int32 = 8080
 
@@ -58,6 +61,7 @@ type TunnelReconciler struct {
 // +kubebuilder:rbac:groups="",resources=secrets,verbs=get;list;watch;update;patch;create
 // +kubebuilder:rbac:groups="",resources=configmaps,verbs=get;list;watch;update;patch;create
 // +kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+// +kubebuilder:rbac:groups="",resources=persistentvolumeclaims,verbs=get;list;watch;create;update;patch;delete
 // +kubebuilder:rbac:groups="",resources=services,verbs=get;list;watch;create;update;patch;delete
 
 func (r *TunnelReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
@@ -129,6 +133,10 @@ func (r *TunnelReconciler) reconcileTunnel(ctx context.Context, tun *glmv1.Tunne
 	}
 
 	if dnsCfg != nil {
+		if _, err := r.upsertDNSServerPVC(ctx, tun); err != nil {
+			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting dns server pvc: %w", err))
+		}
+
 		if _, err := r.upsertDNSServerDeploy(ctx, tun, dnsCfg); err != nil {
 			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting dns server deploy: %w", err))
 		}
@@ -217,7 +225,7 @@ func (r *TunnelReconciler) upsertTunnelDeploy(ctx context.Context, tun *glmv1.Tu
 		}
 
 		if _, err := controllerutil.CreateOrUpdate(ctx, r, secret, secretFn); err != nil {
-			return controllerutil.OperationResultNone, fmt.Errorf("Error upserting tunnel image pull secret: %w", err)
+			return controllerutil.OperationResultNone, fmt.Errorf("error upserting tunnel image pull secret: %w", err)
 		}
 	}
 
@@ -478,6 +486,46 @@ func (r *TunnelReconciler) upsertDNSServerConfig(ctx context.Context, tun *glmv1
 	return cm, nil
 }
 
+func (r *TunnelReconciler) upsertDNSServerPVC(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
+	pvc := &corev1.PersistentVolumeClaim{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      tun.AdGuardServicePVCName(),
+			Namespace: tun.Namespace,
+		},
+	}
+	pvcFn := func() error {
+		pvc.Spec.AccessModes = []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce}
+		pvc.Spec.Resources = corev1.ResourceRequirements{
+			Requests: corev1.ResourceList{
+				corev1.ResourceStorage: resource.MustParse("2Mi"),
+			},
+			Limits: corev1.ResourceList{
+				corev1.ResourceStorage: resource.MustParse("4Mi"),
+			},
+		}
+
+		return controllerutil.SetControllerReference(tun, pvc, r.Scheme())
+	}
+	op, err := controllerutil.CreateOrUpdate(ctx, r, pvc, pvcFn)
+	if err == nil {
+		tun.Status.SetCondition(
+			glmv1.ConditionDNSConfigPVCReady,
+			corev1.ConditionTrue,
+			reasonConfigPVCReady,
+			"",
+		)
+	} else {
+		tun.Status.SetCondition(
+			glmv1.ConditionDNSConfigPVCReady,
+			corev1.ConditionFalse,
+			reasonConfigPVCError,
+			err.Error(),
+		)
+	}
+
+	return op, err
+}
+
 func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1.Tunnel, cfg *corev1.ConfigMap) (controllerutil.OperationResult, error) {
 	var (
 		labels = labelsDNSDeploy(tun)
@@ -507,7 +555,7 @@ func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1
 							Command: []string{
 								"sh",
 								"-c",
-								"mkdir -p /opt/adguardhome/conf && cp /tmp/AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml",
+								`mkdir -p /opt/adguardhome/conf && [[ -f "/opt/adguardhome/conf/AdGuardHome.yaml" ]] && echo "AdGuardHome.yaml exists, skip copying" || cp /tmp/AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml`,
 							},
 							VolumeMounts: []corev1.VolumeMount{
 								{
@@ -595,8 +643,8 @@ func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1
 						{
 							Name: "adguardhome-config",
 							VolumeSource: corev1.VolumeSource{
-								EmptyDir: &corev1.EmptyDirVolumeSource{
-									Medium: corev1.StorageMediumMemory,
+								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+									ClaimName: tun.AdGuardServicePVCName(),
 								},
 							},
 						},
@@ -826,7 +874,7 @@ func getValueOrValueFrom(ctx context.Context, c client.Reader, ns string, i glmv
 		},
 		&secret,
 	); err != nil {
-		return "", fmt.Errorf("Error getting secret %s/%s: %w", ns, name, err)
+		return "", fmt.Errorf("error getting secret %s/%s: %w", ns, name, err)
 	}
 
 	valBytes, ok := secret.Data[key]
@@ -835,7 +883,7 @@ func getValueOrValueFrom(ctx context.Context, c client.Reader, ns string, i glmv
 			return "", nil
 		}
 
-		return "", fmt.Errorf("Couldn't find key %s in secret %s/%s", key, ns, name)
+		return "", fmt.Errorf("couldn't find key %s in secret %s/%s", key, ns, name)
 	}
 
 	return string(valBytes), nil
