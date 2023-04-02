@@ -495,7 +495,7 @@ func fetchWireGuardDevice(ctx context.Context, tun *glmv1.Tunnel) (*apiv1.WireGu
 
 func fetchAdGuardQueryLogs(ctx context.Context, tun *glmv1.Tunnel) ([]*apiv1.AdGuardStatus_QueryLog, error) {
 	conf := adguard.NewConfiguration()
-	conf.Host = tun.AdGuardAdminServiceHost()
+	conf.Host = tun.AdGuardServiceHost()
 	conf.Scheme = "http"
 	conf.HTTPClient = newHTTPClient()
 	client := adguard.NewAPIClient(conf)

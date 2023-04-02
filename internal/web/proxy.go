@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5"
+	glmv1 "github.com/guardllamanet/guardllama/api/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func AGHProxyHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +28,13 @@ func AGHProxyHandler(w http.ResponseWriter, r *http.Request) {
 	r.URL.Path = trimPathPrefix(r.URL.Path, prefix)
 	r.URL.RawPath = trimPathPrefix(r.URL.RawPath, prefix)
 
-	u, err := url.Parse(fmt.Sprintf("http://ag-%s.%s", name, name))
+	tun := glmv1.Tunnel{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      name,
+			Namespace: name,
+		},
+	}
+	u, err := url.Parse(fmt.Sprintf("http://%s", tun.AdGuardServiceHost()))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusPreconditionFailed)
 		return

@@ -488,7 +488,7 @@ func (r *TunnelReconciler) upsertDNSServerConfig(ctx context.Context, tun *glmv1
 func (r *TunnelReconciler) upsertDNSServerPVC(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
 	pvc := &corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      tun.AdGuardServicePVCName(),
+			Name:      tun.AdGuardConfigPVCName(),
 			Namespace: tun.Namespace,
 		},
 	}
@@ -641,7 +641,7 @@ func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1
 				Name: "adguardhome-config",
 				VolumeSource: corev1.VolumeSource{
 					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-						ClaimName: tun.AdGuardServicePVCName(),
+						ClaimName: tun.AdGuardConfigPVCName(),
 					},
 				},
 			},
@@ -675,7 +675,7 @@ func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1
 func (r *TunnelReconciler) upsertDNSServerService(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      tun.AdGuardAdminServiceName(),
+			Name:      tun.AdGuardServiceName(),
 			Namespace: tun.Namespace,
 		},
 	}

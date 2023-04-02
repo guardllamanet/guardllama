@@ -157,16 +157,16 @@ func (t Tunnel) AdGuardTypedName() string {
 	return fmt.Sprintf("ag-%s", t.Name)
 }
 
-func (t Tunnel) AdGuardAdminServiceName() string {
+func (t Tunnel) AdGuardServiceName() string {
 	return t.AdGuardTypedName()
 }
 
-func (t Tunnel) AdGuardServicePVCName() string {
+func (t Tunnel) AdGuardConfigPVCName() string {
 	return t.AdGuardTypedName()
 }
 
-func (t Tunnel) AdGuardAdminServiceHost() string {
-	return fmt.Sprintf("%s.%s", t.AdGuardAdminServiceName(), t.Namespace)
+func (t Tunnel) AdGuardServiceHost() string {
+	return fmt.Sprintf("%s.%s", t.AdGuardServiceName(), t.Namespace)
 }
 
 // +kubebuilder:object:root=true
