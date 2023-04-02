@@ -116,9 +116,19 @@ func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 
 	r.HandleFunc(
 		"/",
-		func(w http.ResponseWriter, req *http.Request) {
-			http.Redirect(w, req, "/ui", http.StatusFound)
+		func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/ui", http.StatusFound)
 		},
+	)
+
+	proxyHandler := AGHProxyHandler
+	r.HandleFunc(
+		"/tunnels/{name}/agh",
+		proxyHandler,
+	)
+	r.HandleFunc(
+		"/tunnels/{name}/agh/*",
+		proxyHandler,
 	)
 
 	gmuxHandler := http.StripPrefix("/api", gmux)
