@@ -325,6 +325,7 @@ func (s *TunnelService) fetchClientTunnel(ctx context.Context, tun *glmv1.Tunnel
 
 	// only fetch peer statuses & dns query logs when tunnel is ready
 	if tunnel.Status.State == apiv1.TunnelStatus_READY {
+		// wireguard status
 		dev, err := fetchWireGuardDevice(ctx, tun)
 		if err != nil {
 			return nil, fmt.Errorf("error fetching tunnel peer statuses: %w", err)
@@ -335,6 +336,7 @@ func (s *TunnelService) fetchClientTunnel(ctx context.Context, tun *glmv1.Tunnel
 			},
 		}
 
+		// adguard status
 		logs, err := fetchAdGuardQueryLogs(ctx, tun)
 		if err != nil {
 			return nil, fmt.Errorf("error fetching dns query logs: %w", err)
@@ -622,8 +624,10 @@ func createTunnel(
 
 	// upsert secret
 	secret, err := c.UpsertSecret(ctx, name, ns.Name, map[string][]byte{
+		// server keys
 		secretKeyServerPrivateKey: []byte(base64.StdEncoding.EncodeToString(skey[:])),
 		secretKeyServerPublicKey:  []byte(base64.StdEncoding.EncodeToString(spub[:])),
+		// client keys
 		// TODO: support multiple peers
 		secretKeyNameClientPrivateKey(0): []byte(base64.StdEncoding.EncodeToString(ckey[:])),
 		secretKeyNameClientPublicKey(0):  []byte(base64.StdEncoding.EncodeToString(cpub[:])),

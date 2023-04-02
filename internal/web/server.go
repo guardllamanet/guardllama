@@ -69,6 +69,7 @@ func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 		gmux = grpcruntime.NewServeMux(
 			grpcruntime.WithIncomingHeaderMatcher(grpcutil.HeaderMatcher),
 			grpcruntime.WithOutgoingHeaderMatcher(grpcutil.HeaderMatcher),
+			grpcutil.WithRequestMetadata(),
 			grpcutil.WithPrettyJSONMarshaler(),
 			grpcutil.WithErrorHandler(cfg.Logger),
 		)
@@ -121,7 +122,7 @@ func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 		},
 	)
 
-	proxyHandler := AGHProxyHandler
+	proxyHandler := AGHProxyHandler(client)
 	r.HandleFunc(
 		"/tunnels/{name}/agh",
 		proxyHandler,
@@ -139,11 +140,11 @@ func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 	}, nil
 }
 
-func basicAuth(client *api.K8sClient) func(ctx context.Context) map[string]string {
-	return func(ctx context.Context) map[string]string {
+func basicAuth(client *api.K8sClient) func(r *http.Request) map[string]string {
+	return func(r *http.Request) map[string]string {
 		creds := make(map[string]string)
 
-		scfg, err := client.GetServerConfig(ctx)
+		scfg, err := client.GetServerConfig(r.Context())
 		if err != nil {
 			return creds
 		}
