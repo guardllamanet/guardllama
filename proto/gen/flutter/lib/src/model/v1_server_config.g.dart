@@ -14,7 +14,7 @@ class _$V1ServerConfig extends V1ServerConfig {
   @override
   final ServerConfigImage? wg;
   @override
-  final ServerConfigCredentials? credentials;
+  final V1ServerConfigCredentials? credentials;
   @override
   final bool? debug;
 
@@ -87,10 +87,10 @@ class V1ServerConfigBuilder
       _$this._wg ??= new ServerConfigImageBuilder();
   set wg(ServerConfigImageBuilder? wg) => _$this._wg = wg;
 
-  ServerConfigCredentialsBuilder? _credentials;
-  ServerConfigCredentialsBuilder get credentials =>
-      _$this._credentials ??= new ServerConfigCredentialsBuilder();
-  set credentials(ServerConfigCredentialsBuilder? credentials) =>
+  V1ServerConfigCredentialsBuilder? _credentials;
+  V1ServerConfigCredentialsBuilder get credentials =>
+      _$this._credentials ??= new V1ServerConfigCredentialsBuilder();
+  set credentials(V1ServerConfigCredentialsBuilder? credentials) =>
       _$this._credentials = credentials;
 
   bool? _debug;

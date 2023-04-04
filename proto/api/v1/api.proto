@@ -147,7 +147,13 @@ message ServerConfig {
       string token = 1 [(validate.rules).string.min_len = 1];
     }
 
+    message Jwt {
+      string sign_key = 1 [(validate.rules).string.min_len = 1];
+      string verify_key = 2 [(validate.rules).string.min_len = 1];
+    }
+
     Api api = 1;
+    Jwt jwt = 2;
   }
 
   Cluster cluster = 1;
@@ -569,4 +575,38 @@ message AdGuardStatus {
   }
 
   repeated QueryLog query_logs = 1;
+}
+
+service AuthService {
+  rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse) {
+    option (google.api.http) = {
+      post: "/authenticate"
+      body: "*"
+    };
+  }
+}
+
+message Credentials {
+  string token = 1 [
+    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
+      required: [
+        "token"
+      ]
+    },
+    (validate.rules).string.min_len = 1
+  ];
+}
+
+message JwtToken {
+  string token = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+
+message AuthenticateRequest {
+  Credentials creds = 1 [(validate.rules).message.required = true];
+}
+
+message AuthenticateResponse {
+  JwtToken jwt_token = 1;
+  string cookie = 2;
 }

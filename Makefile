@@ -211,7 +211,7 @@ test:
 .PHONY: e2etest
 e2etest:
 	TAG=$(TS) WGTEST_REPO=localhost:5111/glm-wgtest $(MAKE) docker_push_wgtest
-	go test ./internal/e2etest/ $(GO_TEST_FLAGS) -count=1 -race -v -e2e -wgtest-image $(WGTEST_REPO):$(TS) -api-server http://localhost:38080/api
+	go test ./internal/e2etest/ $(GO_TEST_FLAGS) -count=1 -race -v -e2e -wgtest-image $(WGTEST_REPO):$(TS) -api-server http://localhost:38080
 
 WGTEST_REPO ?= k3d-guardllama.localhost:5111/glm-wgtest
 .PHONY: docker_push_wgtest

@@ -22,7 +22,7 @@ void main() {
       // TODO
     });
 
-    // ServerConfigCredentials credentials
+    // V1ServerConfigCredentials credentials
     test('to test the property `credentials`', () async {
       // TODO
     });

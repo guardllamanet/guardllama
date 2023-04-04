@@ -4947,6 +4947,521 @@ var _ interface {
 	ErrorName() string
 } = AdGuardStatusValidationError{}
 
+// Validate checks the field values on Credentials with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Credentials) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Credentials with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in CredentialsMultiError, or
+// nil if none found.
+func (m *Credentials) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Credentials) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetToken()) < 1 {
+		err := CredentialsValidationError{
+			field:  "Token",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return CredentialsMultiError(errors)
+	}
+
+	return nil
+}
+
+// CredentialsMultiError is an error wrapping multiple validation errors
+// returned by Credentials.ValidateAll() if the designated constraints aren't met.
+type CredentialsMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m CredentialsMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m CredentialsMultiError) AllErrors() []error { return m }
+
+// CredentialsValidationError is the validation error returned by
+// Credentials.Validate if the designated constraints aren't met.
+type CredentialsValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e CredentialsValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e CredentialsValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e CredentialsValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e CredentialsValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e CredentialsValidationError) ErrorName() string { return "CredentialsValidationError" }
+
+// Error satisfies the builtin error interface
+func (e CredentialsValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sCredentials.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = CredentialsValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = CredentialsValidationError{}
+
+// Validate checks the field values on JwtToken with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *JwtToken) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on JwtToken with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in JwtTokenMultiError, or nil
+// if none found.
+func (m *JwtToken) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *JwtToken) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Token
+
+	if all {
+		switch v := interface{}(m.GetExpiresAt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, JwtTokenValidationError{
+					field:  "ExpiresAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, JwtTokenValidationError{
+					field:  "ExpiresAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetExpiresAt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return JwtTokenValidationError{
+				field:  "ExpiresAt",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return JwtTokenMultiError(errors)
+	}
+
+	return nil
+}
+
+// JwtTokenMultiError is an error wrapping multiple validation errors returned
+// by JwtToken.ValidateAll() if the designated constraints aren't met.
+type JwtTokenMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m JwtTokenMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m JwtTokenMultiError) AllErrors() []error { return m }
+
+// JwtTokenValidationError is the validation error returned by
+// JwtToken.Validate if the designated constraints aren't met.
+type JwtTokenValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e JwtTokenValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e JwtTokenValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e JwtTokenValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e JwtTokenValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e JwtTokenValidationError) ErrorName() string { return "JwtTokenValidationError" }
+
+// Error satisfies the builtin error interface
+func (e JwtTokenValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sJwtToken.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = JwtTokenValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = JwtTokenValidationError{}
+
+// Validate checks the field values on AuthenticateRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthenticateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthenticateRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthenticateRequestMultiError, or nil if none found.
+func (m *AuthenticateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthenticateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetCreds() == nil {
+		err := AuthenticateRequestValidationError{
+			field:  "Creds",
+			reason: "value is required",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if all {
+		switch v := interface{}(m.GetCreds()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthenticateRequestValidationError{
+					field:  "Creds",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthenticateRequestValidationError{
+					field:  "Creds",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCreds()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthenticateRequestValidationError{
+				field:  "Creds",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return AuthenticateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthenticateRequestMultiError is an error wrapping multiple validation
+// errors returned by AuthenticateRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AuthenticateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthenticateRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthenticateRequestMultiError) AllErrors() []error { return m }
+
+// AuthenticateRequestValidationError is the validation error returned by
+// AuthenticateRequest.Validate if the designated constraints aren't met.
+type AuthenticateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthenticateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthenticateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthenticateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthenticateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthenticateRequestValidationError) ErrorName() string {
+	return "AuthenticateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthenticateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthenticateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthenticateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthenticateRequestValidationError{}
+
+// Validate checks the field values on AuthenticateResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AuthenticateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AuthenticateResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AuthenticateResponseMultiError, or nil if none found.
+func (m *AuthenticateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AuthenticateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetJwtToken()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, AuthenticateResponseValidationError{
+					field:  "JwtToken",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, AuthenticateResponseValidationError{
+					field:  "JwtToken",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetJwtToken()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return AuthenticateResponseValidationError{
+				field:  "JwtToken",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for Cookie
+
+	if len(errors) > 0 {
+		return AuthenticateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AuthenticateResponseMultiError is an error wrapping multiple validation
+// errors returned by AuthenticateResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AuthenticateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AuthenticateResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AuthenticateResponseMultiError) AllErrors() []error { return m }
+
+// AuthenticateResponseValidationError is the validation error returned by
+// AuthenticateResponse.Validate if the designated constraints aren't met.
+type AuthenticateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AuthenticateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AuthenticateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AuthenticateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AuthenticateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AuthenticateResponseValidationError) ErrorName() string {
+	return "AuthenticateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AuthenticateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAuthenticateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AuthenticateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AuthenticateResponseValidationError{}
+
 // Validate checks the field values on ServerConfig_Cluster with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -5347,6 +5862,35 @@ func (m *ServerConfig_Credentials) validate(all bool) error {
 		if err := v.Validate(); err != nil {
 			return ServerConfig_CredentialsValidationError{
 				field:  "Api",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if all {
+		switch v := interface{}(m.GetJwt()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ServerConfig_CredentialsValidationError{
+					field:  "Jwt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ServerConfig_CredentialsValidationError{
+					field:  "Jwt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetJwt()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServerConfig_CredentialsValidationError{
+				field:  "Jwt",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -6038,6 +6582,131 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ServerConfig_Credentials_ApiValidationError{}
+
+// Validate checks the field values on ServerConfig_Credentials_Jwt with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ServerConfig_Credentials_Jwt) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ServerConfig_Credentials_Jwt with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ServerConfig_Credentials_JwtMultiError, or nil if none found.
+func (m *ServerConfig_Credentials_Jwt) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ServerConfig_Credentials_Jwt) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if utf8.RuneCountInString(m.GetSignKey()) < 1 {
+		err := ServerConfig_Credentials_JwtValidationError{
+			field:  "SignKey",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if utf8.RuneCountInString(m.GetVerifyKey()) < 1 {
+		err := ServerConfig_Credentials_JwtValidationError{
+			field:  "VerifyKey",
+			reason: "value length must be at least 1 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ServerConfig_Credentials_JwtMultiError(errors)
+	}
+
+	return nil
+}
+
+// ServerConfig_Credentials_JwtMultiError is an error wrapping multiple
+// validation errors returned by ServerConfig_Credentials_Jwt.ValidateAll() if
+// the designated constraints aren't met.
+type ServerConfig_Credentials_JwtMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ServerConfig_Credentials_JwtMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ServerConfig_Credentials_JwtMultiError) AllErrors() []error { return m }
+
+// ServerConfig_Credentials_JwtValidationError is the validation error returned
+// by ServerConfig_Credentials_Jwt.Validate if the designated constraints
+// aren't met.
+type ServerConfig_Credentials_JwtValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ServerConfig_Credentials_JwtValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ServerConfig_Credentials_JwtValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ServerConfig_Credentials_JwtValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ServerConfig_Credentials_JwtValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ServerConfig_Credentials_JwtValidationError) ErrorName() string {
+	return "ServerConfig_Credentials_JwtValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ServerConfig_Credentials_JwtValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sServerConfig_Credentials_Jwt.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ServerConfig_Credentials_JwtValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ServerConfig_Credentials_JwtValidationError{}
 
 // Validate checks the field values on AdGuardConfig_BlockList with the rules
 // defined in the proto definition for this message. If any rules are

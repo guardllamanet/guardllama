@@ -19,7 +19,7 @@ func TestMain(m *testing.M) {
 	var e2etest bool
 	flag.BoolVar(&e2etest, "e2e", false, "Run e2e tests")
 	flag.StringVar(&flagWgTestImage, "wgtest-image", "ghcr.io/guardllamanet/glm-wgtest", "wgtest Docker image")
-	flag.StringVar(&flagAPIServer, "api-server", "http://localhost:38080/api", "API server URL")
+	flag.StringVar(&flagAPIServer, "api-server", "http://localhost:38080", "API server URL")
 	flag.Parse()
 
 	logger := log.NewTextLogger()

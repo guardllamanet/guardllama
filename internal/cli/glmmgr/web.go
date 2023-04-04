@@ -6,6 +6,7 @@ import (
 
 	glmv1 "github.com/guardllamanet/guardllama/api/v1"
 	"github.com/guardllamanet/guardllama/internal/log"
+	"github.com/guardllamanet/guardllama/internal/util"
 	"github.com/guardllamanet/guardllama/internal/web"
 	"github.com/oklog/run"
 	"github.com/spf13/cobra"
@@ -25,6 +26,8 @@ func newWebCmd() *cobra.Command {
 		RunE:  cmd.run,
 	}
 	rootCmd.Flags().String("web-addr", ":8080", "the address that the web process binds to")
+	rootCmd.Flags().String("jwt-sign-key-path", "", "the JWT signing key path")
+	rootCmd.Flags().String("jwt-verify-key-path", "", "the JWT verify key path")
 
 	return rootCmd
 }
@@ -41,6 +44,12 @@ func (s *webCmd) run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 	s.cfg.Logger = log.NewTextLogger().WithGroup("web")
+
+	jwtauth, err := util.NewJWTAuth(s.cfg.JWTSignKeyPath, s.cfg.JWTVerifyKeyPath)
+	if err != nil {
+		return err
+	}
+	s.cfg.JWTAuth = jwtauth
 
 	cls, err := newCluster()
 	if err != nil {

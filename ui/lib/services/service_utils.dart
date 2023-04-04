@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'dart:convert';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
+import 'package:universal_html/html.dart';
 
 class ServiceUtils {
   static Future<void> copyClipboard(String text) {

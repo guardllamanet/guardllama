@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/foundation.dart';
 import 'package:guardllama_api/guardllama_api.dart';
 import 'package:dio/dio.dart';
@@ -75,17 +73,17 @@ enum AdBlockMode {
 }
 
 class ApiService {
-  final String token;
+  final String? jwtToken;
 
   late final GuardllamaApi client;
 
-  ApiService({required this.token, TalkerDioLogger? talkerLogger}) {
+  ApiService({required this.jwtToken, TalkerDioLogger? talkerLogger}) {
     final List<Interceptor> interceptors = [];
     if (talkerLogger != null) {
       interceptors.add(talkerLogger);
     }
-    if (token.isNotEmpty) {
-      interceptors.add(_BasicAuthInterceptor(token));
+    if (jwtToken != null && jwtToken!.isNotEmpty) {
+      interceptors.add(_JWTAuthInterceptor(jwtToken!));
     }
 
     client = GuardllamaApi(
@@ -220,18 +218,17 @@ class ApiService {
   }
 }
 
-class _BasicAuthInterceptor extends Interceptor {
+class _JWTAuthInterceptor extends Interceptor {
   final String token;
 
-  _BasicAuthInterceptor(this.token);
+  _JWTAuthInterceptor(this.token);
 
   @override
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) {
-    options.headers['Authorization'] =
-        'Basic ${base64Encode(utf8.encode(':$token'))}';
+    options.headers['Authorization'] = 'Bearer $token';
     super.onRequest(options, handler);
   }
 }

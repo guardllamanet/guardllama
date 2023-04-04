@@ -13,6 +13,9 @@
     },
     {
       "name": "TunnelService"
+    },
+    {
+      "name": "AuthService"
     }
   ],
   "consumes": [
@@ -22,6 +25,38 @@
     "application/json"
   ],
   "paths": {
+    "/authenticate": {
+      "post": {
+        "operationId": "AuthService_Authenticate",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1AuthenticateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1AuthenticateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "AuthService"
+        ]
+      }
+    },
     "/device": {
       "get": {
         "operationId": "WireGuardService_GetWireGuardDevice",
@@ -453,6 +488,17 @@
         }
       }
     },
+    "CredentialsJwt": {
+      "type": "object",
+      "properties": {
+        "sign_key": {
+          "type": "string"
+        },
+        "verify_key": {
+          "type": "string"
+        }
+      }
+    },
     "ImageImagePullPolicy": {
       "type": "string",
       "enum": [
@@ -585,14 +631,6 @@
         }
       }
     },
-    "ServerConfigCredentials": {
-      "type": "object",
-      "properties": {
-        "api": {
-          "$ref": "#/definitions/CredentialsApi"
-        }
-      }
-    },
     "ServerConfigImage": {
       "type": "object",
       "properties": {
@@ -629,6 +667,17 @@
       ],
       "default": "UNKNOWN",
       "title": "- UNKNOWN: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\n - LINUX: buf:lint:ignore ENUM_VALUE_PREFIX\n - OPEN_BSD: buf:lint:ignore ENUM_VALUE_PREFIX\n - FREE_BSD: buf:lint:ignore ENUM_VALUE_PREFIX\n - WINDOWS: buf:lint:ignore ENUM_VALUE_PREFIX\n - USERSPACE: buf:lint:ignore ENUM_VALUE_PREFIX"
+    },
+    "apiv1Credentials": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "token"
+      ]
     },
     "protobufAny": {
       "type": "object",
@@ -700,6 +749,25 @@
         }
       }
     },
+    "v1AuthenticateRequest": {
+      "type": "object",
+      "properties": {
+        "creds": {
+          "$ref": "#/definitions/apiv1Credentials"
+        }
+      }
+    },
+    "v1AuthenticateResponse": {
+      "type": "object",
+      "properties": {
+        "jwt_token": {
+          "$ref": "#/definitions/v1JwtToken"
+        },
+        "cookie": {
+          "type": "string"
+        }
+      }
+    },
     "v1CreateTunnelRequest": {
       "type": "object",
       "properties": {
@@ -751,6 +819,18 @@
         }
       }
     },
+    "v1JwtToken": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "v1ListTunnelsResponse": {
       "type": "object",
       "properties": {
@@ -790,10 +870,21 @@
           "$ref": "#/definitions/ServerConfigImage"
         },
         "credentials": {
-          "$ref": "#/definitions/ServerConfigCredentials"
+          "$ref": "#/definitions/v1ServerConfigCredentials"
         },
         "debug": {
           "type": "boolean"
+        }
+      }
+    },
+    "v1ServerConfigCredentials": {
+      "type": "object",
+      "properties": {
+        "api": {
+          "$ref": "#/definitions/CredentialsApi"
+        },
+        "jwt": {
+          "$ref": "#/definitions/CredentialsJwt"
         }
       }
     },

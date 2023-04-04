@@ -135,6 +135,11 @@ func defaultServerConfig() (*apiv1.ServerConfig, error) {
 		return nil, err
 	}
 
+	jwtRsaSignKey, jwtRsaVerifyKey, err := util.GenerateJWTRSAKey()
+	if err != nil {
+		return nil, err
+	}
+
 	return &apiv1.ServerConfig{
 		Cluster: &apiv1.ServerConfig_Cluster{
 			KubeConfig: filepath.Join(dir, "kubeconfig.yml"),
@@ -148,6 +153,10 @@ func defaultServerConfig() (*apiv1.ServerConfig, error) {
 		Credentials: &apiv1.ServerConfig_Credentials{
 			Api: &apiv1.ServerConfig_Credentials_Api{
 				Token: token,
+			},
+			Jwt: &apiv1.ServerConfig_Credentials_Jwt{
+				SignKey:   string(jwtRsaSignKey),
+				VerifyKey: string(jwtRsaVerifyKey),
 			},
 		},
 	}, nil

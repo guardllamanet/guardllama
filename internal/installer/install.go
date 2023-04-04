@@ -167,6 +167,10 @@ func InstallCharts(ctx context.Context, cfg *apiv1.ServerConfig) error {
 				annotationBuildVersion: build.Version,
 				annotationBuildDate:    build.Date,
 			},
+			"jwt": map[string]any{
+				"signKey":   cfg.Credentials.Jwt.SignKey,
+				"verifyKey": cfg.Credentials.Jwt.VerifyKey,
+			},
 		},
 	}
 

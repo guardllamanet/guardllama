@@ -47,6 +47,10 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+jwt:
+  signKey: ''
+  verifyKey: ''
+
 service:
   controller:
     type: ClusterIP

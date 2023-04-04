@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/go-chi/jwtauth"
 	grpcruntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/guardllamanet/guardllama/internal/log"
 	"github.com/guardllamanet/guardllama/internal/util"
@@ -21,15 +22,24 @@ import (
 )
 
 type Config struct {
-	WebAddr string `mapstructure:"web-addr"`
+	WebAddr          string `mapstructure:"web-addr"`
+	JWTSignKeyPath   string `mapstructure:"jwt-sign-key-path"`
+	JWTVerifyKeyPath string `mapstructure:"jwt-verify-key-path"`
 
-	Client client.Client
-	Logger *log.Logger
+	JWTAuth *jwtauth.JWTAuth
+	Client  client.Client
+	Logger  *log.Logger
 }
 
 func (c Config) Validate() error {
 	if c.WebAddr == "" {
-		return fmt.Errorf("addr can not be empty")
+		return fmt.Errorf("web-addr can not be empty")
+	}
+	if c.JWTSignKeyPath == "" {
+		return fmt.Errorf("jwt-sign-key-path can not be empty")
+	}
+	if c.JWTVerifyKeyPath == "" {
+		return fmt.Errorf("jwt-verify-key-path can not be empty")
 	}
 
 	return nil
@@ -66,24 +76,26 @@ func (s *Server) Run(ctx context.Context) error {
 
 func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 	var (
-		gmux = grpcruntime.NewServeMux(
-			grpcruntime.WithIncomingHeaderMatcher(grpcutil.HeaderMatcher),
-			grpcruntime.WithOutgoingHeaderMatcher(grpcutil.HeaderMatcher),
-			grpcutil.WithRequestMetadata(),
-			grpcutil.WithPrettyJSONMarshaler(),
-			grpcutil.WithErrorHandler(cfg.Logger),
-		)
-		client = &api.K8sClient{Client: cfg.Client}
+		authMux = newGPRCMux(cfg)
+		apiMux  = newGPRCMux(cfg)
+		client  = &api.K8sClient{Client: cfg.Client}
 	)
 
-	if err := apiv1.RegisterTunnelServiceHandlerServer(ctx, gmux, &api.TunnelService{
+	if err := apiv1.RegisterAuthServiceHandlerServer(ctx, authMux, &api.AuthService{
+		K8sClient: client,
+		JWTAuth:   cfg.JWTAuth,
+	}); err != nil {
+		return nil, err
+	}
+
+	if err := apiv1.RegisterTunnelServiceHandlerServer(ctx, apiMux, &api.TunnelService{
 		K8sClient:    client,
 		EndpointHost: util.MachineIP(), // TODO: refresh periodically
 		Logger:       cfg.Logger.WithGroup("TunnelService"),
 	}); err != nil {
 		return nil, err
 	}
-	if err := apiv1.RegisterServerServiceHandlerServer(ctx, gmux, &api.ServerService{
+	if err := apiv1.RegisterServerServiceHandlerServer(ctx, apiMux, &api.ServerService{
 		K8sClient: client,
 		Logger:    cfg.Logger.WithGroup("ServerService"),
 	}); err != nil {
@@ -101,8 +113,8 @@ func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 		AllowedOrigins:   []string{"https://*", "http://*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		ExposedHeaders:   []string{"*", "Authorization"},
+		AllowCredentials: true,
 		MaxAge:           300,
 	}))
 	r.Use(middleware.Heartbeat("/health"))
@@ -122,36 +134,38 @@ func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 		},
 	)
 
+	r.Handle("/authenticate", authMux)
+
+	routerWithAuth := r.With(
+		jwtauth.Verifier(cfg.JWTAuth),
+		jwtauth.Authenticator,
+	)
+
 	proxyHandler := AGHProxyHandler(client)
-	r.HandleFunc(
+	routerWithAuth.HandleFunc(
 		"/tunnels/{name}/agh",
 		proxyHandler,
 	)
-	r.HandleFunc(
+	routerWithAuth.HandleFunc(
 		"/tunnels/{name}/agh/*",
 		proxyHandler,
 	)
 
-	gmuxHandler := http.StripPrefix("/api", gmux)
-	r.With(gmiddleware.BasicAuth(basicAuth(client))).Handle("/*", gmuxHandler)
+	gmuxHandler := http.StripPrefix("/api", apiMux)
+	routerWithAuth.Handle("/api", gmuxHandler)
+	routerWithAuth.Handle("/api/*", gmuxHandler)
 
 	return &http.Server{
 		Handler: r,
 	}, nil
 }
 
-func basicAuth(client *api.K8sClient) func(r *http.Request) map[string]string {
-	return func(r *http.Request) map[string]string {
-		creds := make(map[string]string)
-
-		scfg, err := client.GetServerConfig(r.Context())
-		if err != nil {
-			return creds
-		}
-
-		creds[""] = scfg.Credentials.Api.Token
-
-		return creds
-
-	}
+func newGPRCMux(cfg Config) *grpcruntime.ServeMux {
+	return grpcruntime.NewServeMux(
+		grpcruntime.WithIncomingHeaderMatcher(grpcutil.HeaderMatcher),
+		grpcruntime.WithOutgoingHeaderMatcher(grpcutil.HeaderMatcher),
+		grpcutil.WithRequestMetadata(),
+		grpcutil.WithPrettyJSONMarshaler(),
+		grpcutil.WithErrorHandler(cfg.Logger),
+	)
 }
