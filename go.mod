@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/bufbuild/buf v1.12.0
 	github.com/denisbrodbeck/machineid v1.0.1
-	github.com/docker/docker v20.10.23+incompatible
+	github.com/docker/docker v20.10.24+incompatible
 	github.com/envoyproxy/protoc-gen-validate v0.10.0-SNAPSHOT.4
 	github.com/glendc/go-external-ip v0.1.0
 	github.com/go-chi/chi/v5 v5.0.8
