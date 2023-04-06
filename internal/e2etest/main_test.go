@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 	flag.StringVar(&flagAPIServer, "api-server", "http://localhost:38080/api", "API server URL")
 	flag.Parse()
 
-	logger := log.NewLogger(true)
+	logger := log.NewTextLogger()
 
 	if !e2etest {
 		logger.Info("e2e tests are skipped")
@@ -30,12 +30,12 @@ func TestMain(m *testing.M) {
 	}
 
 	if flagWgTestImage == "" {
-		logger.Error(nil, "needs e2e test image")
+		logger.Error("needs e2e test image")
 		os.Exit(1)
 	}
 
 	if err := glmv1.AddToScheme(scheme.Scheme); err != nil {
-		logger.Error(err, "error adding scheme")
+		logger.Error("error adding scheme", "error", err.Error())
 		os.Exit(1)
 	}
 

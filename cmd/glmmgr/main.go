@@ -4,13 +4,12 @@ import (
 	"os"
 
 	"github.com/guardllamanet/guardllama/internal/cli/glmmgr"
-	"github.com/guardllamanet/guardllama/internal/log"
+	"golang.org/x/exp/slog"
 )
 
 func main() {
 	if err := glmmgr.Main(); err != nil {
-		logger := log.NewLogger(false)
-		logger.Error(err, "error executing command")
+		slog.Error("error executing command", "error", err.Error())
 		os.Exit(1)
 	}
 }

@@ -10,8 +10,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-logr/logr"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/guardllamanet/guardllama/internal/log"
 	gmiddleware "github.com/guardllamanet/guardllama/internal/web/middleware"
 	apiv1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 	"github.com/oklog/run"
@@ -28,7 +28,7 @@ type ServerConfig struct {
 	HttpAddr     string `mapstructure:"http-addr"`
 	TunnelConfig string `mapstructure:"tunnel-config"`
 
-	Logger logr.Logger
+	Logger *log.Logger
 }
 
 func (c ServerConfig) Validate() error {

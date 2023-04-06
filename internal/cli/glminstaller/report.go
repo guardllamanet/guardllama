@@ -92,17 +92,17 @@ func trackRun(run func(*cobra.Command, []string)) func(*cobra.Command, []string)
 
 func trackRunE(runE func(*cobra.Command, []string) error) func(*cobra.Command, []string) error {
 	return func(c *cobra.Command, args []string) (err error) {
-		logger := log.NewLogger(false)
+		logger := log.NewTextLogger()
 
 		trackEvent, err := NewTrackEvent(c, args)
 		if err != nil {
-			logger.Error(err, "Error creating telemetry")
+			logger.Debug("error creating telemetry", "error", err.Error())
 		}
 
 		defer func() {
 			if trackEvent != nil {
 				if e := trackEvent.CaptureErrAndReport(err); e != nil {
-					logger.Error(e, "Error sending telemetry")
+					logger.Debug("error sending telemetry", "error", err.Error())
 				}
 			}
 		}()

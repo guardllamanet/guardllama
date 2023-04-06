@@ -6,9 +6,11 @@ import (
 	"strings"
 
 	"github.com/guardllamanet/guardllama/internal/cli"
+	"github.com/guardllamanet/guardllama/internal/log"
 	"github.com/ory/viper"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"golang.org/x/exp/slog"
 )
 
 var (
@@ -19,6 +21,11 @@ func Main() error {
 	rootCmd := &cobra.Command{
 		Use:   "glmmgr",
 		Short: "GuardLlama Manager",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			if flagDebug {
+				log.SetLevel(slog.LevelDebug)
+			}
+		},
 	}
 
 	rootCmd.AddCommand(newCtrlCmd())

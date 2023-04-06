@@ -33,6 +33,10 @@ type Logger struct {
 	*slog.Logger
 }
 
+func (l *Logger) WithGroup(name string) *Logger {
+	return &Logger{Logger: l.Logger.WithGroup(name)}
+}
+
 func NewTextLogger() *Logger {
 	return &Logger{slog.New(slog.HandlerOptions{Level: level}.NewTextHandler(os.Stderr))}
 }

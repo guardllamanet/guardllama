@@ -40,7 +40,7 @@ func (s *webCmd) run(cmd *cobra.Command, args []string) error {
 	if err := s.cfg.Validate(); err != nil {
 		return err
 	}
-	s.cfg.Logger = log.NewLogger(flagDebug).WithName("web")
+	s.cfg.Logger = log.NewTextLogger().WithGroup("web")
 
 	cls, err := newCluster()
 	if err != nil {

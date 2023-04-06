@@ -11,7 +11,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/go-logr/logr"
+	"github.com/guardllamanet/guardllama/internal/log"
 	"golang.zx2c4.com/wireguard/wgctrl/wgtypes"
 )
 
@@ -105,14 +105,14 @@ type WgManager interface {
 	Sync(cfg WgConfig) error
 }
 
-func NewWgQuick(logger logr.Logger) WgManager {
+func NewWgQuick(logger *log.Logger) WgManager {
 	return &wgQuick{
 		Logger: logger,
 	}
 }
 
 type wgQuick struct {
-	Logger logr.Logger
+	Logger *log.Logger
 }
 
 func (wg *wgQuick) Up(cfg WgConfig) error {
@@ -120,7 +120,7 @@ func (wg *wgQuick) Up(cfg WgConfig) error {
 	if err != nil {
 		return err
 	}
-	wg.Logger.V(1).Info("wg config", "config", string(b))
+	wg.Logger.Debug("wg config", "config", string(b))
 
 	if err := os.MkdirAll("/etc/wireguard", 0755); err != nil {
 		return err

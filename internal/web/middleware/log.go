@@ -6,15 +6,15 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-logr/logr"
+	"github.com/guardllamanet/guardllama/internal/log"
 )
 
-func NewLogFormatter(l logr.Logger) *LogFormatter {
+func NewLogFormatter(l *log.Logger) *LogFormatter {
 	return &LogFormatter{logger: l}
 }
 
 type LogFormatter struct {
-	logger logr.Logger
+	logger *log.Logger
 }
 
 func (l *LogFormatter) NewLogEntry(r *http.Request) middleware.LogEntry {
@@ -26,7 +26,7 @@ func (l *LogFormatter) NewLogEntry(r *http.Request) middleware.LogEntry {
 
 type logrLogEntry struct {
 	*http.Request
-	logr.Logger
+	*log.Logger
 }
 
 func (l *logrLogEntry) Write(status, bytes int, header http.Header, elapsed time.Duration, extra interface{}) {

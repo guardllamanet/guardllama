@@ -13,12 +13,12 @@ import (
 	"time"
 
 	"github.com/docker/docker/pkg/namesgenerator"
-	"github.com/go-logr/logr"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	glmv1 "github.com/guardllamanet/guardllama/api/v1"
 	adguard "github.com/guardllamanet/guardllama/internal/adguard/gen"
 	"github.com/guardllamanet/guardllama/internal/controller"
+	"github.com/guardllamanet/guardllama/internal/log"
 	apiv1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 	tunnelclient "github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/wire_guard_service"
@@ -59,7 +59,7 @@ type TunnelService struct {
 
 	*K8sClient
 	EndpointHost string
-	Logger       logr.Logger
+	Logger       *log.Logger
 }
 
 func (s *TunnelService) CreateTunnel(ctx context.Context, req *apiv1.CreateTunnelRequest) (*apiv1.CreateTunnelResponse, error) {
@@ -148,7 +148,7 @@ func (s *TunnelService) ListTunnels(ctx context.Context, req *apiv1.ListTunnelsR
 
 			tunnel, err := s.fetchClientTunnel(ctx, &tun, false)
 			if err != nil {
-				s.Logger.Error(err, "error fetching client tunnel")
+				s.Logger.Error("error fetching client tunnel", "error", err.Error())
 				// ignore fetch error
 				return nil
 			}

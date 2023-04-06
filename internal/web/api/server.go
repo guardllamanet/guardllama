@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-logr/logr"
 	"github.com/guardllamanet/guardllama/internal/build"
+	"github.com/guardllamanet/guardllama/internal/log"
 	"github.com/guardllamanet/guardllama/internal/util"
 	apiv1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -15,7 +15,7 @@ type ServerService struct {
 	apiv1.UnimplementedServerServiceServer
 
 	*K8sClient
-	Logger logr.Logger
+	Logger *log.Logger
 }
 
 func (s *ServerService) GetServerConfig(ctx context.Context, req *apiv1.GetServerConfigRequest) (*apiv1.GetServerConfigResponse, error) {

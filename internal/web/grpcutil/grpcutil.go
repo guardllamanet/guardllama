@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-logr/logr"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/guardllamanet/guardllama/internal/log"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -40,7 +39,7 @@ func WithPrettyJSONMarshaler() runtime.ServeMuxOption {
 	})
 }
 
-func WithErrorHandler(logger logr.Logger) runtime.ServeMuxOption {
+func WithErrorHandler(logger *log.Logger) runtime.ServeMuxOption {
 	return runtime.WithErrorHandler(
 		func(
 			ctx context.Context,
@@ -51,8 +50,8 @@ func WithErrorHandler(logger logr.Logger) runtime.ServeMuxOption {
 			err error,
 		) {
 			logger.Error(
-				err,
 				"error processing HTTP request",
+				"error", err.Error(),
 				log.RequestIDField, middleware.GetReqID(ctx),
 				log.HTTPEndpointField, extractEndpoint(r),
 			)

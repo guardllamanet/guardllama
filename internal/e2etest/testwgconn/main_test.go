@@ -22,10 +22,10 @@ func TestMain(m *testing.M) {
 	flag.StringVar(&flagWgTestImage, "wgtest-image", "ghcr.io/guardllamanet/glm-wgtest", "wgtest Docker image")
 	flag.Parse()
 
-	logger := log.NewLogger(true)
+	logger := log.NewTextLogger()
 
 	if flagTunnel == "" {
-		logger.Error(nil, "Missing tunnel; skipping test")
+		logger.Error("Missing tunnel; skipping test")
 		os.Exit(0)
 	}
 

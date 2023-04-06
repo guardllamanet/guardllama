@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/go-logr/logr"
 	grpcruntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/guardllamanet/guardllama/internal/log"
 	"github.com/guardllamanet/guardllama/internal/util"
 	"github.com/guardllamanet/guardllama/internal/web/api"
 	"github.com/guardllamanet/guardllama/internal/web/grpcutil"
@@ -24,7 +24,7 @@ type Config struct {
 	WebAddr string `mapstructure:"web-addr"`
 
 	Client client.Client
-	Logger logr.Logger
+	Logger *log.Logger
 }
 
 func (c Config) Validate() error {
@@ -78,13 +78,13 @@ func newHTTPServer(ctx context.Context, cfg Config) (*http.Server, error) {
 	if err := apiv1.RegisterTunnelServiceHandlerServer(ctx, gmux, &api.TunnelService{
 		K8sClient:    client,
 		EndpointHost: util.MachineIP(), // TODO: refresh periodically
-		Logger:       cfg.Logger.WithName("TunnelService"),
+		Logger:       cfg.Logger.WithGroup("TunnelService"),
 	}); err != nil {
 		return nil, err
 	}
 	if err := apiv1.RegisterServerServiceHandlerServer(ctx, gmux, &api.ServerService{
 		K8sClient: client,
-		Logger:    cfg.Logger.WithName("ServerService"),
+		Logger:    cfg.Logger.WithGroup("ServerService"),
 	}); err != nil {
 		return nil, err
 	}

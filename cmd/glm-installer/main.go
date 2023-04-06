@@ -9,7 +9,7 @@ import (
 
 func main() {
 	if err := glminstaller.Main(); err != nil {
-		slog.Error("error executing command", err)
+		slog.Error("error executing command", "error", err.Error())
 		os.Exit(1)
 	}
 }

@@ -20,10 +20,10 @@ func TestMain(m *testing.M) {
 	flag.StringVar(&flagTestUrl, "test-url", "https://ipinfo.io", "test url")
 	flag.Parse()
 
-	logger := log.NewLogger(true)
+	logger := log.NewTextLogger()
 
 	if flagConf == "" {
-		logger.Error(nil, "Missing WireGuard config; funational tests are skipped")
+		logger.Error("Missing WireGuard config; funational tests are skipped")
 		os.Exit(0)
 	}
 

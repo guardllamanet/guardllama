@@ -36,7 +36,7 @@ func (s *wgCmd) setupConfig(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	s.cfg.Logger = log.NewLogger(flagDebug)
+	s.cfg.Logger = log.NewTextLogger()
 
 	return nil
 }
