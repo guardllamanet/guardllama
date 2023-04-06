@@ -14,20 +14,20 @@ import (
 	"github.com/go-openapi/swag"
 )
 
-// V1AdGuardConfig v1 ad guard config
+// V1AdGuardHomeConfig v1 ad guard home config
 //
-// swagger:model v1AdGuardConfig
-type V1AdGuardConfig struct {
+// swagger:model v1AdGuardHomeConfig
+type V1AdGuardHomeConfig struct {
 
 	// block lists
-	BlockLists []*AdGuardConfigBlockList `json:"block_lists"`
+	BlockLists []*AdGuardHomeConfigBlockList `json:"block_lists"`
 
 	// filtering enabled
 	FilteringEnabled bool `json:"filtering_enabled,omitempty"`
 }
 
-// Validate validates this v1 ad guard config
-func (m *V1AdGuardConfig) Validate(formats strfmt.Registry) error {
+// Validate validates this v1 ad guard home config
+func (m *V1AdGuardHomeConfig) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateBlockLists(formats); err != nil {
@@ -40,7 +40,7 @@ func (m *V1AdGuardConfig) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1AdGuardConfig) validateBlockLists(formats strfmt.Registry) error {
+func (m *V1AdGuardHomeConfig) validateBlockLists(formats strfmt.Registry) error {
 	if swag.IsZero(m.BlockLists) { // not required
 		return nil
 	}
@@ -66,8 +66,8 @@ func (m *V1AdGuardConfig) validateBlockLists(formats strfmt.Registry) error {
 	return nil
 }
 
-// ContextValidate validate this v1 ad guard config based on the context it is used
-func (m *V1AdGuardConfig) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validate this v1 ad guard home config based on the context it is used
+func (m *V1AdGuardHomeConfig) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateBlockLists(ctx, formats); err != nil {
@@ -80,7 +80,7 @@ func (m *V1AdGuardConfig) ContextValidate(ctx context.Context, formats strfmt.Re
 	return nil
 }
 
-func (m *V1AdGuardConfig) contextValidateBlockLists(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1AdGuardHomeConfig) contextValidateBlockLists(ctx context.Context, formats strfmt.Registry) error {
 
 	for i := 0; i < len(m.BlockLists); i++ {
 
@@ -101,7 +101,7 @@ func (m *V1AdGuardConfig) contextValidateBlockLists(ctx context.Context, formats
 }
 
 // MarshalBinary interface implementation
-func (m *V1AdGuardConfig) MarshalBinary() ([]byte, error) {
+func (m *V1AdGuardHomeConfig) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -109,8 +109,8 @@ func (m *V1AdGuardConfig) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *V1AdGuardConfig) UnmarshalBinary(b []byte) error {
-	var res V1AdGuardConfig
+func (m *V1AdGuardHomeConfig) UnmarshalBinary(b []byte) error {
+	var res V1AdGuardHomeConfig
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

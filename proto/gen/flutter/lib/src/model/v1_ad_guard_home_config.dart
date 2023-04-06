@@ -4,46 +4,46 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:guardllama_api/src/model/ad_guard_config_block_list.dart';
+import 'package:guardllama_api/src/model/ad_guard_home_config_block_list.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'v1_ad_guard_config.g.dart';
+part 'v1_ad_guard_home_config.g.dart';
 
-/// V1AdGuardConfig
+/// V1AdGuardHomeConfig
 ///
 /// Properties:
 /// * [filteringEnabled] 
 /// * [blockLists] 
 @BuiltValue()
-abstract class V1AdGuardConfig implements Built<V1AdGuardConfig, V1AdGuardConfigBuilder> {
+abstract class V1AdGuardHomeConfig implements Built<V1AdGuardHomeConfig, V1AdGuardHomeConfigBuilder> {
   @BuiltValueField(wireName: r'filtering_enabled')
   bool? get filteringEnabled;
 
   @BuiltValueField(wireName: r'block_lists')
-  BuiltList<AdGuardConfigBlockList>? get blockLists;
+  BuiltList<AdGuardHomeConfigBlockList>? get blockLists;
 
-  V1AdGuardConfig._();
+  V1AdGuardHomeConfig._();
 
-  factory V1AdGuardConfig([void updates(V1AdGuardConfigBuilder b)]) = _$V1AdGuardConfig;
+  factory V1AdGuardHomeConfig([void updates(V1AdGuardHomeConfigBuilder b)]) = _$V1AdGuardHomeConfig;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(V1AdGuardConfigBuilder b) => b;
+  static void _defaults(V1AdGuardHomeConfigBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<V1AdGuardConfig> get serializer => _$V1AdGuardConfigSerializer();
+  static Serializer<V1AdGuardHomeConfig> get serializer => _$V1AdGuardHomeConfigSerializer();
 }
 
-class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig> {
+class _$V1AdGuardHomeConfigSerializer implements PrimitiveSerializer<V1AdGuardHomeConfig> {
   @override
-  final Iterable<Type> types = const [V1AdGuardConfig, _$V1AdGuardConfig];
+  final Iterable<Type> types = const [V1AdGuardHomeConfig, _$V1AdGuardHomeConfig];
 
   @override
-  final String wireName = r'V1AdGuardConfig';
+  final String wireName = r'V1AdGuardHomeConfig';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    V1AdGuardConfig object, {
+    V1AdGuardHomeConfig object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     if (object.filteringEnabled != null) {
@@ -57,7 +57,7 @@ class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig
       yield r'block_lists';
       yield serializers.serialize(
         object.blockLists,
-        specifiedType: const FullType(BuiltList, [FullType(AdGuardConfigBlockList)]),
+        specifiedType: const FullType(BuiltList, [FullType(AdGuardHomeConfigBlockList)]),
       );
     }
   }
@@ -65,7 +65,7 @@ class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig
   @override
   Object serialize(
     Serializers serializers,
-    V1AdGuardConfig object, {
+    V1AdGuardHomeConfig object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -76,7 +76,7 @@ class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required V1AdGuardConfigBuilder result,
+    required V1AdGuardHomeConfigBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -93,8 +93,8 @@ class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig
         case r'block_lists':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(BuiltList, [FullType(AdGuardConfigBlockList)]),
-          ) as BuiltList<AdGuardConfigBlockList>;
+            specifiedType: const FullType(BuiltList, [FullType(AdGuardHomeConfigBlockList)]),
+          ) as BuiltList<AdGuardHomeConfigBlockList>;
           result.blockLists.replace(valueDes);
           break;
         default:
@@ -106,12 +106,12 @@ class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig
   }
 
   @override
-  V1AdGuardConfig deserialize(
+  V1AdGuardHomeConfig deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = V1AdGuardConfigBuilder();
+    final result = V1AdGuardHomeConfigBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

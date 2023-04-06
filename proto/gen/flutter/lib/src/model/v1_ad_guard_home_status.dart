@@ -3,65 +3,57 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:built_collection/built_collection.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'query_log_rule.g.dart';
+part 'v1_ad_guard_home_status.g.dart';
 
-/// QueryLogRule
+/// V1AdGuardHomeStatus
 ///
 /// Properties:
-/// * [filterId] 
-/// * [text] 
+/// * [dns] 
 @BuiltValue()
-abstract class QueryLogRule implements Built<QueryLogRule, QueryLogRuleBuilder> {
-  @BuiltValueField(wireName: r'filter_id')
-  String? get filterId;
+abstract class V1AdGuardHomeStatus implements Built<V1AdGuardHomeStatus, V1AdGuardHomeStatusBuilder> {
+  @BuiltValueField(wireName: r'dns')
+  BuiltList<String>? get dns;
 
-  @BuiltValueField(wireName: r'text')
-  String get text;
+  V1AdGuardHomeStatus._();
 
-  QueryLogRule._();
-
-  factory QueryLogRule([void updates(QueryLogRuleBuilder b)]) = _$QueryLogRule;
+  factory V1AdGuardHomeStatus([void updates(V1AdGuardHomeStatusBuilder b)]) = _$V1AdGuardHomeStatus;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(QueryLogRuleBuilder b) => b;
+  static void _defaults(V1AdGuardHomeStatusBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<QueryLogRule> get serializer => _$QueryLogRuleSerializer();
+  static Serializer<V1AdGuardHomeStatus> get serializer => _$V1AdGuardHomeStatusSerializer();
 }
 
-class _$QueryLogRuleSerializer implements PrimitiveSerializer<QueryLogRule> {
+class _$V1AdGuardHomeStatusSerializer implements PrimitiveSerializer<V1AdGuardHomeStatus> {
   @override
-  final Iterable<Type> types = const [QueryLogRule, _$QueryLogRule];
+  final Iterable<Type> types = const [V1AdGuardHomeStatus, _$V1AdGuardHomeStatus];
 
   @override
-  final String wireName = r'QueryLogRule';
+  final String wireName = r'V1AdGuardHomeStatus';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    QueryLogRule object, {
+    V1AdGuardHomeStatus object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    if (object.filterId != null) {
-      yield r'filter_id';
+    if (object.dns != null) {
+      yield r'dns';
       yield serializers.serialize(
-        object.filterId,
-        specifiedType: const FullType(String),
+        object.dns,
+        specifiedType: const FullType(BuiltList, [FullType(String)]),
       );
     }
-    yield r'text';
-    yield serializers.serialize(
-      object.text,
-      specifiedType: const FullType(String),
-    );
   }
 
   @override
   Object serialize(
     Serializers serializers,
-    QueryLogRule object, {
+    V1AdGuardHomeStatus object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -72,26 +64,19 @@ class _$QueryLogRuleSerializer implements PrimitiveSerializer<QueryLogRule> {
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required QueryLogRuleBuilder result,
+    required V1AdGuardHomeStatusBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'filter_id':
+        case r'dns':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.filterId = valueDes;
-          break;
-        case r'text':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.text = valueDes;
+            specifiedType: const FullType(BuiltList, [FullType(String)]),
+          ) as BuiltList<String>;
+          result.dns.replace(valueDes);
           break;
         default:
           unhandled.add(key);
@@ -102,12 +87,12 @@ class _$QueryLogRuleSerializer implements PrimitiveSerializer<QueryLogRule> {
   }
 
   @override
-  QueryLogRule deserialize(
+  V1AdGuardHomeStatus deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = QueryLogRuleBuilder();
+    final result = V1AdGuardHomeStatusBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

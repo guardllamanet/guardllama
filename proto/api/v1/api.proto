@@ -227,7 +227,7 @@ service TunnelService {
 
 message CreateTunnelRequest {
   string name = 1;
-  AdGuardConfig ag = 2;
+  AdGuardHomeConfig agh = 2;
 }
 
 message CreateTunnelResponse {
@@ -291,7 +291,7 @@ message UpdateDNSBlockListsRequest {
     },
     (validate.rules).string.min_len = 1
   ];
-  repeated AdGuardConfig.BlockList block_lists = 2;
+  repeated AdGuardHomeConfig.BlockList block_lists = 2;
 }
 
 message UpdateDNSBlockListsResponse {}
@@ -305,7 +305,7 @@ message TunnelConfig {
   oneof dns {
     option (validate.required) = true;
 
-    AdGuardConfig ag = 2;
+    AdGuardHomeConfig agh = 2;
   }
 }
 
@@ -347,7 +347,7 @@ message WireGuardPeer {
   repeated string allowed_ips = 5 [(validate.rules).repeated.items.string.min_len = 1]; // TODO: add cidr
 }
 
-message AdGuardConfig {
+message AdGuardHomeConfig {
   message BlockList {
     string name = 1 [(validate.rules).string.min_len = 1];
     string url = 2 [(validate.rules).string.uri = true];
@@ -392,7 +392,7 @@ message TunnelStatus {
   }
 
   oneof dns {
-    AdGuardStatus ag = 4;
+    AdGuardHomeStatus agh = 4;
   }
 }
 
@@ -400,153 +400,8 @@ message WireGuardStatus {
   WireGuardDevice device = 1;
 }
 
-message AdGuardStatus {
-  message QueryLog {
-    message Request {
-      string class = 1 [
-        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-          required: [
-            "class"
-          ]
-        },
-        (validate.rules).string.min_len = 1
-      ];
-      string name = 2 [
-        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-          required: [
-            "name"
-          ]
-        },
-        (validate.rules).string.min_len = 1
-      ];
-      string type = 3 [
-        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-          required: [
-            "type"
-          ]
-        },
-        (validate.rules).string.min_len = 1
-      ];
-    }
-
-    message Response {
-      message Answer {
-        string type = 1 [
-          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-            required: [
-              "type"
-            ]
-          },
-          (validate.rules).string.min_len = 1
-        ];
-        string value = 2 [
-          (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-            required: [
-              "value"
-            ]
-          },
-          (validate.rules).string.min_len = 1
-        ];
-        int32 ttl = 3 [(validate.rules).int32.gte = 0];
-      }
-
-      double elapsed_ms = 1 [(validate.rules).double.gte = 0];
-      string status = 2 [
-        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-          required: [
-            "status"
-          ]
-        },
-        (validate.rules).string.min_len = 1
-      ];
-      repeated Answer answers = 3;
-    }
-
-    enum Reason {
-      // buf:lint:ignore ENUM_VALUE_PREFIX
-      // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
-      UNKNOWN = 0;
-      // buf:lint:ignore ENUM_VALUE_PREFIX
-      FILTERED_BLOCK_LIST = 1;
-      // buf:lint:ignore ENUM_VALUE_PREFIX
-      ALLOWED = 2;
-    }
-
-    message Rule {
-      int64 filter_id = 1 [(validate.rules).int64.gte = 0];
-      string text = 2 [
-        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-          required: [
-            "text"
-          ]
-        },
-        (validate.rules).string.min_len = 1
-      ];
-    }
-
-    message Client {
-      string address = 1 [
-        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-          required: [
-            "address"
-          ]
-        },
-        (validate.rules).string.min_len = 1
-      ];
-      string name = 2 [
-        (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-          required: [
-            "name"
-          ]
-        },
-        (validate.rules).string.min_len = 1
-      ];
-    }
-
-    google.protobuf.Timestamp timestamp = 1 [
-      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        required: [
-          "timestamp"
-        ]
-      },
-      (validate.rules).timestamp.required = true
-    ];
-    Request request = 2 [
-      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        required: [
-          "request"
-        ]
-      },
-      (validate.rules).message.required = true
-    ];
-    Response response = 3 [
-      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        required: [
-          "response"
-        ]
-      },
-      (validate.rules).message.required = true
-    ];
-    Reason reason = 4 [
-      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        required: [
-          "reason"
-        ]
-      },
-      (validate.rules).enum.defined_only = true
-    ];
-    repeated Rule rules = 5;
-    Client client = 6 [
-      (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-        required: [
-          "client"
-        ]
-      },
-      (validate.rules).message.required = true
-    ];
-  }
-
-  repeated QueryLog query_logs = 1;
+message AdGuardHomeStatus {
+  repeated string dns = 1;
 }
 
 service AuthService {

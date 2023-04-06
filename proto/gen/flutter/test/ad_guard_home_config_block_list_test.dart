@@ -1,12 +1,12 @@
 import 'package:test/test.dart';
 import 'package:guardllama_api/guardllama_api.dart';
 
-// tests for AdGuardConfigBlockList
+// tests for AdGuardHomeConfigBlockList
 void main() {
-  final instance = AdGuardConfigBlockListBuilder();
+  final instance = AdGuardHomeConfigBlockListBuilder();
   // TODO add properties to the builder and call build()
 
-  group(AdGuardConfigBlockList, () {
+  group(AdGuardHomeConfigBlockList, () {
     // String name
     test('to test the property `name`', () async {
       // TODO

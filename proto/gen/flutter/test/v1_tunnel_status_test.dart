@@ -22,8 +22,8 @@ void main() {
       // TODO
     });
 
-    // V1AdGuardStatus ag
-    test('to test the property `ag`', () async {
+    // V1AdGuardHomeStatus agh
+    test('to test the property `agh`', () async {
       // TODO
     });
 

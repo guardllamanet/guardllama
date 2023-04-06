@@ -9,7 +9,7 @@ part of 'tunnel_service_update_dns_block_lists_request.dart';
 class _$TunnelServiceUpdateDNSBlockListsRequest
     extends TunnelServiceUpdateDNSBlockListsRequest {
   @override
-  final BuiltList<AdGuardConfigBlockList>? blockLists;
+  final BuiltList<AdGuardHomeConfigBlockList>? blockLists;
 
   factory _$TunnelServiceUpdateDNSBlockListsRequest(
           [void Function(TunnelServiceUpdateDNSBlockListsRequestBuilder)?
@@ -59,10 +59,10 @@ class TunnelServiceUpdateDNSBlockListsRequestBuilder
             TunnelServiceUpdateDNSBlockListsRequestBuilder> {
   _$TunnelServiceUpdateDNSBlockListsRequest? _$v;
 
-  ListBuilder<AdGuardConfigBlockList>? _blockLists;
-  ListBuilder<AdGuardConfigBlockList> get blockLists =>
-      _$this._blockLists ??= new ListBuilder<AdGuardConfigBlockList>();
-  set blockLists(ListBuilder<AdGuardConfigBlockList>? blockLists) =>
+  ListBuilder<AdGuardHomeConfigBlockList>? _blockLists;
+  ListBuilder<AdGuardHomeConfigBlockList> get blockLists =>
+      _$this._blockLists ??= new ListBuilder<AdGuardHomeConfigBlockList>();
+  set blockLists(ListBuilder<AdGuardHomeConfigBlockList>? blockLists) =>
       _$this._blockLists = blockLists;
 
   TunnelServiceUpdateDNSBlockListsRequestBuilder() {

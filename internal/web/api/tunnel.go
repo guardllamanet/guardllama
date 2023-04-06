@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -16,7 +15,6 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	glmv1 "github.com/guardllamanet/guardllama/api/v1"
-	adguard "github.com/guardllamanet/guardllama/internal/adguard/gen"
 	"github.com/guardllamanet/guardllama/internal/controller"
 	"github.com/guardllamanet/guardllama/internal/log"
 	apiv1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
@@ -48,10 +46,6 @@ const (
 	configServerPostUp     = "iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.6.0.2/32 -o eth+ -j MASQUERADE"
 	configServerPostDown   = "iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.6.0.2/32 -o eth+ -j MASQUERADE"
 	configClientAddress    = "10.6.0.2/32"
-
-	queryLogLimit             = 500
-	reasonNotFilteredNotFound = "NotFilteredNotFound"
-	reasonFilteredBlackList   = "FilteredBlackList"
 )
 
 type TunnelService struct {
@@ -92,7 +86,7 @@ func (s *TunnelService) CreateTunnel(ctx context.Context, req *apiv1.CreateTunne
 		return nil, StatusInternal(fmt.Errorf("error generating preshared key: %w", err))
 	}
 
-	tun, err := createTunnel(ctx, s.K8sClient, name, skey, spub, ckey, cpub, pkey, req.Ag)
+	tun, err := createTunnel(ctx, s.K8sClient, name, skey, spub, ckey, cpub, pkey, req.Agh)
 	if err != nil {
 		return nil, StatusInternal(fmt.Errorf("error creating tunnel: %w", err))
 	}
@@ -217,7 +211,7 @@ func (s *TunnelService) UpdateDNSFilteringEnabled(ctx context.Context, req *apiv
 		return nil, StatusNotFound(err)
 	}
 
-	tun.Spec.DNS.AdGuard.FilteringEnabled = &req.FilteringEnabled
+	tun.Spec.DNS.AdGuardHome.FilteringEnabled = &req.FilteringEnabled
 	if err := s.K8sClient.Update(ctx, tun); err != nil {
 		return nil, StatusInternal(err)
 	}
@@ -235,7 +229,7 @@ func (s *TunnelService) UpdateDNSBlockLists(ctx context.Context, req *apiv1.Upda
 		return nil, StatusNotFound(err)
 	}
 
-	tun.Spec.DNS.AdGuard.BlockLists = convertBlockLists(req.BlockLists)
+	tun.Spec.DNS.AdGuardHome.BlockLists = convertBlockLists(req.BlockLists)
 	if err := s.K8sClient.Update(ctx, tun); err != nil {
 		return nil, StatusInternal(err)
 	}
@@ -285,12 +279,22 @@ func (s *TunnelService) fetchClientTunnel(ctx context.Context, tun *glmv1.Tunnel
 		updatedAt = timestamppb.New(ua.Time)
 	}
 
+	var dns []string
+	if agh := tun.Status.DNS.AdGuardHome; agh != nil {
+		dns = agh.DNS
+	}
+
 	tunnel := &apiv1.Tunnel{
 		Name:   tun.Name,
 		Config: cfg,
 		Status: &apiv1.TunnelStatus{
 			State:   state,
 			Details: details,
+			Dns: &apiv1.TunnelStatus_Agh{
+				Agh: &apiv1.AdGuardHomeStatus{
+					Dns: dns,
+				},
+			},
 		},
 		CreatedAt: timestamppb.New(tun.GetObjectMeta().GetCreationTimestamp().Time),
 		UpdatedAt: updatedAt,
@@ -310,17 +314,6 @@ func (s *TunnelService) fetchClientTunnel(ctx context.Context, tun *glmv1.Tunnel
 		tunnel.Status.Protocol = &apiv1.TunnelStatus_Wg{
 			Wg: &apiv1.WireGuardStatus{
 				Device: dev,
-			},
-		}
-
-		// adguard status
-		logs, err := fetchAdGuardQueryLogs(ctx, tun)
-		if err != nil {
-			return nil, fmt.Errorf("error fetching dns query logs: %w", err)
-		}
-		tunnel.Status.Dns = &apiv1.TunnelStatus_Ag{
-			Ag: &apiv1.AdGuardStatus{
-				QueryLogs: logs,
 			},
 		}
 	}
@@ -350,23 +343,28 @@ func (s *TunnelService) makeClientTunnelConfig(ctx context.Context, tun *glmv1.T
 	}
 
 	filteringEnabled := true
-	if e := tun.Spec.DNS.AdGuard.FilteringEnabled; e != nil {
+	if e := tun.Spec.DNS.AdGuardHome.FilteringEnabled; e != nil {
 		filteringEnabled = *e
 	}
 
-	var blockLists []*apiv1.AdGuardConfig_BlockList
-	for _, bl := range tun.Spec.DNS.AdGuard.BlockLists {
-		blockLists = append(blockLists, &apiv1.AdGuardConfig_BlockList{
+	var blockLists []*apiv1.AdGuardHomeConfig_BlockList
+	for _, bl := range tun.Spec.DNS.AdGuardHome.BlockLists {
+		blockLists = append(blockLists, &apiv1.AdGuardHomeConfig_BlockList{
 			Name: bl.Name,
 			Url:  bl.URL,
 		})
+	}
+
+	var dns []string
+	if aghs := tun.Status.DNS.AdGuardHome; aghs != nil {
+		dns = aghs.DNS
 	}
 
 	wg := &apiv1.WireGuardConfig{
 		Interface: &apiv1.WireGuardInterface{
 			PrivateKey: string(peerPrivateKey),
 			Address:    []string{configClientAddress},
-			Dns:        tun.Status.DNS,
+			Dns:        dns,
 		},
 		Peers: []*apiv1.WireGuardPeer{
 			{
@@ -388,8 +386,8 @@ func (s *TunnelService) makeClientTunnelConfig(ctx context.Context, tun *glmv1.T
 		Protocol: &apiv1.TunnelConfig_Wg{
 			Wg: wg,
 		},
-		Dns: &apiv1.TunnelConfig_Ag{
-			Ag: &apiv1.AdGuardConfig{
+		Dns: &apiv1.TunnelConfig_Agh{
+			Agh: &apiv1.AdGuardHomeConfig{
 				FilteringEnabled: &filteringEnabled,
 				BlockLists:       blockLists,
 			},
@@ -459,98 +457,6 @@ func fetchWireGuardDevice(ctx context.Context, tun *glmv1.Tunnel) (*apiv1.WireGu
 	}, nil
 }
 
-func fetchAdGuardQueryLogs(ctx context.Context, tun *glmv1.Tunnel) ([]*apiv1.AdGuardStatus_QueryLog, error) {
-	conf := adguard.NewConfiguration()
-	conf.Host = tun.AdGuardServiceHost()
-	conf.Scheme = "http"
-	conf.HTTPClient = newHTTPClient()
-	client := adguard.NewAPIClient(conf)
-	logs, _, err := client.LogApi.QueryLog(ctx).Limit(queryLogLimit).Execute()
-	if err != nil {
-		return nil, fmt.Errorf("error fetching query log: %w", err)
-	}
-
-	var (
-		queryLogs []*apiv1.AdGuardStatus_QueryLog
-		result    error
-	)
-	for _, log := range logs.Data {
-		queryLog, err := convertToProtoQueryLog(log)
-		if err != nil {
-			result = errors.Join(result, err)
-			continue
-		}
-
-		queryLogs = append(queryLogs, queryLog)
-	}
-
-	if result != nil {
-		return nil, result
-	}
-
-	return queryLogs, nil
-}
-
-func convertToProtoQueryLog(log adguard.QueryLogItem) (*apiv1.AdGuardStatus_QueryLog, error) {
-	ts, err := time.Parse(time.RFC3339Nano, *log.Time)
-	if err != nil {
-		return nil, err
-	}
-
-	var answers []*apiv1.AdGuardStatus_QueryLog_Response_Answer
-	for _, a := range log.Answer {
-		answers = append(answers, &apiv1.AdGuardStatus_QueryLog_Response_Answer{
-			Type:  *a.Type,
-			Value: *a.Value,
-			Ttl:   *a.Ttl,
-		})
-	}
-
-	var reason apiv1.AdGuardStatus_QueryLog_Reason
-	switch *log.Reason {
-	case reasonNotFilteredNotFound:
-		reason = apiv1.AdGuardStatus_QueryLog_ALLOWED
-	case reasonFilteredBlackList:
-		reason = apiv1.AdGuardStatus_QueryLog_FILTERED_BLOCK_LIST
-	// TODO: support more reasons
-	default:
-		reason = apiv1.AdGuardStatus_QueryLog_UNKNOWN
-	}
-
-	var rules []*apiv1.AdGuardStatus_QueryLog_Rule
-	for _, r := range log.Rules {
-		rules = append(rules, &apiv1.AdGuardStatus_QueryLog_Rule{
-			FilterId: *r.FilterListId,
-			Text:     *r.Text,
-		})
-	}
-
-	elaspedMs, err := strconv.ParseFloat(*log.ElapsedMs, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	return &apiv1.AdGuardStatus_QueryLog{
-		Timestamp: timestamppb.New(ts),
-		Request: &apiv1.AdGuardStatus_QueryLog_Request{
-			Class: *log.Question.Class,
-			Name:  *log.Question.Name,
-			Type:  *log.Question.Type,
-		},
-		Response: &apiv1.AdGuardStatus_QueryLog_Response{
-			ElapsedMs: elaspedMs,
-			Status:    *log.Status,
-			Answers:   answers,
-		},
-		Reason: reason,
-		Rules:  rules,
-		Client: &apiv1.AdGuardStatus_QueryLog_Client{
-			Address: *log.Client,
-			Name:    log.ClientInfo.Name,
-		},
-	}, nil
-}
-
 func genKeyPair() (*device.NoisePrivateKey, *device.NoisePublicKey, error) {
 	var key device.NoisePrivateKey
 	if _, err := rand.Read(key[:]); err != nil {
@@ -579,7 +485,7 @@ func createTunnel(
 	ckey *device.NoisePrivateKey,
 	cpub *device.NoisePublicKey,
 	pkey *device.NoisePrivateKey,
-	agcfg *apiv1.AdGuardConfig,
+	agcfg *apiv1.AdGuardHomeConfig,
 ) (*glmv1.Tunnel, error) {
 	ns, err := c.EnsureNS(ctx, name)
 	if err != nil {
@@ -658,7 +564,7 @@ func createTunnel(
 				},
 			},
 			DNS: glmv1.TunnelDNS{
-				AdGuard: &glmv1.AdGuardHomeSpec{
+				AdGuardHome: &glmv1.AdGuardHomeSpec{
 					FilteringEnabled: agcfg.FilteringEnabled,
 					BlockLists:       convertBlockLists(agcfg.BlockLists),
 				},
@@ -712,7 +618,7 @@ func newHTTPClient() *http.Client {
 	}
 }
 
-func convertBlockLists(blockLists []*apiv1.AdGuardConfig_BlockList) []glmv1.TunnelDNSBlockList {
+func convertBlockLists(blockLists []*apiv1.AdGuardHomeConfig_BlockList) []glmv1.TunnelDNSBlockList {
 	var bls []glmv1.TunnelDNSBlockList
 	for _, bl := range blockLists {
 		bls = append(bls, glmv1.TunnelDNSBlockList{

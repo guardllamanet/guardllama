@@ -14,12 +14,12 @@ class _$V1TunnelStatus extends V1TunnelStatus {
   @override
   final V1WireGuardStatus? wg;
   @override
-  final V1AdGuardStatus? ag;
+  final V1AdGuardHomeStatus? agh;
 
   factory _$V1TunnelStatus([void Function(V1TunnelStatusBuilder)? updates]) =>
       (new V1TunnelStatusBuilder()..update(updates))._build();
 
-  _$V1TunnelStatus._({this.state, this.details, this.wg, this.ag}) : super._();
+  _$V1TunnelStatus._({this.state, this.details, this.wg, this.agh}) : super._();
 
   @override
   V1TunnelStatus rebuild(void Function(V1TunnelStatusBuilder) updates) =>
@@ -36,7 +36,7 @@ class _$V1TunnelStatus extends V1TunnelStatus {
         state == other.state &&
         details == other.details &&
         wg == other.wg &&
-        ag == other.ag;
+        agh == other.agh;
   }
 
   @override
@@ -45,7 +45,7 @@ class _$V1TunnelStatus extends V1TunnelStatus {
     _$hash = $jc(_$hash, state.hashCode);
     _$hash = $jc(_$hash, details.hashCode);
     _$hash = $jc(_$hash, wg.hashCode);
-    _$hash = $jc(_$hash, ag.hashCode);
+    _$hash = $jc(_$hash, agh.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -56,7 +56,7 @@ class _$V1TunnelStatus extends V1TunnelStatus {
           ..add('state', state)
           ..add('details', details)
           ..add('wg', wg)
-          ..add('ag', ag))
+          ..add('agh', agh))
         .toString();
   }
 }
@@ -78,9 +78,10 @@ class V1TunnelStatusBuilder
       _$this._wg ??= new V1WireGuardStatusBuilder();
   set wg(V1WireGuardStatusBuilder? wg) => _$this._wg = wg;
 
-  V1AdGuardStatusBuilder? _ag;
-  V1AdGuardStatusBuilder get ag => _$this._ag ??= new V1AdGuardStatusBuilder();
-  set ag(V1AdGuardStatusBuilder? ag) => _$this._ag = ag;
+  V1AdGuardHomeStatusBuilder? _agh;
+  V1AdGuardHomeStatusBuilder get agh =>
+      _$this._agh ??= new V1AdGuardHomeStatusBuilder();
+  set agh(V1AdGuardHomeStatusBuilder? agh) => _$this._agh = agh;
 
   V1TunnelStatusBuilder() {
     V1TunnelStatus._defaults(this);
@@ -92,7 +93,7 @@ class V1TunnelStatusBuilder
       _state = $v.state;
       _details = $v.details;
       _wg = $v.wg?.toBuilder();
-      _ag = $v.ag?.toBuilder();
+      _agh = $v.agh?.toBuilder();
       _$v = null;
     }
     return this;
@@ -120,14 +121,14 @@ class V1TunnelStatusBuilder
               state: state,
               details: details,
               wg: _wg?.build(),
-              ag: _ag?.build());
+              agh: _agh?.build());
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'wg';
         _wg?.build();
-        _$failedField = 'ag';
-        _ag?.build();
+        _$failedField = 'agh';
+        _agh?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'V1TunnelStatus', _$failedField, e.toString());

@@ -447,7 +447,7 @@ func (r *TunnelReconciler) upsertTunnelService(ctx context.Context, tun *glmv1.T
 }
 
 func (r *TunnelReconciler) upsertAGHInitialConfig(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
-	cfg, err := adGuardHomeConfig(tun.Spec.DNS.AdGuard)
+	cfg, err := adGuardHomeConfig(tun.Spec.DNS.AdGuardHome)
 	if err != nil {
 		return controllerutil.OperationResultNone, err
 	}
@@ -704,7 +704,9 @@ func (r *TunnelReconciler) upsertAGHService(ctx context.Context, tun *glmv1.Tunn
 		}
 		svc.Spec.Selector = labelsDNSDeploy(tun)
 
-		tun.Status.DNS = svc.Spec.ClusterIPs
+		tun.Status.DNS.AdGuardHome = &glmv1.AdGuardHomeStatus{
+			DNS: svc.Spec.ClusterIPs,
+		}
 
 		return controllerutil.SetControllerReference(tun, svc, r.Scheme())
 	}
@@ -761,9 +763,9 @@ func (r *TunnelReconciler) upsertAGHConfig(ctx context.Context, tun *glmv1.Tunne
 			return err
 		}
 
-		if tun.Spec.DNS.AdGuard.IsFilteringEnabled() != toBool(status.Enabled) {
+		if tun.Spec.DNS.AdGuardHome.IsFilteringEnabled() != toBool(status.Enabled) {
 			fc := adguard.NewFilterConfig()
-			fc.SetEnabled(tun.Spec.DNS.AdGuard.IsFilteringEnabled())
+			fc.SetEnabled(tun.Spec.DNS.AdGuardHome.IsFilteringEnabled())
 			fc.SetInterval(24)
 
 			if resp, err := client.FilteringApi.FilteringConfig(ctx).FilterConfig(*fc).Execute(); err != nil {
@@ -777,7 +779,7 @@ func (r *TunnelReconciler) upsertAGHConfig(ctx context.Context, tun *glmv1.Tunne
 		}
 
 		desiredFilteringURLs := make(map[string]glmv1.TunnelDNSBlockList)
-		for _, bl := range tun.Spec.DNS.AdGuard.BlockLists {
+		for _, bl := range tun.Spec.DNS.AdGuardHome.BlockLists {
 			desiredFilteringURLs[bl.URL] = bl
 		}
 

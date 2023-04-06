@@ -268,7 +268,7 @@
                   "type": "array",
                   "items": {
                     "type": "object",
-                    "$ref": "#/definitions/AdGuardConfigBlockList"
+                    "$ref": "#/definitions/AdGuardHomeConfigBlockList"
                   }
                 }
               }
@@ -325,7 +325,7 @@
     }
   },
   "definitions": {
-    "AdGuardConfigBlockList": {
+    "AdGuardHomeConfigBlockList": {
       "type": "object",
       "properties": {
         "name": {
@@ -335,63 +335,6 @@
           "type": "string"
         }
       }
-    },
-    "AdGuardStatusQueryLog": {
-      "type": "object",
-      "properties": {
-        "timestamp": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "request": {
-          "$ref": "#/definitions/QueryLogRequest"
-        },
-        "response": {
-          "$ref": "#/definitions/AdGuardStatusQueryLogResponse"
-        },
-        "reason": {
-          "$ref": "#/definitions/QueryLogReason"
-        },
-        "rules": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/QueryLogRule"
-          }
-        },
-        "client": {
-          "$ref": "#/definitions/QueryLogClient"
-        }
-      },
-      "required": [
-        "timestamp",
-        "request",
-        "response",
-        "reason",
-        "client"
-      ]
-    },
-    "AdGuardStatusQueryLogResponse": {
-      "type": "object",
-      "properties": {
-        "elapsed_ms": {
-          "type": "number",
-          "format": "double"
-        },
-        "status": {
-          "type": "string"
-        },
-        "answers": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/ResponseAnswer"
-          }
-        }
-      },
-      "required": [
-        "status"
-      ]
     },
     "ClusterK3d": {
       "type": "object",
@@ -481,84 +424,6 @@
       ],
       "default": "TCP",
       "title": "- TCP: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\nbuf:lint:ignore ENUM_VALUE_PREFIX\n - UDP: buf:lint:ignore ENUM_VALUE_PREFIX"
-    },
-    "QueryLogClient": {
-      "type": "object",
-      "properties": {
-        "address": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "address",
-        "name"
-      ]
-    },
-    "QueryLogReason": {
-      "type": "string",
-      "enum": [
-        "UNKNOWN",
-        "FILTERED_BLOCK_LIST",
-        "ALLOWED"
-      ],
-      "default": "UNKNOWN",
-      "title": "- UNKNOWN: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\n - FILTERED_BLOCK_LIST: buf:lint:ignore ENUM_VALUE_PREFIX\n - ALLOWED: buf:lint:ignore ENUM_VALUE_PREFIX"
-    },
-    "QueryLogRequest": {
-      "type": "object",
-      "properties": {
-        "class": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "type": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "class",
-        "name",
-        "type"
-      ]
-    },
-    "QueryLogRule": {
-      "type": "object",
-      "properties": {
-        "filter_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "text": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "text"
-      ]
-    },
-    "ResponseAnswer": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        },
-        "ttl": {
-          "type": "integer",
-          "format": "int32"
-        }
-      },
-      "required": [
-        "type",
-        "value"
-      ]
     },
     "ServerConfigCluster": {
       "type": "object",
@@ -653,7 +518,7 @@
         }
       }
     },
-    "v1AdGuardConfig": {
+    "v1AdGuardHomeConfig": {
       "type": "object",
       "properties": {
         "filtering_enabled": {
@@ -663,19 +528,18 @@
           "type": "array",
           "items": {
             "type": "object",
-            "$ref": "#/definitions/AdGuardConfigBlockList"
+            "$ref": "#/definitions/AdGuardHomeConfigBlockList"
           }
         }
       }
     },
-    "v1AdGuardStatus": {
+    "v1AdGuardHomeStatus": {
       "type": "object",
       "properties": {
-        "query_logs": {
+        "dns": {
           "type": "array",
           "items": {
-            "type": "object",
-            "$ref": "#/definitions/AdGuardStatusQueryLog"
+            "type": "string"
           }
         }
       }
@@ -705,8 +569,8 @@
         "name": {
           "type": "string"
         },
-        "ag": {
-          "$ref": "#/definitions/v1AdGuardConfig"
+        "agh": {
+          "$ref": "#/definitions/v1AdGuardHomeConfig"
         }
       }
     },
@@ -867,8 +731,8 @@
         "wg": {
           "$ref": "#/definitions/v1WireGuardConfig"
         },
-        "ag": {
-          "$ref": "#/definitions/v1AdGuardConfig"
+        "agh": {
+          "$ref": "#/definitions/v1AdGuardHomeConfig"
         }
       }
     },
@@ -884,8 +748,8 @@
         "wg": {
           "$ref": "#/definitions/v1WireGuardStatus"
         },
-        "ag": {
-          "$ref": "#/definitions/v1AdGuardStatus"
+        "agh": {
+          "$ref": "#/definitions/v1AdGuardHomeStatus"
         }
       },
       "title": "-\u003e Pending -\u003e Ready/Error"

@@ -14,9 +14,7 @@ import 'package:built_value/iso_8601_date_time_serializer.dart';
 import 'package:guardllama_api/src/date_serializer.dart';
 import 'package:guardllama_api/src/model/date.dart';
 
-import 'package:guardllama_api/src/model/ad_guard_config_block_list.dart';
-import 'package:guardllama_api/src/model/ad_guard_status_query_log.dart';
-import 'package:guardllama_api/src/model/ad_guard_status_query_log_response.dart';
+import 'package:guardllama_api/src/model/ad_guard_home_config_block_list.dart';
 import 'package:guardllama_api/src/model/apiv1_credentials.dart';
 import 'package:guardllama_api/src/model/cluster_k3d.dart';
 import 'package:guardllama_api/src/model/credentials_api.dart';
@@ -26,19 +24,14 @@ import 'package:guardllama_api/src/model/image_image_pull_secret.dart';
 import 'package:guardllama_api/src/model/k3d_node_port_range.dart';
 import 'package:guardllama_api/src/model/node_port_range_protocol.dart';
 import 'package:guardllama_api/src/model/protobuf_any.dart';
-import 'package:guardllama_api/src/model/query_log_client.dart';
-import 'package:guardllama_api/src/model/query_log_reason.dart';
-import 'package:guardllama_api/src/model/query_log_request.dart';
-import 'package:guardllama_api/src/model/query_log_rule.dart';
-import 'package:guardllama_api/src/model/response_answer.dart';
 import 'package:guardllama_api/src/model/rpc_status.dart';
 import 'package:guardllama_api/src/model/server_config_cluster.dart';
 import 'package:guardllama_api/src/model/server_config_image.dart';
 import 'package:guardllama_api/src/model/tunnel_service_update_dns_block_lists_request.dart';
 import 'package:guardllama_api/src/model/tunnel_service_update_dns_filtering_enabled_request.dart';
 import 'package:guardllama_api/src/model/tunnel_status_state.dart';
-import 'package:guardllama_api/src/model/v1_ad_guard_config.dart';
-import 'package:guardllama_api/src/model/v1_ad_guard_status.dart';
+import 'package:guardllama_api/src/model/v1_ad_guard_home_config.dart';
+import 'package:guardllama_api/src/model/v1_ad_guard_home_status.dart';
 import 'package:guardllama_api/src/model/v1_authenticate_request.dart';
 import 'package:guardllama_api/src/model/v1_authenticate_response.dart';
 import 'package:guardllama_api/src/model/v1_create_tunnel_request.dart';
@@ -67,9 +60,7 @@ import 'package:guardllama_api/src/model/wire_guard_device_device_type.dart';
 part 'serializers.g.dart';
 
 @SerializersFor([
-  AdGuardConfigBlockList,
-  AdGuardStatusQueryLog,
-  AdGuardStatusQueryLogResponse,
+  AdGuardHomeConfigBlockList,
   Apiv1Credentials,
   ClusterK3d,
   CredentialsApi,
@@ -79,19 +70,14 @@ part 'serializers.g.dart';
   K3dNodePortRange,
   NodePortRangeProtocol,
   ProtobufAny,
-  QueryLogClient,
-  QueryLogReason,
-  QueryLogRequest,
-  QueryLogRule,
-  ResponseAnswer,
   RpcStatus,
   ServerConfigCluster,
   ServerConfigImage,
   TunnelServiceUpdateDNSBlockListsRequest,
   TunnelServiceUpdateDNSFilteringEnabledRequest,
   TunnelStatusState,
-  V1AdGuardConfig,
-  V1AdGuardStatus,
+  V1AdGuardHomeConfig,
+  V1AdGuardHomeStatus,
   V1AuthenticateRequest,
   V1AuthenticateResponse,
   V1CreateTunnelRequest,

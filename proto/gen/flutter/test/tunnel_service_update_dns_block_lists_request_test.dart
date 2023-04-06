@@ -7,7 +7,7 @@ void main() {
   // TODO add properties to the builder and call build()
 
   group(TunnelServiceUpdateDNSBlockListsRequest, () {
-    // BuiltList<AdGuardConfigBlockList> blockLists
+    // BuiltList<AdGuardHomeConfigBlockList> blockLists
     test('to test the property `blockLists`', () async {
       // TODO
     });

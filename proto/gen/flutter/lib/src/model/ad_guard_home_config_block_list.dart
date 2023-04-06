@@ -6,63 +6,56 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'response_answer.g.dart';
+part 'ad_guard_home_config_block_list.g.dart';
 
-/// ResponseAnswer
+/// AdGuardHomeConfigBlockList
 ///
 /// Properties:
-/// * [type] 
-/// * [value] 
-/// * [ttl] 
+/// * [name] 
+/// * [url] 
 @BuiltValue()
-abstract class ResponseAnswer implements Built<ResponseAnswer, ResponseAnswerBuilder> {
-  @BuiltValueField(wireName: r'type')
-  String get type;
+abstract class AdGuardHomeConfigBlockList implements Built<AdGuardHomeConfigBlockList, AdGuardHomeConfigBlockListBuilder> {
+  @BuiltValueField(wireName: r'name')
+  String? get name;
 
-  @BuiltValueField(wireName: r'value')
-  String get value;
+  @BuiltValueField(wireName: r'url')
+  String? get url;
 
-  @BuiltValueField(wireName: r'ttl')
-  int? get ttl;
+  AdGuardHomeConfigBlockList._();
 
-  ResponseAnswer._();
-
-  factory ResponseAnswer([void updates(ResponseAnswerBuilder b)]) = _$ResponseAnswer;
+  factory AdGuardHomeConfigBlockList([void updates(AdGuardHomeConfigBlockListBuilder b)]) = _$AdGuardHomeConfigBlockList;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(ResponseAnswerBuilder b) => b;
+  static void _defaults(AdGuardHomeConfigBlockListBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<ResponseAnswer> get serializer => _$ResponseAnswerSerializer();
+  static Serializer<AdGuardHomeConfigBlockList> get serializer => _$AdGuardHomeConfigBlockListSerializer();
 }
 
-class _$ResponseAnswerSerializer implements PrimitiveSerializer<ResponseAnswer> {
+class _$AdGuardHomeConfigBlockListSerializer implements PrimitiveSerializer<AdGuardHomeConfigBlockList> {
   @override
-  final Iterable<Type> types = const [ResponseAnswer, _$ResponseAnswer];
+  final Iterable<Type> types = const [AdGuardHomeConfigBlockList, _$AdGuardHomeConfigBlockList];
 
   @override
-  final String wireName = r'ResponseAnswer';
+  final String wireName = r'AdGuardHomeConfigBlockList';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    ResponseAnswer object, {
+    AdGuardHomeConfigBlockList object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
-    yield r'type';
-    yield serializers.serialize(
-      object.type,
-      specifiedType: const FullType(String),
-    );
-    yield r'value';
-    yield serializers.serialize(
-      object.value,
-      specifiedType: const FullType(String),
-    );
-    if (object.ttl != null) {
-      yield r'ttl';
+    if (object.name != null) {
+      yield r'name';
       yield serializers.serialize(
-        object.ttl,
-        specifiedType: const FullType(int),
+        object.name,
+        specifiedType: const FullType(String),
+      );
+    }
+    if (object.url != null) {
+      yield r'url';
+      yield serializers.serialize(
+        object.url,
+        specifiedType: const FullType(String),
       );
     }
   }
@@ -70,7 +63,7 @@ class _$ResponseAnswerSerializer implements PrimitiveSerializer<ResponseAnswer> 
   @override
   Object serialize(
     Serializers serializers,
-    ResponseAnswer object, {
+    AdGuardHomeConfigBlockList object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -81,33 +74,26 @@ class _$ResponseAnswerSerializer implements PrimitiveSerializer<ResponseAnswer> 
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required ResponseAnswerBuilder result,
+    required AdGuardHomeConfigBlockListBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
       final key = serializedList[i] as String;
       final value = serializedList[i + 1];
       switch (key) {
-        case r'type':
+        case r'name':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.type = valueDes;
+          result.name = valueDes;
           break;
-        case r'value':
+        case r'url':
           final valueDes = serializers.deserialize(
             value,
             specifiedType: const FullType(String),
           ) as String;
-          result.value = valueDes;
-          break;
-        case r'ttl':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(int),
-          ) as int;
-          result.ttl = valueDes;
+          result.url = valueDes;
           break;
         default:
           unhandled.add(key);
@@ -118,12 +104,12 @@ class _$ResponseAnswerSerializer implements PrimitiveSerializer<ResponseAnswer> 
   }
 
   @override
-  ResponseAnswer deserialize(
+  AdGuardHomeConfigBlockList deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = ResponseAnswerBuilder();
+    final result = AdGuardHomeConfigBlockListBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

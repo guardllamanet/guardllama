@@ -1,36 +1,36 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'ad_guard_config_block_list.dart';
+part of 'ad_guard_home_config_block_list.dart';
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-class _$AdGuardConfigBlockList extends AdGuardConfigBlockList {
+class _$AdGuardHomeConfigBlockList extends AdGuardHomeConfigBlockList {
   @override
   final String? name;
   @override
   final String? url;
 
-  factory _$AdGuardConfigBlockList(
-          [void Function(AdGuardConfigBlockListBuilder)? updates]) =>
-      (new AdGuardConfigBlockListBuilder()..update(updates))._build();
+  factory _$AdGuardHomeConfigBlockList(
+          [void Function(AdGuardHomeConfigBlockListBuilder)? updates]) =>
+      (new AdGuardHomeConfigBlockListBuilder()..update(updates))._build();
 
-  _$AdGuardConfigBlockList._({this.name, this.url}) : super._();
+  _$AdGuardHomeConfigBlockList._({this.name, this.url}) : super._();
 
   @override
-  AdGuardConfigBlockList rebuild(
-          void Function(AdGuardConfigBlockListBuilder) updates) =>
+  AdGuardHomeConfigBlockList rebuild(
+          void Function(AdGuardHomeConfigBlockListBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  AdGuardConfigBlockListBuilder toBuilder() =>
-      new AdGuardConfigBlockListBuilder()..replace(this);
+  AdGuardHomeConfigBlockListBuilder toBuilder() =>
+      new AdGuardHomeConfigBlockListBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is AdGuardConfigBlockList &&
+    return other is AdGuardHomeConfigBlockList &&
         name == other.name &&
         url == other.url;
   }
@@ -46,16 +46,17 @@ class _$AdGuardConfigBlockList extends AdGuardConfigBlockList {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'AdGuardConfigBlockList')
+    return (newBuiltValueToStringHelper(r'AdGuardHomeConfigBlockList')
           ..add('name', name)
           ..add('url', url))
         .toString();
   }
 }
 
-class AdGuardConfigBlockListBuilder
-    implements Builder<AdGuardConfigBlockList, AdGuardConfigBlockListBuilder> {
-  _$AdGuardConfigBlockList? _$v;
+class AdGuardHomeConfigBlockListBuilder
+    implements
+        Builder<AdGuardHomeConfigBlockList, AdGuardHomeConfigBlockListBuilder> {
+  _$AdGuardHomeConfigBlockList? _$v;
 
   String? _name;
   String? get name => _$this._name;
@@ -65,11 +66,11 @@ class AdGuardConfigBlockListBuilder
   String? get url => _$this._url;
   set url(String? url) => _$this._url = url;
 
-  AdGuardConfigBlockListBuilder() {
-    AdGuardConfigBlockList._defaults(this);
+  AdGuardHomeConfigBlockListBuilder() {
+    AdGuardHomeConfigBlockList._defaults(this);
   }
 
-  AdGuardConfigBlockListBuilder get _$this {
+  AdGuardHomeConfigBlockListBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _name = $v.name;
@@ -80,22 +81,22 @@ class AdGuardConfigBlockListBuilder
   }
 
   @override
-  void replace(AdGuardConfigBlockList other) {
+  void replace(AdGuardHomeConfigBlockList other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$AdGuardConfigBlockList;
+    _$v = other as _$AdGuardHomeConfigBlockList;
   }
 
   @override
-  void update(void Function(AdGuardConfigBlockListBuilder)? updates) {
+  void update(void Function(AdGuardHomeConfigBlockListBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  AdGuardConfigBlockList build() => _build();
+  AdGuardHomeConfigBlockList build() => _build();
 
-  _$AdGuardConfigBlockList _build() {
+  _$AdGuardHomeConfigBlockList _build() {
     final _$result =
-        _$v ?? new _$AdGuardConfigBlockList._(name: name, url: url);
+        _$v ?? new _$AdGuardHomeConfigBlockList._(name: name, url: url);
     replace(_$result);
     return _$result;
   }

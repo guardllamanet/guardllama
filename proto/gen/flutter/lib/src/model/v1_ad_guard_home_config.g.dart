@@ -1,34 +1,36 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'v1_ad_guard_config.dart';
+part of 'v1_ad_guard_home_config.dart';
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-class _$V1AdGuardConfig extends V1AdGuardConfig {
+class _$V1AdGuardHomeConfig extends V1AdGuardHomeConfig {
   @override
   final bool? filteringEnabled;
   @override
-  final BuiltList<AdGuardConfigBlockList>? blockLists;
+  final BuiltList<AdGuardHomeConfigBlockList>? blockLists;
 
-  factory _$V1AdGuardConfig([void Function(V1AdGuardConfigBuilder)? updates]) =>
-      (new V1AdGuardConfigBuilder()..update(updates))._build();
+  factory _$V1AdGuardHomeConfig(
+          [void Function(V1AdGuardHomeConfigBuilder)? updates]) =>
+      (new V1AdGuardHomeConfigBuilder()..update(updates))._build();
 
-  _$V1AdGuardConfig._({this.filteringEnabled, this.blockLists}) : super._();
+  _$V1AdGuardHomeConfig._({this.filteringEnabled, this.blockLists}) : super._();
 
   @override
-  V1AdGuardConfig rebuild(void Function(V1AdGuardConfigBuilder) updates) =>
+  V1AdGuardHomeConfig rebuild(
+          void Function(V1AdGuardHomeConfigBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  V1AdGuardConfigBuilder toBuilder() =>
-      new V1AdGuardConfigBuilder()..replace(this);
+  V1AdGuardHomeConfigBuilder toBuilder() =>
+      new V1AdGuardHomeConfigBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is V1AdGuardConfig &&
+    return other is V1AdGuardHomeConfig &&
         filteringEnabled == other.filteringEnabled &&
         blockLists == other.blockLists;
   }
@@ -44,33 +46,33 @@ class _$V1AdGuardConfig extends V1AdGuardConfig {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'V1AdGuardConfig')
+    return (newBuiltValueToStringHelper(r'V1AdGuardHomeConfig')
           ..add('filteringEnabled', filteringEnabled)
           ..add('blockLists', blockLists))
         .toString();
   }
 }
 
-class V1AdGuardConfigBuilder
-    implements Builder<V1AdGuardConfig, V1AdGuardConfigBuilder> {
-  _$V1AdGuardConfig? _$v;
+class V1AdGuardHomeConfigBuilder
+    implements Builder<V1AdGuardHomeConfig, V1AdGuardHomeConfigBuilder> {
+  _$V1AdGuardHomeConfig? _$v;
 
   bool? _filteringEnabled;
   bool? get filteringEnabled => _$this._filteringEnabled;
   set filteringEnabled(bool? filteringEnabled) =>
       _$this._filteringEnabled = filteringEnabled;
 
-  ListBuilder<AdGuardConfigBlockList>? _blockLists;
-  ListBuilder<AdGuardConfigBlockList> get blockLists =>
-      _$this._blockLists ??= new ListBuilder<AdGuardConfigBlockList>();
-  set blockLists(ListBuilder<AdGuardConfigBlockList>? blockLists) =>
+  ListBuilder<AdGuardHomeConfigBlockList>? _blockLists;
+  ListBuilder<AdGuardHomeConfigBlockList> get blockLists =>
+      _$this._blockLists ??= new ListBuilder<AdGuardHomeConfigBlockList>();
+  set blockLists(ListBuilder<AdGuardHomeConfigBlockList>? blockLists) =>
       _$this._blockLists = blockLists;
 
-  V1AdGuardConfigBuilder() {
-    V1AdGuardConfig._defaults(this);
+  V1AdGuardHomeConfigBuilder() {
+    V1AdGuardHomeConfig._defaults(this);
   }
 
-  V1AdGuardConfigBuilder get _$this {
+  V1AdGuardHomeConfigBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _filteringEnabled = $v.filteringEnabled;
@@ -81,24 +83,24 @@ class V1AdGuardConfigBuilder
   }
 
   @override
-  void replace(V1AdGuardConfig other) {
+  void replace(V1AdGuardHomeConfig other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$V1AdGuardConfig;
+    _$v = other as _$V1AdGuardHomeConfig;
   }
 
   @override
-  void update(void Function(V1AdGuardConfigBuilder)? updates) {
+  void update(void Function(V1AdGuardHomeConfigBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  V1AdGuardConfig build() => _build();
+  V1AdGuardHomeConfig build() => _build();
 
-  _$V1AdGuardConfig _build() {
-    _$V1AdGuardConfig _$result;
+  _$V1AdGuardHomeConfig _build() {
+    _$V1AdGuardHomeConfig _$result;
     try {
       _$result = _$v ??
-          new _$V1AdGuardConfig._(
+          new _$V1AdGuardHomeConfig._(
               filteringEnabled: filteringEnabled,
               blockLists: _blockLists?.build());
     } catch (_) {
@@ -108,7 +110,7 @@ class V1AdGuardConfigBuilder
         _blockLists?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
-            r'V1AdGuardConfig', _$failedField, e.toString());
+            r'V1AdGuardHomeConfig', _$failedField, e.toString());
       }
       rethrow;
     }

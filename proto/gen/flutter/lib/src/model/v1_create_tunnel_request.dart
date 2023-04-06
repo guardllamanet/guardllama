@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:guardllama_api/src/model/v1_ad_guard_config.dart';
+import 'package:guardllama_api/src/model/v1_ad_guard_home_config.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -13,14 +13,14 @@ part 'v1_create_tunnel_request.g.dart';
 ///
 /// Properties:
 /// * [name] 
-/// * [ag] 
+/// * [agh] 
 @BuiltValue()
 abstract class V1CreateTunnelRequest implements Built<V1CreateTunnelRequest, V1CreateTunnelRequestBuilder> {
   @BuiltValueField(wireName: r'name')
   String? get name;
 
-  @BuiltValueField(wireName: r'ag')
-  V1AdGuardConfig? get ag;
+  @BuiltValueField(wireName: r'agh')
+  V1AdGuardHomeConfig? get agh;
 
   V1CreateTunnelRequest._();
 
@@ -52,11 +52,11 @@ class _$V1CreateTunnelRequestSerializer implements PrimitiveSerializer<V1CreateT
         specifiedType: const FullType(String),
       );
     }
-    if (object.ag != null) {
-      yield r'ag';
+    if (object.agh != null) {
+      yield r'agh';
       yield serializers.serialize(
-        object.ag,
-        specifiedType: const FullType(V1AdGuardConfig),
+        object.agh,
+        specifiedType: const FullType(V1AdGuardHomeConfig),
       );
     }
   }
@@ -89,12 +89,12 @@ class _$V1CreateTunnelRequestSerializer implements PrimitiveSerializer<V1CreateT
           ) as String;
           result.name = valueDes;
           break;
-        case r'ag':
+        case r'agh':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(V1AdGuardConfig),
-          ) as V1AdGuardConfig;
-          result.ag.replace(valueDes);
+            specifiedType: const FullType(V1AdGuardHomeConfig),
+          ) as V1AdGuardHomeConfig;
+          result.agh.replace(valueDes);
           break;
         default:
           unhandled.add(key);

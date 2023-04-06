@@ -1681,11 +1681,11 @@ func (m *CreateTunnelRequest) validate(all bool) error {
 	// no validation rules for Name
 
 	if all {
-		switch v := interface{}(m.GetAg()).(type) {
+		switch v := interface{}(m.GetAgh()).(type) {
 		case interface{ ValidateAll() error }:
 			if err := v.ValidateAll(); err != nil {
 				errors = append(errors, CreateTunnelRequestValidationError{
-					field:  "Ag",
+					field:  "Agh",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
@@ -1693,16 +1693,16 @@ func (m *CreateTunnelRequest) validate(all bool) error {
 		case interface{ Validate() error }:
 			if err := v.Validate(); err != nil {
 				errors = append(errors, CreateTunnelRequestValidationError{
-					field:  "Ag",
+					field:  "Agh",
 					reason: "embedded message failed validation",
 					cause:  err,
 				})
 			}
 		}
-	} else if v, ok := interface{}(m.GetAg()).(interface{ Validate() error }); ok {
+	} else if v, ok := interface{}(m.GetAgh()).(interface{ Validate() error }); ok {
 		if err := v.Validate(); err != nil {
 			return CreateTunnelRequestValidationError{
-				field:  "Ag",
+				field:  "Agh",
 				reason: "embedded message failed validation",
 				cause:  err,
 			}
@@ -3169,7 +3169,7 @@ func (m *TunnelConfig) validate(all bool) error {
 	}
 	oneofDnsPresent := false
 	switch v := m.Dns.(type) {
-	case *TunnelConfig_Ag:
+	case *TunnelConfig_Agh:
 		if v == nil {
 			err := TunnelConfigValidationError{
 				field:  "Dns",
@@ -3183,11 +3183,11 @@ func (m *TunnelConfig) validate(all bool) error {
 		oneofDnsPresent = true
 
 		if all {
-			switch v := interface{}(m.GetAg()).(type) {
+			switch v := interface{}(m.GetAgh()).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, TunnelConfigValidationError{
-						field:  "Ag",
+						field:  "Agh",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -3195,16 +3195,16 @@ func (m *TunnelConfig) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, TunnelConfigValidationError{
-						field:  "Ag",
+						field:  "Agh",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
 				}
 			}
-		} else if v, ok := interface{}(m.GetAg()).(interface{ Validate() error }); ok {
+		} else if v, ok := interface{}(m.GetAgh()).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return TunnelConfigValidationError{
-					field:  "Ag",
+					field:  "Agh",
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -3842,22 +3842,22 @@ var _ interface {
 	ErrorName() string
 } = WireGuardPeerValidationError{}
 
-// Validate checks the field values on AdGuardConfig with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *AdGuardConfig) Validate() error {
+// Validate checks the field values on AdGuardHomeConfig with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AdGuardHomeConfig) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AdGuardConfig with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in AdGuardConfigMultiError, or
-// nil if none found.
-func (m *AdGuardConfig) ValidateAll() error {
+// ValidateAll checks the field values on AdGuardHomeConfig with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AdGuardHomeConfigMultiError, or nil if none found.
+func (m *AdGuardHomeConfig) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AdGuardConfig) validate(all bool) error {
+func (m *AdGuardHomeConfig) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -3871,7 +3871,7 @@ func (m *AdGuardConfig) validate(all bool) error {
 			switch v := interface{}(item).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AdGuardConfigValidationError{
+					errors = append(errors, AdGuardHomeConfigValidationError{
 						field:  fmt.Sprintf("BlockLists[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3879,7 +3879,7 @@ func (m *AdGuardConfig) validate(all bool) error {
 				}
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
-					errors = append(errors, AdGuardConfigValidationError{
+					errors = append(errors, AdGuardHomeConfigValidationError{
 						field:  fmt.Sprintf("BlockLists[%v]", idx),
 						reason: "embedded message failed validation",
 						cause:  err,
@@ -3888,7 +3888,7 @@ func (m *AdGuardConfig) validate(all bool) error {
 			}
 		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
-				return AdGuardConfigValidationError{
+				return AdGuardHomeConfigValidationError{
 					field:  fmt.Sprintf("BlockLists[%v]", idx),
 					reason: "embedded message failed validation",
 					cause:  err,
@@ -3903,19 +3903,19 @@ func (m *AdGuardConfig) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return AdGuardConfigMultiError(errors)
+		return AdGuardHomeConfigMultiError(errors)
 	}
 
 	return nil
 }
 
-// AdGuardConfigMultiError is an error wrapping multiple validation errors
-// returned by AdGuardConfig.ValidateAll() if the designated constraints
+// AdGuardHomeConfigMultiError is an error wrapping multiple validation errors
+// returned by AdGuardHomeConfig.ValidateAll() if the designated constraints
 // aren't met.
-type AdGuardConfigMultiError []error
+type AdGuardHomeConfigMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardConfigMultiError) Error() string {
+func (m AdGuardHomeConfigMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -3924,11 +3924,11 @@ func (m AdGuardConfigMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AdGuardConfigMultiError) AllErrors() []error { return m }
+func (m AdGuardHomeConfigMultiError) AllErrors() []error { return m }
 
-// AdGuardConfigValidationError is the validation error returned by
-// AdGuardConfig.Validate if the designated constraints aren't met.
-type AdGuardConfigValidationError struct {
+// AdGuardHomeConfigValidationError is the validation error returned by
+// AdGuardHomeConfig.Validate if the designated constraints aren't met.
+type AdGuardHomeConfigValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -3936,22 +3936,24 @@ type AdGuardConfigValidationError struct {
 }
 
 // Field function returns field value.
-func (e AdGuardConfigValidationError) Field() string { return e.field }
+func (e AdGuardHomeConfigValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AdGuardConfigValidationError) Reason() string { return e.reason }
+func (e AdGuardHomeConfigValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AdGuardConfigValidationError) Cause() error { return e.cause }
+func (e AdGuardHomeConfigValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AdGuardConfigValidationError) Key() bool { return e.key }
+func (e AdGuardHomeConfigValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AdGuardConfigValidationError) ErrorName() string { return "AdGuardConfigValidationError" }
+func (e AdGuardHomeConfigValidationError) ErrorName() string {
+	return "AdGuardHomeConfigValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e AdGuardConfigValidationError) Error() string {
+func (e AdGuardHomeConfigValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -3963,14 +3965,14 @@ func (e AdGuardConfigValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAdGuardConfig.%s: %s%s",
+		"invalid %sAdGuardHomeConfig.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AdGuardConfigValidationError{}
+var _ error = AdGuardHomeConfigValidationError{}
 
 var _ interface {
 	Field() string
@@ -3978,7 +3980,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AdGuardConfigValidationError{}
+} = AdGuardHomeConfigValidationError{}
 
 // Validate checks the field values on Tunnel with the rules defined in the
 // proto definition for this message. If any rules are violated, the first
@@ -4277,7 +4279,7 @@ func (m *TunnelStatus) validate(all bool) error {
 		_ = v // ensures v is used
 	}
 	switch v := m.Dns.(type) {
-	case *TunnelStatus_Ag:
+	case *TunnelStatus_Agh:
 		if v == nil {
 			err := TunnelStatusValidationError{
 				field:  "Dns",
@@ -4290,11 +4292,11 @@ func (m *TunnelStatus) validate(all bool) error {
 		}
 
 		if all {
-			switch v := interface{}(m.GetAg()).(type) {
+			switch v := interface{}(m.GetAgh()).(type) {
 			case interface{ ValidateAll() error }:
 				if err := v.ValidateAll(); err != nil {
 					errors = append(errors, TunnelStatusValidationError{
-						field:  "Ag",
+						field:  "Agh",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
@@ -4302,16 +4304,16 @@ func (m *TunnelStatus) validate(all bool) error {
 			case interface{ Validate() error }:
 				if err := v.Validate(); err != nil {
 					errors = append(errors, TunnelStatusValidationError{
-						field:  "Ag",
+						field:  "Agh",
 						reason: "embedded message failed validation",
 						cause:  err,
 					})
 				}
 			}
-		} else if v, ok := interface{}(m.GetAg()).(interface{ Validate() error }); ok {
+		} else if v, ok := interface{}(m.GetAgh()).(interface{ Validate() error }); ok {
 			if err := v.Validate(); err != nil {
 				return TunnelStatusValidationError{
-					field:  "Ag",
+					field:  "Agh",
 					reason: "embedded message failed validation",
 					cause:  err,
 				}
@@ -4528,76 +4530,42 @@ var _ interface {
 	ErrorName() string
 } = WireGuardStatusValidationError{}
 
-// Validate checks the field values on AdGuardStatus with the rules defined in
-// the proto definition for this message. If any rules are violated, the first
-// error encountered is returned, or nil if there are no violations.
-func (m *AdGuardStatus) Validate() error {
+// Validate checks the field values on AdGuardHomeStatus with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AdGuardHomeStatus) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AdGuardStatus with the rules defined
-// in the proto definition for this message. If any rules are violated, the
-// result is a list of violation errors wrapped in AdGuardStatusMultiError, or
-// nil if none found.
-func (m *AdGuardStatus) ValidateAll() error {
+// ValidateAll checks the field values on AdGuardHomeStatus with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AdGuardHomeStatusMultiError, or nil if none found.
+func (m *AdGuardHomeStatus) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AdGuardStatus) validate(all bool) error {
+func (m *AdGuardHomeStatus) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
 
 	var errors []error
 
-	for idx, item := range m.GetQueryLogs() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AdGuardStatusValidationError{
-						field:  fmt.Sprintf("QueryLogs[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AdGuardStatusValidationError{
-						field:  fmt.Sprintf("QueryLogs[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AdGuardStatusValidationError{
-					field:  fmt.Sprintf("QueryLogs[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
 	if len(errors) > 0 {
-		return AdGuardStatusMultiError(errors)
+		return AdGuardHomeStatusMultiError(errors)
 	}
 
 	return nil
 }
 
-// AdGuardStatusMultiError is an error wrapping multiple validation errors
-// returned by AdGuardStatus.ValidateAll() if the designated constraints
+// AdGuardHomeStatusMultiError is an error wrapping multiple validation errors
+// returned by AdGuardHomeStatus.ValidateAll() if the designated constraints
 // aren't met.
-type AdGuardStatusMultiError []error
+type AdGuardHomeStatusMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardStatusMultiError) Error() string {
+func (m AdGuardHomeStatusMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -4606,11 +4574,11 @@ func (m AdGuardStatusMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AdGuardStatusMultiError) AllErrors() []error { return m }
+func (m AdGuardHomeStatusMultiError) AllErrors() []error { return m }
 
-// AdGuardStatusValidationError is the validation error returned by
-// AdGuardStatus.Validate if the designated constraints aren't met.
-type AdGuardStatusValidationError struct {
+// AdGuardHomeStatusValidationError is the validation error returned by
+// AdGuardHomeStatus.Validate if the designated constraints aren't met.
+type AdGuardHomeStatusValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -4618,22 +4586,24 @@ type AdGuardStatusValidationError struct {
 }
 
 // Field function returns field value.
-func (e AdGuardStatusValidationError) Field() string { return e.field }
+func (e AdGuardHomeStatusValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AdGuardStatusValidationError) Reason() string { return e.reason }
+func (e AdGuardHomeStatusValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AdGuardStatusValidationError) Cause() error { return e.cause }
+func (e AdGuardHomeStatusValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AdGuardStatusValidationError) Key() bool { return e.key }
+func (e AdGuardHomeStatusValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AdGuardStatusValidationError) ErrorName() string { return "AdGuardStatusValidationError" }
+func (e AdGuardHomeStatusValidationError) ErrorName() string {
+	return "AdGuardHomeStatusValidationError"
+}
 
 // Error satisfies the builtin error interface
-func (e AdGuardStatusValidationError) Error() string {
+func (e AdGuardHomeStatusValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -4645,14 +4615,14 @@ func (e AdGuardStatusValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAdGuardStatus.%s: %s%s",
+		"invalid %sAdGuardHomeStatus.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AdGuardStatusValidationError{}
+var _ error = AdGuardHomeStatusValidationError{}
 
 var _ interface {
 	Field() string
@@ -4660,7 +4630,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AdGuardStatusValidationError{}
+} = AdGuardHomeStatusValidationError{}
 
 // Validate checks the field values on Credentials with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
@@ -6423,22 +6393,22 @@ var _ interface {
 	ErrorName() string
 } = ServerConfig_Credentials_JwtValidationError{}
 
-// Validate checks the field values on AdGuardConfig_BlockList with the rules
-// defined in the proto definition for this message. If any rules are
+// Validate checks the field values on AdGuardHomeConfig_BlockList with the
+// rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AdGuardConfig_BlockList) Validate() error {
+func (m *AdGuardHomeConfig_BlockList) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on AdGuardConfig_BlockList with the
+// ValidateAll checks the field values on AdGuardHomeConfig_BlockList with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the result is a list of violation errors wrapped in
-// AdGuardConfig_BlockListMultiError, or nil if none found.
-func (m *AdGuardConfig_BlockList) ValidateAll() error {
+// AdGuardHomeConfig_BlockListMultiError, or nil if none found.
+func (m *AdGuardHomeConfig_BlockList) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *AdGuardConfig_BlockList) validate(all bool) error {
+func (m *AdGuardHomeConfig_BlockList) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -6446,7 +6416,7 @@ func (m *AdGuardConfig_BlockList) validate(all bool) error {
 	var errors []error
 
 	if utf8.RuneCountInString(m.GetName()) < 1 {
-		err := AdGuardConfig_BlockListValidationError{
+		err := AdGuardHomeConfig_BlockListValidationError{
 			field:  "Name",
 			reason: "value length must be at least 1 runes",
 		}
@@ -6457,7 +6427,7 @@ func (m *AdGuardConfig_BlockList) validate(all bool) error {
 	}
 
 	if uri, err := url.Parse(m.GetUrl()); err != nil {
-		err = AdGuardConfig_BlockListValidationError{
+		err = AdGuardHomeConfig_BlockListValidationError{
 			field:  "Url",
 			reason: "value must be a valid URI",
 			cause:  err,
@@ -6467,7 +6437,7 @@ func (m *AdGuardConfig_BlockList) validate(all bool) error {
 		}
 		errors = append(errors, err)
 	} else if !uri.IsAbs() {
-		err := AdGuardConfig_BlockListValidationError{
+		err := AdGuardHomeConfig_BlockListValidationError{
 			field:  "Url",
 			reason: "value must be absolute",
 		}
@@ -6478,716 +6448,19 @@ func (m *AdGuardConfig_BlockList) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return AdGuardConfig_BlockListMultiError(errors)
+		return AdGuardHomeConfig_BlockListMultiError(errors)
 	}
 
 	return nil
 }
 
-// AdGuardConfig_BlockListMultiError is an error wrapping multiple validation
-// errors returned by AdGuardConfig_BlockList.ValidateAll() if the designated
-// constraints aren't met.
-type AdGuardConfig_BlockListMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardConfig_BlockListMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AdGuardConfig_BlockListMultiError) AllErrors() []error { return m }
-
-// AdGuardConfig_BlockListValidationError is the validation error returned by
-// AdGuardConfig_BlockList.Validate if the designated constraints aren't met.
-type AdGuardConfig_BlockListValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AdGuardConfig_BlockListValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AdGuardConfig_BlockListValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AdGuardConfig_BlockListValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AdGuardConfig_BlockListValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AdGuardConfig_BlockListValidationError) ErrorName() string {
-	return "AdGuardConfig_BlockListValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e AdGuardConfig_BlockListValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAdGuardConfig_BlockList.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AdGuardConfig_BlockListValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AdGuardConfig_BlockListValidationError{}
-
-// Validate checks the field values on AdGuardStatus_QueryLog with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AdGuardStatus_QueryLog) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on AdGuardStatus_QueryLog with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// AdGuardStatus_QueryLogMultiError, or nil if none found.
-func (m *AdGuardStatus_QueryLog) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AdGuardStatus_QueryLog) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.GetTimestamp() == nil {
-		err := AdGuardStatus_QueryLogValidationError{
-			field:  "Timestamp",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetRequest() == nil {
-		err := AdGuardStatus_QueryLogValidationError{
-			field:  "Request",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetRequest()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, AdGuardStatus_QueryLogValidationError{
-					field:  "Request",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, AdGuardStatus_QueryLogValidationError{
-					field:  "Request",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetRequest()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AdGuardStatus_QueryLogValidationError{
-				field:  "Request",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if m.GetResponse() == nil {
-		err := AdGuardStatus_QueryLogValidationError{
-			field:  "Response",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetResponse()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, AdGuardStatus_QueryLogValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, AdGuardStatus_QueryLogValidationError{
-					field:  "Response",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetResponse()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AdGuardStatus_QueryLogValidationError{
-				field:  "Response",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if _, ok := AdGuardStatus_QueryLog_Reason_name[int32(m.GetReason())]; !ok {
-		err := AdGuardStatus_QueryLogValidationError{
-			field:  "Reason",
-			reason: "value must be one of the defined enum values",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	for idx, item := range m.GetRules() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AdGuardStatus_QueryLogValidationError{
-						field:  fmt.Sprintf("Rules[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AdGuardStatus_QueryLogValidationError{
-						field:  fmt.Sprintf("Rules[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AdGuardStatus_QueryLogValidationError{
-					field:  fmt.Sprintf("Rules[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if m.GetClient() == nil {
-		err := AdGuardStatus_QueryLogValidationError{
-			field:  "Client",
-			reason: "value is required",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if all {
-		switch v := interface{}(m.GetClient()).(type) {
-		case interface{ ValidateAll() error }:
-			if err := v.ValidateAll(); err != nil {
-				errors = append(errors, AdGuardStatus_QueryLogValidationError{
-					field:  "Client",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		case interface{ Validate() error }:
-			if err := v.Validate(); err != nil {
-				errors = append(errors, AdGuardStatus_QueryLogValidationError{
-					field:  "Client",
-					reason: "embedded message failed validation",
-					cause:  err,
-				})
-			}
-		}
-	} else if v, ok := interface{}(m.GetClient()).(interface{ Validate() error }); ok {
-		if err := v.Validate(); err != nil {
-			return AdGuardStatus_QueryLogValidationError{
-				field:  "Client",
-				reason: "embedded message failed validation",
-				cause:  err,
-			}
-		}
-	}
-
-	if len(errors) > 0 {
-		return AdGuardStatus_QueryLogMultiError(errors)
-	}
-
-	return nil
-}
-
-// AdGuardStatus_QueryLogMultiError is an error wrapping multiple validation
-// errors returned by AdGuardStatus_QueryLog.ValidateAll() if the designated
-// constraints aren't met.
-type AdGuardStatus_QueryLogMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardStatus_QueryLogMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AdGuardStatus_QueryLogMultiError) AllErrors() []error { return m }
-
-// AdGuardStatus_QueryLogValidationError is the validation error returned by
-// AdGuardStatus_QueryLog.Validate if the designated constraints aren't met.
-type AdGuardStatus_QueryLogValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AdGuardStatus_QueryLogValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AdGuardStatus_QueryLogValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AdGuardStatus_QueryLogValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AdGuardStatus_QueryLogValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AdGuardStatus_QueryLogValidationError) ErrorName() string {
-	return "AdGuardStatus_QueryLogValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e AdGuardStatus_QueryLogValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAdGuardStatus_QueryLog.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AdGuardStatus_QueryLogValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AdGuardStatus_QueryLogValidationError{}
-
-// Validate checks the field values on AdGuardStatus_QueryLog_Request with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AdGuardStatus_QueryLog_Request) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on AdGuardStatus_QueryLog_Request with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// AdGuardStatus_QueryLog_RequestMultiError, or nil if none found.
-func (m *AdGuardStatus_QueryLog_Request) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AdGuardStatus_QueryLog_Request) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if utf8.RuneCountInString(m.GetClass()) < 1 {
-		err := AdGuardStatus_QueryLog_RequestValidationError{
-			field:  "Class",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetName()) < 1 {
-		err := AdGuardStatus_QueryLog_RequestValidationError{
-			field:  "Name",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetType()) < 1 {
-		err := AdGuardStatus_QueryLog_RequestValidationError{
-			field:  "Type",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return AdGuardStatus_QueryLog_RequestMultiError(errors)
-	}
-
-	return nil
-}
-
-// AdGuardStatus_QueryLog_RequestMultiError is an error wrapping multiple
-// validation errors returned by AdGuardStatus_QueryLog_Request.ValidateAll()
-// if the designated constraints aren't met.
-type AdGuardStatus_QueryLog_RequestMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardStatus_QueryLog_RequestMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AdGuardStatus_QueryLog_RequestMultiError) AllErrors() []error { return m }
-
-// AdGuardStatus_QueryLog_RequestValidationError is the validation error
-// returned by AdGuardStatus_QueryLog_Request.Validate if the designated
-// constraints aren't met.
-type AdGuardStatus_QueryLog_RequestValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AdGuardStatus_QueryLog_RequestValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AdGuardStatus_QueryLog_RequestValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AdGuardStatus_QueryLog_RequestValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AdGuardStatus_QueryLog_RequestValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AdGuardStatus_QueryLog_RequestValidationError) ErrorName() string {
-	return "AdGuardStatus_QueryLog_RequestValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e AdGuardStatus_QueryLog_RequestValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAdGuardStatus_QueryLog_Request.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AdGuardStatus_QueryLog_RequestValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AdGuardStatus_QueryLog_RequestValidationError{}
-
-// Validate checks the field values on AdGuardStatus_QueryLog_Response with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AdGuardStatus_QueryLog_Response) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on AdGuardStatus_QueryLog_Response with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// AdGuardStatus_QueryLog_ResponseMultiError, or nil if none found.
-func (m *AdGuardStatus_QueryLog_Response) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AdGuardStatus_QueryLog_Response) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.GetElapsedMs() < 0 {
-		err := AdGuardStatus_QueryLog_ResponseValidationError{
-			field:  "ElapsedMs",
-			reason: "value must be greater than or equal to 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetStatus()) < 1 {
-		err := AdGuardStatus_QueryLog_ResponseValidationError{
-			field:  "Status",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	for idx, item := range m.GetAnswers() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, AdGuardStatus_QueryLog_ResponseValidationError{
-						field:  fmt.Sprintf("Answers[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, AdGuardStatus_QueryLog_ResponseValidationError{
-						field:  fmt.Sprintf("Answers[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return AdGuardStatus_QueryLog_ResponseValidationError{
-					field:  fmt.Sprintf("Answers[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
-	if len(errors) > 0 {
-		return AdGuardStatus_QueryLog_ResponseMultiError(errors)
-	}
-
-	return nil
-}
-
-// AdGuardStatus_QueryLog_ResponseMultiError is an error wrapping multiple
-// validation errors returned by AdGuardStatus_QueryLog_Response.ValidateAll()
-// if the designated constraints aren't met.
-type AdGuardStatus_QueryLog_ResponseMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardStatus_QueryLog_ResponseMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AdGuardStatus_QueryLog_ResponseMultiError) AllErrors() []error { return m }
-
-// AdGuardStatus_QueryLog_ResponseValidationError is the validation error
-// returned by AdGuardStatus_QueryLog_Response.Validate if the designated
-// constraints aren't met.
-type AdGuardStatus_QueryLog_ResponseValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AdGuardStatus_QueryLog_ResponseValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AdGuardStatus_QueryLog_ResponseValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AdGuardStatus_QueryLog_ResponseValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AdGuardStatus_QueryLog_ResponseValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AdGuardStatus_QueryLog_ResponseValidationError) ErrorName() string {
-	return "AdGuardStatus_QueryLog_ResponseValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e AdGuardStatus_QueryLog_ResponseValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAdGuardStatus_QueryLog_Response.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AdGuardStatus_QueryLog_ResponseValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AdGuardStatus_QueryLog_ResponseValidationError{}
-
-// Validate checks the field values on AdGuardStatus_QueryLog_Rule with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AdGuardStatus_QueryLog_Rule) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on AdGuardStatus_QueryLog_Rule with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// AdGuardStatus_QueryLog_RuleMultiError, or nil if none found.
-func (m *AdGuardStatus_QueryLog_Rule) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AdGuardStatus_QueryLog_Rule) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if m.GetFilterId() < 0 {
-		err := AdGuardStatus_QueryLog_RuleValidationError{
-			field:  "FilterId",
-			reason: "value must be greater than or equal to 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetText()) < 1 {
-		err := AdGuardStatus_QueryLog_RuleValidationError{
-			field:  "Text",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return AdGuardStatus_QueryLog_RuleMultiError(errors)
-	}
-
-	return nil
-}
-
-// AdGuardStatus_QueryLog_RuleMultiError is an error wrapping multiple
-// validation errors returned by AdGuardStatus_QueryLog_Rule.ValidateAll() if
+// AdGuardHomeConfig_BlockListMultiError is an error wrapping multiple
+// validation errors returned by AdGuardHomeConfig_BlockList.ValidateAll() if
 // the designated constraints aren't met.
-type AdGuardStatus_QueryLog_RuleMultiError []error
+type AdGuardHomeConfig_BlockListMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardStatus_QueryLog_RuleMultiError) Error() string {
+func (m AdGuardHomeConfig_BlockListMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -7196,12 +6469,12 @@ func (m AdGuardStatus_QueryLog_RuleMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m AdGuardStatus_QueryLog_RuleMultiError) AllErrors() []error { return m }
+func (m AdGuardHomeConfig_BlockListMultiError) AllErrors() []error { return m }
 
-// AdGuardStatus_QueryLog_RuleValidationError is the validation error returned
-// by AdGuardStatus_QueryLog_Rule.Validate if the designated constraints
+// AdGuardHomeConfig_BlockListValidationError is the validation error returned
+// by AdGuardHomeConfig_BlockList.Validate if the designated constraints
 // aren't met.
-type AdGuardStatus_QueryLog_RuleValidationError struct {
+type AdGuardHomeConfig_BlockListValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -7209,24 +6482,24 @@ type AdGuardStatus_QueryLog_RuleValidationError struct {
 }
 
 // Field function returns field value.
-func (e AdGuardStatus_QueryLog_RuleValidationError) Field() string { return e.field }
+func (e AdGuardHomeConfig_BlockListValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e AdGuardStatus_QueryLog_RuleValidationError) Reason() string { return e.reason }
+func (e AdGuardHomeConfig_BlockListValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e AdGuardStatus_QueryLog_RuleValidationError) Cause() error { return e.cause }
+func (e AdGuardHomeConfig_BlockListValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e AdGuardStatus_QueryLog_RuleValidationError) Key() bool { return e.key }
+func (e AdGuardHomeConfig_BlockListValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e AdGuardStatus_QueryLog_RuleValidationError) ErrorName() string {
-	return "AdGuardStatus_QueryLog_RuleValidationError"
+func (e AdGuardHomeConfig_BlockListValidationError) ErrorName() string {
+	return "AdGuardHomeConfig_BlockListValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e AdGuardStatus_QueryLog_RuleValidationError) Error() string {
+func (e AdGuardHomeConfig_BlockListValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -7238,14 +6511,14 @@ func (e AdGuardStatus_QueryLog_RuleValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sAdGuardStatus_QueryLog_Rule.%s: %s%s",
+		"invalid %sAdGuardHomeConfig_BlockList.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = AdGuardStatus_QueryLog_RuleValidationError{}
+var _ error = AdGuardHomeConfig_BlockListValidationError{}
 
 var _ interface {
 	Field() string
@@ -7253,268 +6526,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = AdGuardStatus_QueryLog_RuleValidationError{}
-
-// Validate checks the field values on AdGuardStatus_QueryLog_Client with the
-// rules defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *AdGuardStatus_QueryLog_Client) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on AdGuardStatus_QueryLog_Client with
-// the rules defined in the proto definition for this message. If any rules
-// are violated, the result is a list of violation errors wrapped in
-// AdGuardStatus_QueryLog_ClientMultiError, or nil if none found.
-func (m *AdGuardStatus_QueryLog_Client) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AdGuardStatus_QueryLog_Client) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if utf8.RuneCountInString(m.GetAddress()) < 1 {
-		err := AdGuardStatus_QueryLog_ClientValidationError{
-			field:  "Address",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetName()) < 1 {
-		err := AdGuardStatus_QueryLog_ClientValidationError{
-			field:  "Name",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return AdGuardStatus_QueryLog_ClientMultiError(errors)
-	}
-
-	return nil
-}
-
-// AdGuardStatus_QueryLog_ClientMultiError is an error wrapping multiple
-// validation errors returned by AdGuardStatus_QueryLog_Client.ValidateAll()
-// if the designated constraints aren't met.
-type AdGuardStatus_QueryLog_ClientMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardStatus_QueryLog_ClientMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AdGuardStatus_QueryLog_ClientMultiError) AllErrors() []error { return m }
-
-// AdGuardStatus_QueryLog_ClientValidationError is the validation error
-// returned by AdGuardStatus_QueryLog_Client.Validate if the designated
-// constraints aren't met.
-type AdGuardStatus_QueryLog_ClientValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AdGuardStatus_QueryLog_ClientValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AdGuardStatus_QueryLog_ClientValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AdGuardStatus_QueryLog_ClientValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AdGuardStatus_QueryLog_ClientValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AdGuardStatus_QueryLog_ClientValidationError) ErrorName() string {
-	return "AdGuardStatus_QueryLog_ClientValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e AdGuardStatus_QueryLog_ClientValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAdGuardStatus_QueryLog_Client.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AdGuardStatus_QueryLog_ClientValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AdGuardStatus_QueryLog_ClientValidationError{}
-
-// Validate checks the field values on AdGuardStatus_QueryLog_Response_Answer
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *AdGuardStatus_QueryLog_Response_Answer) Validate() error {
-	return m.validate(false)
-}
-
-// ValidateAll checks the field values on
-// AdGuardStatus_QueryLog_Response_Answer with the rules defined in the proto
-// definition for this message. If any rules are violated, the result is a
-// list of violation errors wrapped in
-// AdGuardStatus_QueryLog_Response_AnswerMultiError, or nil if none found.
-func (m *AdGuardStatus_QueryLog_Response_Answer) ValidateAll() error {
-	return m.validate(true)
-}
-
-func (m *AdGuardStatus_QueryLog_Response_Answer) validate(all bool) error {
-	if m == nil {
-		return nil
-	}
-
-	var errors []error
-
-	if utf8.RuneCountInString(m.GetType()) < 1 {
-		err := AdGuardStatus_QueryLog_Response_AnswerValidationError{
-			field:  "Type",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if utf8.RuneCountInString(m.GetValue()) < 1 {
-		err := AdGuardStatus_QueryLog_Response_AnswerValidationError{
-			field:  "Value",
-			reason: "value length must be at least 1 runes",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if m.GetTtl() < 0 {
-		err := AdGuardStatus_QueryLog_Response_AnswerValidationError{
-			field:  "Ttl",
-			reason: "value must be greater than or equal to 0",
-		}
-		if !all {
-			return err
-		}
-		errors = append(errors, err)
-	}
-
-	if len(errors) > 0 {
-		return AdGuardStatus_QueryLog_Response_AnswerMultiError(errors)
-	}
-
-	return nil
-}
-
-// AdGuardStatus_QueryLog_Response_AnswerMultiError is an error wrapping
-// multiple validation errors returned by
-// AdGuardStatus_QueryLog_Response_Answer.ValidateAll() if the designated
-// constraints aren't met.
-type AdGuardStatus_QueryLog_Response_AnswerMultiError []error
-
-// Error returns a concatenation of all the error messages it wraps.
-func (m AdGuardStatus_QueryLog_Response_AnswerMultiError) Error() string {
-	var msgs []string
-	for _, err := range m {
-		msgs = append(msgs, err.Error())
-	}
-	return strings.Join(msgs, "; ")
-}
-
-// AllErrors returns a list of validation violation errors.
-func (m AdGuardStatus_QueryLog_Response_AnswerMultiError) AllErrors() []error { return m }
-
-// AdGuardStatus_QueryLog_Response_AnswerValidationError is the validation
-// error returned by AdGuardStatus_QueryLog_Response_Answer.Validate if the
-// designated constraints aren't met.
-type AdGuardStatus_QueryLog_Response_AnswerValidationError struct {
-	field  string
-	reason string
-	cause  error
-	key    bool
-}
-
-// Field function returns field value.
-func (e AdGuardStatus_QueryLog_Response_AnswerValidationError) Field() string { return e.field }
-
-// Reason function returns reason value.
-func (e AdGuardStatus_QueryLog_Response_AnswerValidationError) Reason() string { return e.reason }
-
-// Cause function returns cause value.
-func (e AdGuardStatus_QueryLog_Response_AnswerValidationError) Cause() error { return e.cause }
-
-// Key function returns key value.
-func (e AdGuardStatus_QueryLog_Response_AnswerValidationError) Key() bool { return e.key }
-
-// ErrorName returns error name.
-func (e AdGuardStatus_QueryLog_Response_AnswerValidationError) ErrorName() string {
-	return "AdGuardStatus_QueryLog_Response_AnswerValidationError"
-}
-
-// Error satisfies the builtin error interface
-func (e AdGuardStatus_QueryLog_Response_AnswerValidationError) Error() string {
-	cause := ""
-	if e.cause != nil {
-		cause = fmt.Sprintf(" | caused by: %v", e.cause)
-	}
-
-	key := ""
-	if e.key {
-		key = "key for "
-	}
-
-	return fmt.Sprintf(
-		"invalid %sAdGuardStatus_QueryLog_Response_Answer.%s: %s%s",
-		key,
-		e.field,
-		e.reason,
-		cause)
-}
-
-var _ error = AdGuardStatus_QueryLog_Response_AnswerValidationError{}
-
-var _ interface {
-	Field() string
-	Reason() string
-	Key() bool
-	Cause() error
-	ErrorName() string
-} = AdGuardStatus_QueryLog_Response_AnswerValidationError{}
+} = AdGuardHomeConfig_BlockListValidationError{}

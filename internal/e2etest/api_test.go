@@ -106,8 +106,8 @@ func Test_APITunnel(t *testing.T) {
 				resp, err := apiClient.TunnelService.TunnelServiceCreateTunnel(
 					tunnel_service.NewTunnelServiceCreateTunnelParams().
 						WithBody(&models.V1CreateTunnelRequest{
-							Ag: &models.V1AdGuardConfig{
-								BlockLists: []*models.AdGuardConfigBlockList{
+							Agh: &models.V1AdGuardHomeConfig{
+								BlockLists: []*models.AdGuardHomeConfigBlockList{
 									{
 										Name: "AdGuard DNS filter",
 										URL:  "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
@@ -175,7 +175,7 @@ func Test_APITunnel(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				if !resp.Payload.Tunnel.Config.Ag.FilteringEnabled {
+				if !resp.Payload.Tunnel.Config.Agh.FilteringEnabled {
 					t.Fatalf("dns filering should be enabled")
 				}
 
@@ -196,7 +196,7 @@ func Test_APITunnel(t *testing.T) {
 						return err
 					}
 
-					if resp.Payload.Tunnel.Config.Ag.FilteringEnabled {
+					if resp.Payload.Tunnel.Config.Agh.FilteringEnabled {
 						return fmt.Errorf("dns filering should be disabled")
 					}
 
@@ -212,7 +212,7 @@ func Test_APITunnel(t *testing.T) {
 					t.Fatal(err)
 				}
 
-				if diff := cmp.Diff(1, len(resp.Payload.Tunnel.Config.Ag.BlockLists)); diff != "" {
+				if diff := cmp.Diff(1, len(resp.Payload.Tunnel.Config.Agh.BlockLists)); diff != "" {
 					t.Fatalf("mismatch of number of blocklists (-want +got): %s", diff)
 				}
 
@@ -220,7 +220,7 @@ func Test_APITunnel(t *testing.T) {
 					tunnel_service.NewTunnelServiceUpdateDNSBlockListsParams().
 						WithName(*tun.Name).
 						WithBody(tunnel_service.TunnelServiceUpdateDNSBlockListsBody{
-							BlockLists: []*models.AdGuardConfigBlockList{
+							BlockLists: []*models.AdGuardHomeConfigBlockList{
 								{
 									Name: "AdGuard DNS filter",
 									URL:  "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
@@ -242,7 +242,7 @@ func Test_APITunnel(t *testing.T) {
 						return err
 					}
 
-					if diff := cmp.Diff(2, len(resp.Payload.Tunnel.Config.Ag.BlockLists)); diff != "" {
+					if diff := cmp.Diff(2, len(resp.Payload.Tunnel.Config.Agh.BlockLists)); diff != "" {
 						return fmt.Errorf("mismatch of number of blocklists (-want +got): %s", diff)
 					}
 

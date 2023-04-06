@@ -100,7 +100,7 @@ class ApiService {
   Future<V1Tunnel> createTunnel() async {
     final api = client.getTunnelServiceApi();
     final bodyBuilder = V1CreateTunnelRequestBuilder()
-      ..ag = (V1AdGuardConfigBuilder()
+      ..agh = (V1AdGuardHomeConfigBuilder()
         ..filteringEnabled = true
         ..blockLists =
             ListBuilder(_asBlockLists(AdBlockMode.defaultMode.blocklists)));
@@ -188,9 +188,9 @@ class ApiService {
     }
   }
 
-  List<AdGuardConfigBlockList> _asBlockLists(List<AdBlockList> blocklists) {
+  List<AdGuardHomeConfigBlockList> _asBlockLists(List<AdBlockList> blocklists) {
     return blocklists.asMap().entries.map((e) {
-      final builder = AdGuardConfigBlockListBuilder()
+      final builder = AdGuardHomeConfigBlockListBuilder()
         ..name = e.value.name
         ..url = e.value.url;
       return builder.build();

@@ -44,7 +44,7 @@ func (r *Tunnel) Default() {
 		}
 	}
 
-	adGuard := r.Spec.DNS.AdGuard
+	adGuard := r.Spec.DNS.AdGuardHome
 	if adGuard != nil {
 		defaultFilteringEnabled := true
 		if adGuard.FilteringEnabled == nil {
@@ -83,7 +83,7 @@ func validateTunnel(r *Tunnel) error {
 		}
 	}
 
-	if r.Spec.DNS.AdGuard == nil {
+	if r.Spec.DNS.AdGuardHome == nil {
 		err = errors.Join(err, fmt.Errorf("AdGuard DNS is the only supported DNS and can not be empty"))
 	}
 

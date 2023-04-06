@@ -29,8 +29,8 @@ class _TunnelShowViewState extends State<TunnelShowView> {
     final wgDev = status.wg?.device;
     final iface = widget.tunnel.config!.wg!.interface_!;
     final peer = widget.tunnel.config!.wg!.peers!.first;
-    final ag = widget.tunnel.config!.ag!;
-    final bls = ag.blockLists ?? BuiltList();
+    final agh = widget.tunnel.config!.agh!;
+    final bls = agh.blockLists ?? BuiltList();
     final blocklists =
         bls.map((bl) => AdBlockList(name: bl.name!, url: bl.url!)).toList();
     final blockMode =
@@ -74,7 +74,7 @@ class _TunnelShowViewState extends State<TunnelShowView> {
         key: 'Filtering:',
         keyHelp: 'Turn on/off DNS filtering.',
         value: Switch(
-            value: ag.filteringEnabled!,
+            value: agh.filteringEnabled!,
             onChanged: (value) {
               ContextScope.of(context)
                   .apiService

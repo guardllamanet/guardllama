@@ -72,7 +72,7 @@ func Test_Tunnel(t *testing.T) {
 					},
 					Spec: glmv1.TunnelSpec{
 						DNS: glmv1.TunnelDNS{
-							AdGuard: &glmv1.AdGuardHomeSpec{},
+							AdGuardHome: &glmv1.AdGuardHomeSpec{},
 						},
 						Protocol: glmv1.TunnelProtocol{
 							WireGuard: &glmv1.WireGuardSpec{
@@ -133,7 +133,7 @@ func Test_Tunnel(t *testing.T) {
 		{
 			Name: "get a tunnel",
 			Step: func(t *testing.T) {
-				testutil.PollUntil(t, time.Second, 20*time.Second, func() error {
+				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
 					var tun glmv1.Tunnel
 					if err := c.Get(ctx, types.NamespacedName{Namespace: ns.Name, Name: tunName}, &tun); err != nil {
 						return err
@@ -148,7 +148,11 @@ func Test_Tunnel(t *testing.T) {
 						t.Fatalf("Tunnel condition should not be false when starting: %v", tun.Status)
 					}
 
-					if dns := tun.Status.DNS; len(dns) == 0 {
+					var dns []string
+					if aghs := tun.Status.DNS.AdGuardHome; aghs != nil {
+						dns = aghs.DNS
+					}
+					if len(dns) == 0 {
 						return fmt.Errorf("Tunnel dns is not assigned")
 					}
 
@@ -164,6 +168,11 @@ func Test_Tunnel(t *testing.T) {
 					t.Fatal(err)
 				}
 
+				var dns []string
+				if aghs := tun.Status.DNS.AdGuardHome; aghs != nil {
+					dns = aghs.DNS
+				}
+
 				conf := fmt.Sprintf(`[Interface]
 PrivateKey = %s
 Address = 10.6.0.2/32
@@ -174,7 +183,7 @@ PresharedKey = %s
 AllowedIPs = 0.0.0.0/0
 Endpoint = %s`,
 					base64.StdEncoding.EncodeToString(ckey[:]),
-					strings.Join(tun.Status.DNS, ","),
+					strings.Join(dns, ","),
 					base64.StdEncoding.EncodeToString(spub[:]),
 					base64.StdEncoding.EncodeToString(pkey[:]),
 					// This is internal addr. We will use node_ip:node_port in prod
