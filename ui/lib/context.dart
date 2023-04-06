@@ -40,6 +40,7 @@ class Context extends ChangeNotifier {
   Future<bool> isLoggedIn() async {
     try {
       _jwtToken = await _session.getJWTToken();
+      _api = ApiService(jwtToken: _jwtToken, talkerLogger: _talkerLogger);
       return Future.value(_jwtToken == null ? false : _jwtToken!.isNotEmpty);
     } catch (e, s) {
       talker.handle(e, s);
@@ -53,6 +54,7 @@ class Context extends ChangeNotifier {
     try {
       _session.clearSession();
       _jwtToken = null;
+      _api = ApiService(jwtToken: '', talkerLogger: _talkerLogger);
       notifyListeners();
     } catch (e, s) {
       talker.handle(e, s);

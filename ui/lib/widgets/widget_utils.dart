@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:guardllama/services/service_utils.dart';
 
 import 'snackbar_content.dart';
 
@@ -15,5 +16,10 @@ class WidgetUtils {
         iconData: Icons.info_rounded,
       ),
     ));
+  }
+
+  static Uri aghFiltersPage(String tunnelName) {
+    return Uri.parse(
+        '${ServiceUtils.serverOrigin()}/tunnels/$tunnelName/agh/#filters');
   }
 }

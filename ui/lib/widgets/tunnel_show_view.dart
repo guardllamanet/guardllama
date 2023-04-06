@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:guardllama/context.dart';
 import 'package:guardllama/widgets/key_value_table.dart';
-import 'package:guardllama/widgets/rounded_button.dart';
 import 'package:guardllama/widgets/widget_utils.dart';
 import 'package:guardllama_api/guardllama_api.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../services/api.dart';
-import 'query_logs_table.dart';
 
 class TunnelShowView extends StatefulWidget {
   final V1Tunnel tunnel;
@@ -37,7 +36,6 @@ class _TunnelShowViewState extends State<TunnelShowView> {
   Widget build(BuildContext context) {
     final status = widget.tunnel.status!;
     final wgDev = status.wg?.device;
-    final agQueryLogs = status.ag?.queryLogs;
     final iface = widget.tunnel.config!.wg!.interface_!;
     final peer = widget.tunnel.config!.wg!.peers!.first;
     final ag = widget.tunnel.config!.ag!;
@@ -114,49 +112,18 @@ class _TunnelShowViewState extends State<TunnelShowView> {
             },
           )),
       KeyValueRow(
-        key: 'Filtering rules:',
+        key: 'Adanced configuration:',
         keyHelp:
-            'Filtering rules examples:\n1. ||example.org^: block access to example.org and all its subdomains;\n2. @@||example.org^: unblock access to example.org and all its subdomains;\n3. 127.0.0.1 example.org: respond with 127.0.0.1 for example.org (but not for its subdomains);\n4. ! Here goes a comment.: just a comment;\n5. # Also a comment.: just a comment;\n6. /REGEX/: block access to domains matching the specified regular expression.',
-        value: Padding(
-          padding: const EdgeInsets.only(bottom: 10),
-          child: Form(
-            child: ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: Transform.translate(
-                offset: const Offset(-16, 0),
-                child: TextFormField(
-                  keyboardType: TextInputType.multiline,
-                  minLines: 10,
-                  maxLines: null,
-                  controller: _filteringRulesController,
-                  textInputAction: TextInputAction.send,
-                  decoration: const InputDecoration(
-                      isDense: true,
-                      border: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.black))),
-                ),
-              ),
-              trailing: Transform.translate(
-                  offset: const Offset(-16, 0),
-                  child: RoundedButton(
-                      text: 'Apply',
-                      onPressed: () {
-                        ContextScope.of(context)
-                            .apiService
-                            .updateDNSFilteringRules(
-                                widget.tunnel.name,
-                                _filteringRulesController.text
-                                    .split("\n")
-                                    .where((element) => element.isNotEmpty)
-                                    .toList())
-                            .then((_) {
-                          widget.tunnelUpdated();
-                          WidgetUtils.showInfo(
-                              context, "Filtering rules updated");
-                        });
-                      })),
+            'Configure advanced DNS settings on the AdGuardHome dashboard.',
+        value: InkWell(
+          child: Text(
+            'Go to AdGuardHome',
+            style: TextStyle(
+              color: Theme.of(context).primaryColor,
             ),
           ),
+          onTap: () =>
+              launchUrl(WidgetUtils.aghFiltersPage(widget.tunnel.name)),
         ),
       ),
     ];
@@ -191,11 +158,10 @@ class _TunnelShowViewState extends State<TunnelShowView> {
         header,
         Expanded(
           child: DefaultTabController(
-            length: 3,
+            length: 2,
             child: Column(
               children: [
                 TabBar(
-                  //isScrollable: true,
                   indicatorSize: TabBarIndicatorSize.label,
                   labelColor: Colors.black,
                   overlayColor: MaterialStateColor.resolveWith((states) {
@@ -207,16 +173,12 @@ class _TunnelShowViewState extends State<TunnelShowView> {
                   tabs: const [
                     Tab(
                       icon: Icon(Icons.vpn_key_rounded),
-                      text: "VPN",
+                      text: "WireGuard",
                     ),
                     Tab(
                       icon: Icon(Icons.filter_rounded),
-                      text: "Filters",
+                      text: "AdGuardHome",
                     ),
-                    Tab(
-                      icon: Icon(Icons.manage_search_rounded),
-                      text: "Query Logs",
-                    )
                   ],
                 ),
                 Expanded(
@@ -224,15 +186,6 @@ class _TunnelShowViewState extends State<TunnelShowView> {
                     children: [
                       buildTab(configRows, 60),
                       buildTab(dnsRows, 100),
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: QueryLogsTable(
-                              logs: agQueryLogs == null
-                                  ? List.empty()
-                                  : agQueryLogs.toList()),
-                        ),
-                      ),
                     ],
                   ),
                 )

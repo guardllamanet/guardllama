@@ -1,8 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:guardllama_api/guardllama_api.dart';
 import 'package:dio/dio.dart';
 import 'package:talker_dio_logger/talker_dio_logger.dart';
 import 'package:built_collection/built_collection.dart';
+
+import 'service_utils.dart';
 
 class AdBlockList {
   final String name;
@@ -89,9 +90,7 @@ class ApiService {
     client = GuardllamaApi(
       dio: Dio(
         BaseOptions(
-          baseUrl: kDebugMode
-              ? 'http://localhost:38080/api'
-              : '${Uri.base.origin}/api',
+          baseUrl: '${ServiceUtils.serverOrigin()}/api',
         ),
       ),
       interceptors: interceptors,
