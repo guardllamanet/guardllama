@@ -80,6 +80,10 @@ type AdGuardSpec struct {
 	Rules            []string             `json:"rules,omitempty"`
 }
 
+func (s AdGuardSpec) IsFilteringEnabled() bool {
+	return s.FilteringEnabled == nil || *s.FilteringEnabled
+}
+
 type TunnelDNSBlockList struct {
 	ID      int32  `json:"id"`
 	Name    string `json:"name"`

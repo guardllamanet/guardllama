@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"net/http/httputil"
 	"time"
 
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -18,6 +20,7 @@ import (
 
 	"github.com/go-logr/logr"
 	glmv1 "github.com/guardllamanet/guardllama/api/v1"
+	adguard "github.com/guardllamanet/guardllama/internal/adguard/gen"
 	apiv1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -40,7 +43,6 @@ const (
 
 	labelTunnelName               = SystemLabelPrefix + "/tunnel-name"
 	annotationTunnelConfigVersion = SystemLabelPrefix + "/tunnel-config-version"
-	annotationDNSConfigVersion    = SystemLabelPrefix + "/dns-config-version"
 )
 
 var (
@@ -131,22 +133,26 @@ func (r *TunnelReconciler) reconcileTunnel(ctx context.Context, tun *glmv1.Tunne
 		}
 	}
 
-	dnsCfg, err := r.upsertDNSServerConfig(ctx, tun)
+	dnsCfg, err := r.upsertAGHInitialConfig(ctx, tun)
 	if err != nil {
-		returnErr = errors.Join(returnErr, fmt.Errorf("error upserting dns server config: %w", err))
+		returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH initial config: %w", err))
 	}
 
 	if dnsCfg != nil {
-		if _, err := r.upsertDNSServerPVC(ctx, tun); err != nil {
-			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting dns server pvc: %w", err))
+		if _, err := r.upsertAGHConfigPVC(ctx, tun); err != nil {
+			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH config pvc: %w", err))
 		}
 
-		if _, err := r.upsertDNSServerDeploy(ctx, tun, dnsCfg); err != nil {
-			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting dns server deploy: %w", err))
+		if _, err := r.upsertAGHDeploy(ctx, tun); err != nil {
+			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH deploy: %w", err))
 		}
 
-		if _, err := r.upsertDNSServerService(ctx, tun); err != nil {
-			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting dns server service: %w", err))
+		if _, err := r.upsertAGHService(ctx, tun); err != nil {
+			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH service: %w", err))
+		}
+
+		if err := r.upsertAGHConfig(ctx, tun); err != nil {
+			returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH config: %w", err))
 		}
 	}
 
@@ -445,7 +451,7 @@ func (r *TunnelReconciler) upsertTunnelService(ctx context.Context, tun *glmv1.T
 	return controllerutil.OperationResultUpdated, nil
 }
 
-func (r *TunnelReconciler) upsertDNSServerConfig(ctx context.Context, tun *glmv1.Tunnel) (*corev1.ConfigMap, error) {
+func (r *TunnelReconciler) upsertAGHInitialConfig(ctx context.Context, tun *glmv1.Tunnel) (*corev1.ConfigMap, error) {
 	cfg, err := adGuardHomeConfig(tun.Spec.DNS.AdGuard)
 	if err != nil {
 		return nil, err
@@ -485,7 +491,7 @@ func (r *TunnelReconciler) upsertDNSServerConfig(ctx context.Context, tun *glmv1
 	return cm, nil
 }
 
-func (r *TunnelReconciler) upsertDNSServerPVC(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
+func (r *TunnelReconciler) upsertAGHConfigPVC(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
 	pvc := &corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      tun.AdGuardConfigPVCName(),
@@ -525,7 +531,7 @@ func (r *TunnelReconciler) upsertDNSServerPVC(ctx context.Context, tun *glmv1.Tu
 	return op, err
 }
 
-func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1.Tunnel, cfg *corev1.ConfigMap) (controllerutil.OperationResult, error) {
+func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
 	var (
 		labels = labelsDNSDeploy(tun)
 	)
@@ -542,7 +548,7 @@ func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1
 		}
 		deploy.Spec.Template.ObjectMeta = metav1.ObjectMeta{
 			Labels:      labels,
-			Annotations: annosTunnelWithAssociatedObject(tun, cfg, annotationDNSConfigVersion),
+			Annotations: filterSystemLabels(tun.Annotations),
 		}
 		deploy.Spec.Template.Spec.InitContainers = []corev1.Container{
 			{
@@ -672,7 +678,7 @@ func (r *TunnelReconciler) upsertDNSServerDeploy(ctx context.Context, tun *glmv1
 	return op, err
 }
 
-func (r *TunnelReconciler) upsertDNSServerService(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
+func (r *TunnelReconciler) upsertAGHService(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      tun.AdGuardServiceName(),
@@ -726,6 +732,64 @@ func (r *TunnelReconciler) upsertDNSServerService(ctx context.Context, tun *glmv
 	}
 
 	return op, err
+}
+
+func (r *TunnelReconciler) upsertAGHConfig(ctx context.Context, tun *glmv1.Tunnel) error {
+	conf := adguard.NewConfiguration()
+	conf.Host = tun.AdGuardServiceHost()
+	conf.Scheme = "http"
+	conf.HTTPClient = newHTTPClient()
+
+	client := adguard.NewAPIClient(conf)
+	status, _, err := client.FilteringApi.FilteringStatus(ctx).Execute()
+	if err != nil {
+		return err
+	}
+
+	if tun.Spec.DNS.AdGuard.IsFilteringEnabled() != toBool(status.Enabled) {
+		fc := adguard.NewFilterConfig()
+		fc.SetEnabled(tun.Spec.DNS.AdGuard.IsFilteringEnabled())
+		fc.SetInterval(24)
+
+		if resp, err := client.FilteringApi.FilteringConfig(ctx).FilterConfig(*fc).Execute(); err != nil {
+			return &errHTTPResponse{msg: "error updating filter config", resp: resp}
+		}
+	}
+
+	existingFilteringURLs := make(map[string]struct{})
+	for _, fl := range status.Filters {
+		existingFilteringURLs[fl.Url] = struct{}{}
+	}
+
+	desiredFilteringURLs := make(map[string]glmv1.TunnelDNSBlockList)
+	for _, bl := range tun.Spec.DNS.AdGuard.BlockLists {
+		desiredFilteringURLs[bl.URL] = bl
+	}
+
+	for _, bl := range desiredFilteringURLs {
+		if _, ok := existingFilteringURLs[bl.URL]; !ok {
+			u := adguard.NewAddUrlRequestWithDefaults()
+			u.SetName(bl.Name)
+			u.SetUrl(bl.URL)
+
+			if resp, err := client.FilteringApi.FilteringAddURL(ctx).AddUrlRequest(*u).Execute(); err != nil {
+				return &errHTTPResponse{msg: "error adding blocklist", resp: resp}
+			}
+		}
+	}
+
+	for bl := range existingFilteringURLs {
+		if _, ok := desiredFilteringURLs[bl]; !ok {
+			u := adguard.NewRemoveUrlRequestWithDefaults()
+			u.SetUrl(bl)
+
+			if resp, err := client.FilteringApi.FilteringRemoveURL(ctx).RemoveUrlRequest(*u).Execute(); err != nil {
+				return &errHTTPResponse{msg: "error remove blocklist", resp: resp}
+			}
+		}
+	}
+
+	return nil
 }
 
 func (r *TunnelReconciler) SetupWithManager(mgr ctrl.Manager) error {
@@ -880,4 +944,32 @@ func getValueOrValueFrom(ctx context.Context, c client.Reader, ns string, i glmv
 	}
 
 	return string(valBytes), nil
+}
+
+func newHTTPClient() *http.Client {
+	return &http.Client{
+		Timeout: 5 * time.Second,
+	}
+}
+
+func toBool(value *bool) bool {
+	if value == nil {
+		return false
+	}
+
+	return *value
+}
+
+type errHTTPResponse struct {
+	msg  string
+	resp *http.Response
+}
+
+func (e *errHTTPResponse) Error() string {
+	b, err := httputil.DumpResponse(e.resp, true)
+	if err != nil {
+		return fmt.Sprintf("HTTP %d (failed to dump response: %s)", e.resp.StatusCode, err)
+	}
+
+	return fmt.Sprintf("%s: %s", e.msg, b)
 }
