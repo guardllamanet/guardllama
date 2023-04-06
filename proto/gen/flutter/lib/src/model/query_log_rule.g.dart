@@ -1,40 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'ad_guard_status_query_log_rule.dart';
+part of 'query_log_rule.dart';
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-class _$AdGuardStatusQueryLogRule extends AdGuardStatusQueryLogRule {
+class _$QueryLogRule extends QueryLogRule {
   @override
   final String? filterId;
   @override
   final String text;
 
-  factory _$AdGuardStatusQueryLogRule(
-          [void Function(AdGuardStatusQueryLogRuleBuilder)? updates]) =>
-      (new AdGuardStatusQueryLogRuleBuilder()..update(updates))._build();
+  factory _$QueryLogRule([void Function(QueryLogRuleBuilder)? updates]) =>
+      (new QueryLogRuleBuilder()..update(updates))._build();
 
-  _$AdGuardStatusQueryLogRule._({this.filterId, required this.text})
-      : super._() {
-    BuiltValueNullFieldError.checkNotNull(
-        text, r'AdGuardStatusQueryLogRule', 'text');
+  _$QueryLogRule._({this.filterId, required this.text}) : super._() {
+    BuiltValueNullFieldError.checkNotNull(text, r'QueryLogRule', 'text');
   }
 
   @override
-  AdGuardStatusQueryLogRule rebuild(
-          void Function(AdGuardStatusQueryLogRuleBuilder) updates) =>
+  QueryLogRule rebuild(void Function(QueryLogRuleBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  AdGuardStatusQueryLogRuleBuilder toBuilder() =>
-      new AdGuardStatusQueryLogRuleBuilder()..replace(this);
+  QueryLogRuleBuilder toBuilder() => new QueryLogRuleBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is AdGuardStatusQueryLogRule &&
+    return other is QueryLogRule &&
         filterId == other.filterId &&
         text == other.text;
   }
@@ -50,17 +45,16 @@ class _$AdGuardStatusQueryLogRule extends AdGuardStatusQueryLogRule {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'AdGuardStatusQueryLogRule')
+    return (newBuiltValueToStringHelper(r'QueryLogRule')
           ..add('filterId', filterId)
           ..add('text', text))
         .toString();
   }
 }
 
-class AdGuardStatusQueryLogRuleBuilder
-    implements
-        Builder<AdGuardStatusQueryLogRule, AdGuardStatusQueryLogRuleBuilder> {
-  _$AdGuardStatusQueryLogRule? _$v;
+class QueryLogRuleBuilder
+    implements Builder<QueryLogRule, QueryLogRuleBuilder> {
+  _$QueryLogRule? _$v;
 
   String? _filterId;
   String? get filterId => _$this._filterId;
@@ -70,11 +64,11 @@ class AdGuardStatusQueryLogRuleBuilder
   String? get text => _$this._text;
   set text(String? text) => _$this._text = text;
 
-  AdGuardStatusQueryLogRuleBuilder() {
-    AdGuardStatusQueryLogRule._defaults(this);
+  QueryLogRuleBuilder() {
+    QueryLogRule._defaults(this);
   }
 
-  AdGuardStatusQueryLogRuleBuilder get _$this {
+  QueryLogRuleBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _filterId = $v.filterId;
@@ -85,25 +79,25 @@ class AdGuardStatusQueryLogRuleBuilder
   }
 
   @override
-  void replace(AdGuardStatusQueryLogRule other) {
+  void replace(QueryLogRule other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$AdGuardStatusQueryLogRule;
+    _$v = other as _$QueryLogRule;
   }
 
   @override
-  void update(void Function(AdGuardStatusQueryLogRuleBuilder)? updates) {
+  void update(void Function(QueryLogRuleBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  AdGuardStatusQueryLogRule build() => _build();
+  QueryLogRule build() => _build();
 
-  _$AdGuardStatusQueryLogRule _build() {
+  _$QueryLogRule _build() {
     final _$result = _$v ??
-        new _$AdGuardStatusQueryLogRule._(
+        new _$QueryLogRule._(
             filterId: filterId,
             text: BuiltValueNullFieldError.checkNotNull(
-                text, r'AdGuardStatusQueryLogRule', 'text'));
+                text, r'QueryLogRule', 'text'));
     replace(_$result);
     return _$result;
   }

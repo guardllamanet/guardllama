@@ -57,27 +57,17 @@ spec:
                       blockLists:
                         items:
                           properties:
-                            enabled:
-                              type: boolean
-                            id:
-                              format: int32
-                              type: integer
                             name:
                               type: string
                             url:
                               type: string
                           required:
-                          - id
                           - name
                           - url
                           type: object
                         type: array
                       filteringEnabled:
                         type: boolean
-                      rules:
-                        items:
-                          type: string
-                        type: array
                     type: object
                 type: object
               protocol:

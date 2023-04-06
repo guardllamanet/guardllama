@@ -109,10 +109,8 @@ func Test_APITunnel(t *testing.T) {
 							Ag: &models.V1AdGuardConfig{
 								BlockLists: []*models.AdGuardConfigBlockList{
 									{
-										ID:      0,
-										Name:    "AdGuard DNS filter",
-										URL:     "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
-										Enabled: true,
+										Name: "AdGuard DNS filter",
+										URL:  "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
 									},
 								},
 							},
@@ -156,7 +154,7 @@ func Test_APITunnel(t *testing.T) {
 						return nil
 					}
 
-					return fmt.Errorf("tunnel status not ready: %v", resp.Payload.Tunnel)
+					return fmt.Errorf("tunnel status not ready: %v", resp.Payload.Tunnel.Status)
 				})
 			},
 		},
@@ -224,16 +222,12 @@ func Test_APITunnel(t *testing.T) {
 						WithBody(tunnel_service.TunnelServiceUpdateDNSBlockListsBody{
 							BlockLists: []*models.AdGuardConfigBlockList{
 								{
-									ID:      0,
-									Name:    "AdGuard DNS filter",
-									URL:     "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
-									Enabled: true,
+									Name: "AdGuard DNS filter",
+									URL:  "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
 								},
 								{
-									ID:      1,
-									Name:    "AdAway Default Blocklist",
-									URL:     "https://adaway.org/hosts.txt",
-									Enabled: true,
+									Name: "AdAway Default Blocklist",
+									URL:  "https://adaway.org/hosts.txt",
 								},
 							},
 						}),
@@ -250,47 +244,6 @@ func Test_APITunnel(t *testing.T) {
 
 					if diff := cmp.Diff(2, len(resp.Payload.Tunnel.Config.Ag.BlockLists)); diff != "" {
 						return fmt.Errorf("mismatch of number of blocklists (-want +got): %s", diff)
-					}
-
-					return nil
-				})
-			},
-		},
-		{
-			Name: "update dns filtering rules",
-			Step: func(t *testing.T) {
-				resp, err := apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
-				if err != nil {
-					t.Fatal(err)
-				}
-
-				if diff := cmp.Diff([]*models.V1AdGuardConfigRule{}, resp.Payload.Tunnel.Config.Ag.Rules); diff != "" {
-					t.Fatalf("mismatch of filtering rules (-want +got): %s", diff)
-				}
-
-				_, err = apiClient.TunnelService.TunnelServiceUpdateDNSFilteringRules(
-					tunnel_service.NewTunnelServiceUpdateDNSFilteringRulesParams().
-						WithName(*tun.Name).
-						WithBody(tunnel_service.TunnelServiceUpdateDNSFilteringRulesBody{
-							Rules: []*models.V1AdGuardConfigRule{
-								{
-									Rule: "||example.org^",
-								},
-							},
-						}),
-				)
-				if err != nil {
-					t.Fatal(err)
-				}
-
-				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
-					resp, err = apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
-					if err != nil {
-						return err
-					}
-
-					if diff := cmp.Diff([]*models.V1AdGuardConfigRule{{Rule: "||example.org^"}}, resp.Payload.Tunnel.Config.Ag.Rules); diff != "" {
-						return fmt.Errorf("mismatch of filtering rules (-want +got): %s", diff)
 					}
 
 					return nil

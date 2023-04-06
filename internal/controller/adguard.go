@@ -120,17 +120,14 @@ statistics:
   interval: 1
   ignored: []
 filters:
-{{- range .BlockLists }}
-  - enabled: {{ deref_bool .Enabled }}
-    url: {{ .URL }}
-    name: {{ .Name }}
-    id: {{ .ID }}
+{{- range $i, $bl := .BlockLists }}
+  - enabled: true
+    url: {{ $bl.URL }}
+    name: {{ $bl.Name }}
+    id: {{ $i }}
 {{- end }}
 whitelist_filters: []
-user_rules:
-{{- range .Rules }}
-  - '{{ . }}'
-{{- end}}
+user_rules: []
 dhcp:
   enabled: false
   interface_name: ""
@@ -184,7 +181,7 @@ var (
 		Parse(adGuardHomeConfigTmpl))
 )
 
-func adGuardHomeConfig(cfg *glmv1.AdGuardSpec) (string, error) {
+func adGuardHomeConfig(cfg *glmv1.AdGuardHomeSpec) (string, error) {
 	buf := bytes.NewBuffer(nil)
 	if err := tmpl.Execute(buf, cfg); err != nil {
 		return "", err

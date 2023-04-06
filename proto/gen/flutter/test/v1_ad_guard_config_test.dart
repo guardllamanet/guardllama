@@ -17,10 +17,5 @@ void main() {
       // TODO
     });
 
-    // BuiltList<V1AdGuardConfigRule> rules
-    test('to test the property `rules`', () async {
-      // TODO
-    });
-
   });
 }

@@ -6,42 +6,42 @@
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'ad_guard_status_query_log_rule.g.dart';
+part 'query_log_rule.g.dart';
 
-/// AdGuardStatusQueryLogRule
+/// QueryLogRule
 ///
 /// Properties:
 /// * [filterId] 
 /// * [text] 
 @BuiltValue()
-abstract class AdGuardStatusQueryLogRule implements Built<AdGuardStatusQueryLogRule, AdGuardStatusQueryLogRuleBuilder> {
+abstract class QueryLogRule implements Built<QueryLogRule, QueryLogRuleBuilder> {
   @BuiltValueField(wireName: r'filter_id')
   String? get filterId;
 
   @BuiltValueField(wireName: r'text')
   String get text;
 
-  AdGuardStatusQueryLogRule._();
+  QueryLogRule._();
 
-  factory AdGuardStatusQueryLogRule([void updates(AdGuardStatusQueryLogRuleBuilder b)]) = _$AdGuardStatusQueryLogRule;
+  factory QueryLogRule([void updates(QueryLogRuleBuilder b)]) = _$QueryLogRule;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(AdGuardStatusQueryLogRuleBuilder b) => b;
+  static void _defaults(QueryLogRuleBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<AdGuardStatusQueryLogRule> get serializer => _$AdGuardStatusQueryLogRuleSerializer();
+  static Serializer<QueryLogRule> get serializer => _$QueryLogRuleSerializer();
 }
 
-class _$AdGuardStatusQueryLogRuleSerializer implements PrimitiveSerializer<AdGuardStatusQueryLogRule> {
+class _$QueryLogRuleSerializer implements PrimitiveSerializer<QueryLogRule> {
   @override
-  final Iterable<Type> types = const [AdGuardStatusQueryLogRule, _$AdGuardStatusQueryLogRule];
+  final Iterable<Type> types = const [QueryLogRule, _$QueryLogRule];
 
   @override
-  final String wireName = r'AdGuardStatusQueryLogRule';
+  final String wireName = r'QueryLogRule';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    AdGuardStatusQueryLogRule object, {
+    QueryLogRule object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     if (object.filterId != null) {
@@ -61,7 +61,7 @@ class _$AdGuardStatusQueryLogRuleSerializer implements PrimitiveSerializer<AdGua
   @override
   Object serialize(
     Serializers serializers,
-    AdGuardStatusQueryLogRule object, {
+    QueryLogRule object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -72,7 +72,7 @@ class _$AdGuardStatusQueryLogRuleSerializer implements PrimitiveSerializer<AdGua
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required AdGuardStatusQueryLogRuleBuilder result,
+    required QueryLogRuleBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -102,12 +102,12 @@ class _$AdGuardStatusQueryLogRuleSerializer implements PrimitiveSerializer<AdGua
   }
 
   @override
-  AdGuardStatusQueryLogRule deserialize(
+  QueryLogRule deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = AdGuardStatusQueryLogRuleBuilder();
+    final result = QueryLogRuleBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

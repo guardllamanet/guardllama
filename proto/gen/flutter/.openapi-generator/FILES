@@ -5,7 +5,6 @@ analysis_options.yaml
 doc/AdGuardConfigBlockList.md
 doc/AdGuardStatusQueryLog.md
 doc/AdGuardStatusQueryLogResponse.md
-doc/AdGuardStatusQueryLogRule.md
 doc/Apiv1Credentials.md
 doc/AuthServiceApi.md
 doc/ClusterK3d.md
@@ -19,6 +18,7 @@ doc/ProtobufAny.md
 doc/QueryLogClient.md
 doc/QueryLogReason.md
 doc/QueryLogRequest.md
+doc/QueryLogRule.md
 doc/ResponseAnswer.md
 doc/RpcStatus.md
 doc/ServerConfigCluster.md
@@ -27,10 +27,8 @@ doc/ServerServiceApi.md
 doc/TunnelServiceApi.md
 doc/TunnelServiceUpdateDNSBlockListsRequest.md
 doc/TunnelServiceUpdateDNSFilteringEnabledRequest.md
-doc/TunnelServiceUpdateDNSFilteringRulesRequest.md
 doc/TunnelStatusState.md
 doc/V1AdGuardConfig.md
-doc/V1AdGuardConfigRule.md
 doc/V1AdGuardStatus.md
 doc/V1AuthenticateRequest.md
 doc/V1AuthenticateResponse.md
@@ -73,7 +71,6 @@ lib/src/date_serializer.dart
 lib/src/model/ad_guard_config_block_list.dart
 lib/src/model/ad_guard_status_query_log.dart
 lib/src/model/ad_guard_status_query_log_response.dart
-lib/src/model/ad_guard_status_query_log_rule.dart
 lib/src/model/apiv1_credentials.dart
 lib/src/model/cluster_k3d.dart
 lib/src/model/credentials_api.dart
@@ -87,16 +84,15 @@ lib/src/model/protobuf_any.dart
 lib/src/model/query_log_client.dart
 lib/src/model/query_log_reason.dart
 lib/src/model/query_log_request.dart
+lib/src/model/query_log_rule.dart
 lib/src/model/response_answer.dart
 lib/src/model/rpc_status.dart
 lib/src/model/server_config_cluster.dart
 lib/src/model/server_config_image.dart
 lib/src/model/tunnel_service_update_dns_block_lists_request.dart
 lib/src/model/tunnel_service_update_dns_filtering_enabled_request.dart
-lib/src/model/tunnel_service_update_dns_filtering_rules_request.dart
 lib/src/model/tunnel_status_state.dart
 lib/src/model/v1_ad_guard_config.dart
-lib/src/model/v1_ad_guard_config_rule.dart
 lib/src/model/v1_ad_guard_status.dart
 lib/src/model/v1_authenticate_request.dart
 lib/src/model/v1_authenticate_response.dart
@@ -126,7 +122,6 @@ lib/src/serializers.dart
 pubspec.yaml
 test/ad_guard_config_block_list_test.dart
 test/ad_guard_status_query_log_response_test.dart
-test/ad_guard_status_query_log_rule_test.dart
 test/ad_guard_status_query_log_test.dart
 test/apiv1_credentials_test.dart
 test/auth_service_api_test.dart
@@ -141,6 +136,7 @@ test/protobuf_any_test.dart
 test/query_log_client_test.dart
 test/query_log_reason_test.dart
 test/query_log_request_test.dart
+test/query_log_rule_test.dart
 test/response_answer_test.dart
 test/rpc_status_test.dart
 test/server_config_cluster_test.dart
@@ -149,9 +145,7 @@ test/server_service_api_test.dart
 test/tunnel_service_api_test.dart
 test/tunnel_service_update_dns_block_lists_request_test.dart
 test/tunnel_service_update_dns_filtering_enabled_request_test.dart
-test/tunnel_service_update_dns_filtering_rules_request_test.dart
 test/tunnel_status_state_test.dart
-test/v1_ad_guard_config_rule_test.dart
 test/v1_ad_guard_config_test.dart
 test/v1_ad_guard_status_test.dart
 test/v1_authenticate_request_test.dart

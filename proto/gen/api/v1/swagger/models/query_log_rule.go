@@ -14,10 +14,10 @@ import (
 	"github.com/go-openapi/validate"
 )
 
-// AdGuardStatusQueryLogRule ad guard status query log rule
+// QueryLogRule query log rule
 //
-// swagger:model AdGuardStatusQueryLogRule
-type AdGuardStatusQueryLogRule struct {
+// swagger:model QueryLogRule
+type QueryLogRule struct {
 
 	// filter id
 	FilterID string `json:"filter_id,omitempty"`
@@ -27,8 +27,8 @@ type AdGuardStatusQueryLogRule struct {
 	Text *string `json:"text"`
 }
 
-// Validate validates this ad guard status query log rule
-func (m *AdGuardStatusQueryLogRule) Validate(formats strfmt.Registry) error {
+// Validate validates this query log rule
+func (m *QueryLogRule) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateText(formats); err != nil {
@@ -41,7 +41,7 @@ func (m *AdGuardStatusQueryLogRule) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *AdGuardStatusQueryLogRule) validateText(formats strfmt.Registry) error {
+func (m *QueryLogRule) validateText(formats strfmt.Registry) error {
 
 	if err := validate.Required("text", "body", m.Text); err != nil {
 		return err
@@ -50,13 +50,13 @@ func (m *AdGuardStatusQueryLogRule) validateText(formats strfmt.Registry) error 
 	return nil
 }
 
-// ContextValidate validates this ad guard status query log rule based on context it is used
-func (m *AdGuardStatusQueryLogRule) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+// ContextValidate validates this query log rule based on context it is used
+func (m *QueryLogRule) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	return nil
 }
 
 // MarshalBinary interface implementation
-func (m *AdGuardStatusQueryLogRule) MarshalBinary() ([]byte, error) {
+func (m *QueryLogRule) MarshalBinary() ([]byte, error) {
 	if m == nil {
 		return nil, nil
 	}
@@ -64,8 +64,8 @@ func (m *AdGuardStatusQueryLogRule) MarshalBinary() ([]byte, error) {
 }
 
 // UnmarshalBinary interface implementation
-func (m *AdGuardStatusQueryLogRule) UnmarshalBinary(b []byte) error {
-	var res AdGuardStatusQueryLogRule
+func (m *QueryLogRule) UnmarshalBinary(b []byte) error {
+	var res QueryLogRule
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

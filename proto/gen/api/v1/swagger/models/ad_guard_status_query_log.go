@@ -37,7 +37,7 @@ type AdGuardStatusQueryLog struct {
 	Response *AdGuardStatusQueryLogResponse `json:"response"`
 
 	// rules
-	Rules []*AdGuardStatusQueryLogRule `json:"rules"`
+	Rules []*QueryLogRule `json:"rules"`
 
 	// timestamp
 	// Required: true

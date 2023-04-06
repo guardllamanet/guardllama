@@ -73,7 +73,6 @@ Class | Method | HTTP request | Description
 [*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceRemoveTunnel**](doc/TunnelServiceApi.md#tunnelserviceremovetunnel) | **DELETE** /tunnels/{name} | 
 [*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceUpdateDNSBlockLists**](doc/TunnelServiceApi.md#tunnelserviceupdatednsblocklists) | **PUT** /tunnels/{name}/dns_block_lists | 
 [*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceUpdateDNSFilteringEnabled**](doc/TunnelServiceApi.md#tunnelserviceupdatednsfilteringenabled) | **PUT** /tunnels/{name}/dns_filtering_enabled | 
-[*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceUpdateDNSFilteringRules**](doc/TunnelServiceApi.md#tunnelserviceupdatednsfilteringrules) | **PUT** /tunnels/{name}/dns_filtering_rules | 
 [*WireGuardServiceApi*](doc/WireGuardServiceApi.md) | [**wireGuardServiceGetWireGuardDevice**](doc/WireGuardServiceApi.md#wireguardservicegetwireguarddevice) | **GET** /device | 
 
 
@@ -82,7 +81,6 @@ Class | Method | HTTP request | Description
  - [AdGuardConfigBlockList](doc/AdGuardConfigBlockList.md)
  - [AdGuardStatusQueryLog](doc/AdGuardStatusQueryLog.md)
  - [AdGuardStatusQueryLogResponse](doc/AdGuardStatusQueryLogResponse.md)
- - [AdGuardStatusQueryLogRule](doc/AdGuardStatusQueryLogRule.md)
  - [Apiv1Credentials](doc/Apiv1Credentials.md)
  - [ClusterK3d](doc/ClusterK3d.md)
  - [CredentialsApi](doc/CredentialsApi.md)
@@ -95,16 +93,15 @@ Class | Method | HTTP request | Description
  - [QueryLogClient](doc/QueryLogClient.md)
  - [QueryLogReason](doc/QueryLogReason.md)
  - [QueryLogRequest](doc/QueryLogRequest.md)
+ - [QueryLogRule](doc/QueryLogRule.md)
  - [ResponseAnswer](doc/ResponseAnswer.md)
  - [RpcStatus](doc/RpcStatus.md)
  - [ServerConfigCluster](doc/ServerConfigCluster.md)
  - [ServerConfigImage](doc/ServerConfigImage.md)
  - [TunnelServiceUpdateDNSBlockListsRequest](doc/TunnelServiceUpdateDNSBlockListsRequest.md)
  - [TunnelServiceUpdateDNSFilteringEnabledRequest](doc/TunnelServiceUpdateDNSFilteringEnabledRequest.md)
- - [TunnelServiceUpdateDNSFilteringRulesRequest](doc/TunnelServiceUpdateDNSFilteringRulesRequest.md)
  - [TunnelStatusState](doc/TunnelStatusState.md)
  - [V1AdGuardConfig](doc/V1AdGuardConfig.md)
- - [V1AdGuardConfigRule](doc/V1AdGuardConfigRule.md)
  - [V1AdGuardStatus](doc/V1AdGuardStatus.md)
  - [V1AuthenticateRequest](doc/V1AuthenticateRequest.md)
  - [V1AuthenticateResponse](doc/V1AuthenticateResponse.md)

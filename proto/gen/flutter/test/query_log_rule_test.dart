@@ -1,12 +1,12 @@
 import 'package:test/test.dart';
 import 'package:guardllama_api/guardllama_api.dart';
 
-// tests for AdGuardStatusQueryLogRule
+// tests for QueryLogRule
 void main() {
-  final instance = AdGuardStatusQueryLogRuleBuilder();
+  final instance = QueryLogRuleBuilder();
   // TODO add properties to the builder and call build()
 
-  group(AdGuardStatusQueryLogRule, () {
+  group(QueryLogRule, () {
     // String filterId
     test('to test the property `filterId`', () async {
       // TODO

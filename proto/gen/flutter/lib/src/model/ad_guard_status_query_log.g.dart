@@ -16,7 +16,7 @@ class _$AdGuardStatusQueryLog extends AdGuardStatusQueryLog {
   @override
   final QueryLogReason reason;
   @override
-  final BuiltList<AdGuardStatusQueryLogRule>? rules;
+  final BuiltList<QueryLogRule>? rules;
   @override
   final QueryLogClient client;
 
@@ -114,11 +114,10 @@ class AdGuardStatusQueryLogBuilder
   QueryLogReason? get reason => _$this._reason;
   set reason(QueryLogReason? reason) => _$this._reason = reason;
 
-  ListBuilder<AdGuardStatusQueryLogRule>? _rules;
-  ListBuilder<AdGuardStatusQueryLogRule> get rules =>
-      _$this._rules ??= new ListBuilder<AdGuardStatusQueryLogRule>();
-  set rules(ListBuilder<AdGuardStatusQueryLogRule>? rules) =>
-      _$this._rules = rules;
+  ListBuilder<QueryLogRule>? _rules;
+  ListBuilder<QueryLogRule> get rules =>
+      _$this._rules ??= new ListBuilder<QueryLogRule>();
+  set rules(ListBuilder<QueryLogRule>? rules) => _$this._rules = rules;
 
   QueryLogClientBuilder? _client;
   QueryLogClientBuilder get client =>

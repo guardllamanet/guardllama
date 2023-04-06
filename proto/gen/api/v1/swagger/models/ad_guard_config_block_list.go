@@ -17,12 +17,6 @@ import (
 // swagger:model AdGuardConfigBlockList
 type AdGuardConfigBlockList struct {
 
-	// enabled
-	Enabled bool `json:"enabled,omitempty"`
-
-	// id
-	ID int32 `json:"id,omitempty"`
-
 	// name
 	Name string `json:"name,omitempty"`
 

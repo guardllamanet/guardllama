@@ -4,7 +4,6 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:guardllama_api/src/model/v1_ad_guard_config_rule.dart';
 import 'package:guardllama_api/src/model/ad_guard_config_block_list.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -16,7 +15,6 @@ part 'v1_ad_guard_config.g.dart';
 /// Properties:
 /// * [filteringEnabled] 
 /// * [blockLists] 
-/// * [rules] 
 @BuiltValue()
 abstract class V1AdGuardConfig implements Built<V1AdGuardConfig, V1AdGuardConfigBuilder> {
   @BuiltValueField(wireName: r'filtering_enabled')
@@ -24,9 +22,6 @@ abstract class V1AdGuardConfig implements Built<V1AdGuardConfig, V1AdGuardConfig
 
   @BuiltValueField(wireName: r'block_lists')
   BuiltList<AdGuardConfigBlockList>? get blockLists;
-
-  @BuiltValueField(wireName: r'rules')
-  BuiltList<V1AdGuardConfigRule>? get rules;
 
   V1AdGuardConfig._();
 
@@ -65,13 +60,6 @@ class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig
         specifiedType: const FullType(BuiltList, [FullType(AdGuardConfigBlockList)]),
       );
     }
-    if (object.rules != null) {
-      yield r'rules';
-      yield serializers.serialize(
-        object.rules,
-        specifiedType: const FullType(BuiltList, [FullType(V1AdGuardConfigRule)]),
-      );
-    }
   }
 
   @override
@@ -108,13 +96,6 @@ class _$V1AdGuardConfigSerializer implements PrimitiveSerializer<V1AdGuardConfig
             specifiedType: const FullType(BuiltList, [FullType(AdGuardConfigBlockList)]),
           ) as BuiltList<AdGuardConfigBlockList>;
           result.blockLists.replace(valueDes);
-          break;
-        case r'rules':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(V1AdGuardConfigRule)]),
-          ) as BuiltList<V1AdGuardConfigRule>;
-          result.rules.replace(valueDes);
           break;
         default:
           unhandled.add(key);

@@ -15,11 +15,12 @@ const (
 	ConditionTunnelPodReady     ConditionType = "TunnelPodReady"
 	ConditionTunnelServiceReady ConditionType = "TunnelServiceReady"
 
-	ConditionDNSConfigReady    ConditionType = "DNSConfigReady"
-	ConditionDNSConfigPVCReady ConditionType = "DNSConfigPVCReady"
-	ConditionDNSDeployReady    ConditionType = "DNSDeployReady"
-	ConditionDNSPodReady       ConditionType = "DNSPodReady"
-	ConditionDNSServiceReady   ConditionType = "DNSServiceReady"
+	ConditionDNSInitConfigReady ConditionType = "DNSInitConfigReady"
+	ConditionDNSConfigReady     ConditionType = "DNSConfigReady"
+	ConditionDNSConfigPVCReady  ConditionType = "DNSConfigPVCReady"
+	ConditionDNSDeployReady     ConditionType = "DNSDeployReady"
+	ConditionDNSPodReady        ConditionType = "DNSPodReady"
+	ConditionDNSServiceReady    ConditionType = "DNSServiceReady"
 )
 
 var (
@@ -31,6 +32,7 @@ var (
 		ConditionTunnelServiceReady,
 		ConditionTunnelPodReady,
 
+		ConditionDNSInitConfigReady,
 		ConditionDNSConfigReady,
 		ConditionDNSConfigPVCReady,
 		ConditionDNSDeployReady,
@@ -49,7 +51,7 @@ type TunnelProtocol struct {
 }
 
 type TunnelDNS struct {
-	AdGuard *AdGuardSpec `json:"adGuard,omitempty"`
+	AdGuard *AdGuardHomeSpec `json:"adGuard,omitempty"`
 }
 
 type WireGuardSpec struct {
@@ -74,21 +76,18 @@ type WireGuardInterface struct {
 	PostDown     string   `json:"postDown,omitempty"`
 }
 
-type AdGuardSpec struct {
+type AdGuardHomeSpec struct {
 	FilteringEnabled *bool                `json:"filteringEnabled,omitempty"`
 	BlockLists       []TunnelDNSBlockList `json:"blockLists,omitempty"`
-	Rules            []string             `json:"rules,omitempty"`
 }
 
-func (s AdGuardSpec) IsFilteringEnabled() bool {
+func (s AdGuardHomeSpec) IsFilteringEnabled() bool {
 	return s.FilteringEnabled == nil || *s.FilteringEnabled
 }
 
 type TunnelDNSBlockList struct {
-	ID      int32  `json:"id"`
-	Name    string `json:"name"`
-	URL     string `json:"url"`
-	Enabled *bool  `json:"enabled,omitempty"`
+	Name string `json:"name"`
+	URL  string `json:"url"`
 }
 
 type WireGuardPeer struct {

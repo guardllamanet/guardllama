@@ -12,7 +12,7 @@ Name | Type | Description | Notes
 **request** | [**QueryLogRequest**](QueryLogRequest.md) |  | 
 **response** | [**AdGuardStatusQueryLogResponse**](AdGuardStatusQueryLogResponse.md) |  | 
 **reason** | [**QueryLogReason**](QueryLogReason.md) |  | 
-**rules** | [**BuiltList&lt;AdGuardStatusQueryLogRule&gt;**](AdGuardStatusQueryLogRule.md) |  | [optional] 
+**rules** | [**BuiltList&lt;QueryLogRule&gt;**](QueryLogRule.md) |  | [optional] 
 **client** | [**QueryLogClient**](QueryLogClient.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

@@ -24,9 +24,6 @@ type V1AdGuardConfig struct {
 
 	// filtering enabled
 	FilteringEnabled bool `json:"filtering_enabled,omitempty"`
-
-	// rules
-	Rules []*V1AdGuardConfigRule `json:"rules"`
 }
 
 // Validate validates this v1 ad guard config
@@ -34,10 +31,6 @@ func (m *V1AdGuardConfig) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateBlockLists(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateRules(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -73,41 +66,11 @@ func (m *V1AdGuardConfig) validateBlockLists(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1AdGuardConfig) validateRules(formats strfmt.Registry) error {
-	if swag.IsZero(m.Rules) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.Rules); i++ {
-		if swag.IsZero(m.Rules[i]) { // not required
-			continue
-		}
-
-		if m.Rules[i] != nil {
-			if err := m.Rules[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("rules" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("rules" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
 // ContextValidate validate this v1 ad guard config based on the context it is used
 func (m *V1AdGuardConfig) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.contextValidateBlockLists(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateRules(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -127,26 +90,6 @@ func (m *V1AdGuardConfig) contextValidateBlockLists(ctx context.Context, formats
 					return ve.ValidateName("block_lists" + "." + strconv.Itoa(i))
 				} else if ce, ok := err.(*errors.CompositeError); ok {
 					return ce.ValidateName("block_lists" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *V1AdGuardConfig) contextValidateRules(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.Rules); i++ {
-
-		if m.Rules[i] != nil {
-			if err := m.Rules[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("rules" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("rules" + "." + strconv.Itoa(i))
 				}
 				return err
 			}

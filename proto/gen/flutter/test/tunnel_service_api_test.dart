@@ -37,10 +37,5 @@ void main() {
       // TODO
     });
 
-    //Future<JsonObject> tunnelServiceUpdateDNSFilteringRules(String name, TunnelServiceUpdateDNSFilteringRulesRequest body) async
-    test('test tunnelServiceUpdateDNSFilteringRules', () async {
-      // TODO
-    });
-
   });
 }

@@ -7,7 +7,7 @@ import 'package:guardllama_api/src/model/query_log_client.dart';
 import 'package:guardllama_api/src/model/ad_guard_status_query_log_response.dart';
 import 'package:built_collection/built_collection.dart';
 import 'package:guardllama_api/src/model/query_log_request.dart';
-import 'package:guardllama_api/src/model/ad_guard_status_query_log_rule.dart';
+import 'package:guardllama_api/src/model/query_log_rule.dart';
 import 'package:guardllama_api/src/model/query_log_reason.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
@@ -39,7 +39,7 @@ abstract class AdGuardStatusQueryLog implements Built<AdGuardStatusQueryLog, AdG
   // enum reasonEnum {  UNKNOWN,  FILTERED_BLOCK_LIST,  ALLOWED,  };
 
   @BuiltValueField(wireName: r'rules')
-  BuiltList<AdGuardStatusQueryLogRule>? get rules;
+  BuiltList<QueryLogRule>? get rules;
 
   @BuiltValueField(wireName: r'client')
   QueryLogClient get client;
@@ -91,7 +91,7 @@ class _$AdGuardStatusQueryLogSerializer implements PrimitiveSerializer<AdGuardSt
       yield r'rules';
       yield serializers.serialize(
         object.rules,
-        specifiedType: const FullType(BuiltList, [FullType(AdGuardStatusQueryLogRule)]),
+        specifiedType: const FullType(BuiltList, [FullType(QueryLogRule)]),
       );
     }
     yield r'client';
@@ -153,8 +153,8 @@ class _$AdGuardStatusQueryLogSerializer implements PrimitiveSerializer<AdGuardSt
         case r'rules':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(BuiltList, [FullType(AdGuardStatusQueryLogRule)]),
-          ) as BuiltList<AdGuardStatusQueryLogRule>;
+            specifiedType: const FullType(BuiltList, [FullType(QueryLogRule)]),
+          ) as BuiltList<QueryLogRule>;
           result.rules.replace(valueDes);
           break;
         case r'client':

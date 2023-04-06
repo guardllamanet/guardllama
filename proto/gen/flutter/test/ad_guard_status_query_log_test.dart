@@ -27,7 +27,7 @@ void main() {
       // TODO
     });
 
-    // BuiltList<AdGuardStatusQueryLogRule> rules
+    // BuiltList<QueryLogRule> rules
     test('to test the property `rules`', () async {
       // TODO
     });

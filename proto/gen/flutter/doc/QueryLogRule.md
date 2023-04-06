@@ -1,4 +1,4 @@
-# guardllama_api.model.AdGuardStatusQueryLogRule
+# guardllama_api.model.QueryLogRule
 
 ## Load the model package
 ```dart

@@ -102,7 +102,6 @@ class ApiService {
     final bodyBuilder = V1CreateTunnelRequestBuilder()
       ..ag = (V1AdGuardConfigBuilder()
         ..filteringEnabled = true
-        ..rules = ListBuilder([])
         ..blockLists =
             ListBuilder(_asBlockLists(AdBlockMode.defaultMode.blocklists)));
     final resp = await api.tunnelServiceCreateTunnel(body: bodyBuilder.build());
@@ -176,22 +175,6 @@ class ApiService {
     }
   }
 
-  Future<void> updateDNSFilteringRules(String name, List<String> rules) async {
-    final api = client.getTunnelServiceApi();
-    final bodyBuilder = TunnelServiceUpdateDNSFilteringRulesRequestBuilder()
-      ..rules = ListBuilder(rules.map((r) {
-        final builder = V1AdGuardConfigRuleBuilder()..rule = r;
-        return builder.build();
-      }));
-    final resp = await api.tunnelServiceUpdateDNSFilteringRules(
-        name: name, body: bodyBuilder.build());
-    if (resp.statusCode! >= 200 && resp.statusCode! < 300) {
-      return;
-    } else {
-      throw Exception('Failed to update dns filtering rules');
-    }
-  }
-
   Future<void> updateDNSBlockMode(String name, AdBlockMode mode) async {
     final api = client.getTunnelServiceApi();
     final bodyBuilder = TunnelServiceUpdateDNSBlockListsRequestBuilder()
@@ -208,10 +191,8 @@ class ApiService {
   List<AdGuardConfigBlockList> _asBlockLists(List<AdBlockList> blocklists) {
     return blocklists.asMap().entries.map((e) {
       final builder = AdGuardConfigBlockListBuilder()
-        ..id = e.key
         ..name = e.value.name
-        ..url = e.value.url
-        ..enabled = true;
+        ..url = e.value.url;
       return builder.build();
     }).toList();
   }

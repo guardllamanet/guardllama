@@ -8,20 +8,15 @@ part of 'ad_guard_config_block_list.dart';
 
 class _$AdGuardConfigBlockList extends AdGuardConfigBlockList {
   @override
-  final int? id;
-  @override
   final String? name;
   @override
   final String? url;
-  @override
-  final bool? enabled;
 
   factory _$AdGuardConfigBlockList(
           [void Function(AdGuardConfigBlockListBuilder)? updates]) =>
       (new AdGuardConfigBlockListBuilder()..update(updates))._build();
 
-  _$AdGuardConfigBlockList._({this.id, this.name, this.url, this.enabled})
-      : super._();
+  _$AdGuardConfigBlockList._({this.name, this.url}) : super._();
 
   @override
   AdGuardConfigBlockList rebuild(
@@ -36,19 +31,15 @@ class _$AdGuardConfigBlockList extends AdGuardConfigBlockList {
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
     return other is AdGuardConfigBlockList &&
-        id == other.id &&
         name == other.name &&
-        url == other.url &&
-        enabled == other.enabled;
+        url == other.url;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
-    _$hash = $jc(_$hash, id.hashCode);
     _$hash = $jc(_$hash, name.hashCode);
     _$hash = $jc(_$hash, url.hashCode);
-    _$hash = $jc(_$hash, enabled.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -56,10 +47,8 @@ class _$AdGuardConfigBlockList extends AdGuardConfigBlockList {
   @override
   String toString() {
     return (newBuiltValueToStringHelper(r'AdGuardConfigBlockList')
-          ..add('id', id)
           ..add('name', name)
-          ..add('url', url)
-          ..add('enabled', enabled))
+          ..add('url', url))
         .toString();
   }
 }
@@ -67,10 +56,6 @@ class _$AdGuardConfigBlockList extends AdGuardConfigBlockList {
 class AdGuardConfigBlockListBuilder
     implements Builder<AdGuardConfigBlockList, AdGuardConfigBlockListBuilder> {
   _$AdGuardConfigBlockList? _$v;
-
-  int? _id;
-  int? get id => _$this._id;
-  set id(int? id) => _$this._id = id;
 
   String? _name;
   String? get name => _$this._name;
@@ -80,10 +65,6 @@ class AdGuardConfigBlockListBuilder
   String? get url => _$this._url;
   set url(String? url) => _$this._url = url;
 
-  bool? _enabled;
-  bool? get enabled => _$this._enabled;
-  set enabled(bool? enabled) => _$this._enabled = enabled;
-
   AdGuardConfigBlockListBuilder() {
     AdGuardConfigBlockList._defaults(this);
   }
@@ -91,10 +72,8 @@ class AdGuardConfigBlockListBuilder
   AdGuardConfigBlockListBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
-      _id = $v.id;
       _name = $v.name;
       _url = $v.url;
-      _enabled = $v.enabled;
       _$v = null;
     }
     return this;
@@ -115,9 +94,8 @@ class AdGuardConfigBlockListBuilder
   AdGuardConfigBlockList build() => _build();
 
   _$AdGuardConfigBlockList _build() {
-    final _$result = _$v ??
-        new _$AdGuardConfigBlockList._(
-            id: id, name: name, url: url, enabled: enabled);
+    final _$result =
+        _$v ?? new _$AdGuardConfigBlockList._(name: name, url: url);
     replace(_$result);
     return _$result;
   }

@@ -10,7 +10,6 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **filteringEnabled** | **bool** |  | [optional] 
 **blockLists** | [**BuiltList&lt;AdGuardConfigBlockList&gt;**](AdGuardConfigBlockList.md) |  | [optional] 
-**rules** | [**BuiltList&lt;V1AdGuardConfigRule&gt;**](V1AdGuardConfigRule.md) |  | [optional] 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

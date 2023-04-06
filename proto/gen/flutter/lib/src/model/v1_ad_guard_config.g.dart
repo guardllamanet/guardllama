@@ -11,14 +11,11 @@ class _$V1AdGuardConfig extends V1AdGuardConfig {
   final bool? filteringEnabled;
   @override
   final BuiltList<AdGuardConfigBlockList>? blockLists;
-  @override
-  final BuiltList<V1AdGuardConfigRule>? rules;
 
   factory _$V1AdGuardConfig([void Function(V1AdGuardConfigBuilder)? updates]) =>
       (new V1AdGuardConfigBuilder()..update(updates))._build();
 
-  _$V1AdGuardConfig._({this.filteringEnabled, this.blockLists, this.rules})
-      : super._();
+  _$V1AdGuardConfig._({this.filteringEnabled, this.blockLists}) : super._();
 
   @override
   V1AdGuardConfig rebuild(void Function(V1AdGuardConfigBuilder) updates) =>
@@ -33,8 +30,7 @@ class _$V1AdGuardConfig extends V1AdGuardConfig {
     if (identical(other, this)) return true;
     return other is V1AdGuardConfig &&
         filteringEnabled == other.filteringEnabled &&
-        blockLists == other.blockLists &&
-        rules == other.rules;
+        blockLists == other.blockLists;
   }
 
   @override
@@ -42,7 +38,6 @@ class _$V1AdGuardConfig extends V1AdGuardConfig {
     var _$hash = 0;
     _$hash = $jc(_$hash, filteringEnabled.hashCode);
     _$hash = $jc(_$hash, blockLists.hashCode);
-    _$hash = $jc(_$hash, rules.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -51,8 +46,7 @@ class _$V1AdGuardConfig extends V1AdGuardConfig {
   String toString() {
     return (newBuiltValueToStringHelper(r'V1AdGuardConfig')
           ..add('filteringEnabled', filteringEnabled)
-          ..add('blockLists', blockLists)
-          ..add('rules', rules))
+          ..add('blockLists', blockLists))
         .toString();
   }
 }
@@ -72,11 +66,6 @@ class V1AdGuardConfigBuilder
   set blockLists(ListBuilder<AdGuardConfigBlockList>? blockLists) =>
       _$this._blockLists = blockLists;
 
-  ListBuilder<V1AdGuardConfigRule>? _rules;
-  ListBuilder<V1AdGuardConfigRule> get rules =>
-      _$this._rules ??= new ListBuilder<V1AdGuardConfigRule>();
-  set rules(ListBuilder<V1AdGuardConfigRule>? rules) => _$this._rules = rules;
-
   V1AdGuardConfigBuilder() {
     V1AdGuardConfig._defaults(this);
   }
@@ -86,7 +75,6 @@ class V1AdGuardConfigBuilder
     if ($v != null) {
       _filteringEnabled = $v.filteringEnabled;
       _blockLists = $v.blockLists?.toBuilder();
-      _rules = $v.rules?.toBuilder();
       _$v = null;
     }
     return this;
@@ -112,15 +100,12 @@ class V1AdGuardConfigBuilder
       _$result = _$v ??
           new _$V1AdGuardConfig._(
               filteringEnabled: filteringEnabled,
-              blockLists: _blockLists?.build(),
-              rules: _rules?.build());
+              blockLists: _blockLists?.build());
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'blockLists';
         _blockLists?.build();
-        _$failedField = 'rules';
-        _rules?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'V1AdGuardConfig', _$failedField, e.toString());

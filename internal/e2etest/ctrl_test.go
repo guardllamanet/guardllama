@@ -72,7 +72,7 @@ func Test_Tunnel(t *testing.T) {
 					},
 					Spec: glmv1.TunnelSpec{
 						DNS: glmv1.TunnelDNS{
-							AdGuard: &glmv1.AdGuardSpec{},
+							AdGuard: &glmv1.AdGuardHomeSpec{},
 						},
 						Protocol: glmv1.TunnelProtocol{
 							WireGuard: &glmv1.WireGuardSpec{

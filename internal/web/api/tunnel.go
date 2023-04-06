@@ -243,29 +243,6 @@ func (s *TunnelService) UpdateDNSBlockLists(ctx context.Context, req *apiv1.Upda
 	return &apiv1.UpdateDNSBlockListsResponse{}, nil
 }
 
-func (s *TunnelService) UpdateDNSFilteringRules(ctx context.Context, req *apiv1.UpdateDNSFilteringRulesRequest) (*apiv1.UpdateDNSFilteringRulesResponse, error) {
-	if err := req.ValidateAll(); err != nil {
-		return nil, StatusInvalidArg(err)
-	}
-
-	tun, err := s.getTunnel(ctx, req.Name)
-	if err != nil {
-		return nil, StatusNotFound(err)
-	}
-
-	var rules []string
-	for _, r := range req.Rules {
-		rules = append(rules, r.Rule)
-	}
-
-	tun.Spec.DNS.AdGuard.Rules = rules
-	if err := s.K8sClient.Update(ctx, tun); err != nil {
-		return nil, StatusInternal(err)
-	}
-
-	return &apiv1.UpdateDNSFilteringRulesResponse{}, nil
-}
-
 func (s *TunnelService) getTunnel(ctx context.Context, name string) (*glmv1.Tunnel, error) {
 	var tun glmv1.Tunnel
 	if err := s.Get(ctx, client.ObjectKey{Namespace: name, Name: name}, &tun); err != nil {
@@ -379,22 +356,10 @@ func (s *TunnelService) makeClientTunnelConfig(ctx context.Context, tun *glmv1.T
 
 	var blockLists []*apiv1.AdGuardConfig_BlockList
 	for _, bl := range tun.Spec.DNS.AdGuard.BlockLists {
-		blEnabled := true
-		if e := bl.Enabled; e != nil {
-			blEnabled = *e
-		}
-
 		blockLists = append(blockLists, &apiv1.AdGuardConfig_BlockList{
-			Id:      bl.ID,
-			Name:    bl.Name,
-			Url:     bl.URL,
-			Enabled: blEnabled,
+			Name: bl.Name,
+			Url:  bl.URL,
 		})
-	}
-
-	var rules []*apiv1.AdGuardConfig_Rule
-	for _, r := range tun.Spec.DNS.AdGuard.Rules {
-		rules = append(rules, &apiv1.AdGuardConfig_Rule{Rule: r})
 	}
 
 	wg := &apiv1.WireGuardConfig{
@@ -426,7 +391,6 @@ func (s *TunnelService) makeClientTunnelConfig(ctx context.Context, tun *glmv1.T
 		Dns: &apiv1.TunnelConfig_Ag{
 			Ag: &apiv1.AdGuardConfig{
 				FilteringEnabled: &filteringEnabled,
-				Rules:            rules,
 				BlockLists:       blockLists,
 			},
 		},
@@ -637,11 +601,6 @@ func createTunnel(
 		return nil, err
 	}
 
-	var rules []string
-	for _, r := range agcfg.Rules {
-		rules = append(rules, r.Rule)
-	}
-
 	// upsert tunnel
 	tun := &glmv1.Tunnel{
 		ObjectMeta: metav1.ObjectMeta{
@@ -699,10 +658,9 @@ func createTunnel(
 				},
 			},
 			DNS: glmv1.TunnelDNS{
-				AdGuard: &glmv1.AdGuardSpec{
+				AdGuard: &glmv1.AdGuardHomeSpec{
 					FilteringEnabled: agcfg.FilteringEnabled,
 					BlockLists:       convertBlockLists(agcfg.BlockLists),
-					Rules:            rules,
 				},
 			},
 			// disable boringtun
@@ -755,17 +713,11 @@ func newHTTPClient() *http.Client {
 }
 
 func convertBlockLists(blockLists []*apiv1.AdGuardConfig_BlockList) []glmv1.TunnelDNSBlockList {
-	var (
-		bls     []glmv1.TunnelDNSBlockList
-		enabled = true
-	)
-
+	var bls []glmv1.TunnelDNSBlockList
 	for _, bl := range blockLists {
 		bls = append(bls, glmv1.TunnelDNSBlockList{
-			ID:      bl.Id,
-			Name:    bl.Name,
-			URL:     bl.Url,
-			Enabled: &enabled,
+			Name: bl.Name,
+			URL:  bl.Url,
 		})
 	}
 

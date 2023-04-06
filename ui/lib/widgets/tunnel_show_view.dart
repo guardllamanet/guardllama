@@ -23,15 +23,6 @@ class TunnelShowView extends StatefulWidget {
 }
 
 class _TunnelShowViewState extends State<TunnelShowView> {
-  final _filteringRulesController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _filteringRulesController.text =
-        widget.tunnel.config!.ag!.rules!.map((r) => r.rule).join("\n");
-  }
-
   @override
   Widget build(BuildContext context) {
     final status = widget.tunnel.status!;

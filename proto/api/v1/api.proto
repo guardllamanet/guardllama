@@ -223,13 +223,6 @@ service TunnelService {
       body: "*"
     };
   }
-
-  rpc UpdateDNSFilteringRules(UpdateDNSFilteringRulesRequest) returns (UpdateDNSFilteringRulesResponse) {
-    option (google.api.http) = {
-      put: "/tunnels/{name}/dns_filtering_rules"
-      body: "*"
-    };
-  }
 }
 
 message CreateTunnelRequest {
@@ -303,20 +296,6 @@ message UpdateDNSBlockListsRequest {
 
 message UpdateDNSBlockListsResponse {}
 
-message UpdateDNSFilteringRulesRequest {
-  string name = 1 [
-    (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {
-      required: [
-        "name"
-      ]
-    },
-    (validate.rules).string.min_len = 1
-  ];
-  repeated AdGuardConfig.Rule rules = 3;
-}
-
-message UpdateDNSFilteringRulesResponse {}
-
 message TunnelConfig {
   oneof protocol {
     option (validate.required) = true;
@@ -370,19 +349,12 @@ message WireGuardPeer {
 
 message AdGuardConfig {
   message BlockList {
-    int32 id = 1 [(validate.rules).int32.gte = 0];
-    string name = 2 [(validate.rules).string.min_len = 1];
-    string url = 3 [(validate.rules).string.uri = true];
-    bool enabled = 4;
-  }
-
-  message Rule {
-    string rule = 1 [(validate.rules).string.min_len = 1];
+    string name = 1 [(validate.rules).string.min_len = 1];
+    string url = 2 [(validate.rules).string.uri = true];
   }
 
   optional bool filtering_enabled = 1;
   repeated BlockList block_lists = 3;
-  repeated Rule rules = 4;
 }
 
 message Tunnel {
