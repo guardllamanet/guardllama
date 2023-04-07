@@ -17,7 +17,7 @@ const (
 
 	ConditionDNSInitConfigReady ConditionType = "DNSInitConfigReady"
 	ConditionDNSConfigReady     ConditionType = "DNSConfigReady"
-	ConditionDNSConfigPVCReady  ConditionType = "DNSConfigPVCReady"
+	ConditionDNSPVCReady        ConditionType = "DNSPVCReady"
 	ConditionDNSDeployReady     ConditionType = "DNSDeployReady"
 	ConditionDNSPodReady        ConditionType = "DNSPodReady"
 	ConditionDNSServiceReady    ConditionType = "DNSServiceReady"
@@ -34,7 +34,7 @@ var (
 
 		ConditionDNSInitConfigReady,
 		ConditionDNSConfigReady,
-		ConditionDNSConfigPVCReady,
+		ConditionDNSPVCReady,
 		ConditionDNSDeployReady,
 		ConditionDNSPodReady,
 		ConditionDNSServiceReady,
@@ -165,7 +165,11 @@ func (t Tunnel) AdGuardHomeServiceName() string {
 }
 
 func (t Tunnel) AdGuardHomeConfigPVCName() string {
-	return t.AdGuardHomeTypedName()
+	return fmt.Sprintf("%s-config", t.AdGuardHomeTypedName())
+}
+
+func (t Tunnel) AdGuardHomeDataPVCName() string {
+	return fmt.Sprintf("%s-data", t.AdGuardHomeTypedName())
 }
 
 func (t Tunnel) AdGuardHomeServiceHost() string {

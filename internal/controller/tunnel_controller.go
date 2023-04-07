@@ -34,8 +34,8 @@ const (
 	reasonInitConfigError = "InitConfigError"
 	reasonConfigReady     = "ConfigReady"
 	reasonConfigError     = "ConfigError"
-	reasonConfigPVCReady  = "ConfigPVCReady"
-	reasonConfigPVCError  = "ConfigPVCError"
+	reasonPVCReady        = "PVCReady"
+	reasonPVCError        = "PVCError"
 	reasonDeployReady     = "DeployReady"
 	reasonDeployError     = "DeployError"
 	reasonServiceReady    = "ServiceReady"
@@ -140,8 +140,8 @@ func (r *TunnelReconciler) reconcileTunnel(ctx context.Context, tun *glmv1.Tunne
 	if _, err := r.upsertAGHInitialConfig(ctx, tun); err != nil {
 		returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH initial config: %w", err))
 	}
-	if _, err := r.upsertAGHConfigPVC(ctx, tun); err != nil {
-		returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH config pvc: %w", err))
+	if err := r.upsertAGHPVC(ctx, tun); err != nil {
+		returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH pvc: %w", err))
 	}
 	if _, err := r.upsertAGHDeploy(ctx, tun); err != nil {
 		returnErr = errors.Join(returnErr, fmt.Errorf("error upserting AGH deploy: %w", err))
@@ -488,44 +488,56 @@ func (r *TunnelReconciler) upsertAGHInitialConfig(ctx context.Context, tun *glmv
 	return op, nil
 }
 
-func (r *TunnelReconciler) upsertAGHConfigPVC(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
-	pvc := &corev1.PersistentVolumeClaim{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      tun.AdGuardHomeConfigPVCName(),
-			Namespace: tun.Namespace,
-		},
+func (r *TunnelReconciler) upsertAGHPVC(ctx context.Context, tun *glmv1.Tunnel) error {
+	sizeMap := map[string]int{
+		tun.AdGuardHomeConfigPVCName(): 2,
+		tun.AdGuardHomeDataPVCName():   128,
 	}
-	pvcFn := func() error {
-		pvc.Spec.AccessModes = []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce}
-		pvc.Spec.Resources = corev1.ResourceRequirements{
-			Requests: corev1.ResourceList{
-				corev1.ResourceStorage: resource.MustParse("2Mi"),
-			},
-			Limits: corev1.ResourceList{
-				corev1.ResourceStorage: resource.MustParse("4Mi"),
+
+	var aggregateErr error
+	for n, s := range sizeMap {
+		pvc := &corev1.PersistentVolumeClaim{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      n,
+				Namespace: tun.Namespace,
 			},
 		}
+		pvcFn := func() error {
+			pvc.Spec.AccessModes = []corev1.PersistentVolumeAccessMode{corev1.ReadWriteOnce}
+			pvc.Spec.Resources = corev1.ResourceRequirements{
+				Requests: corev1.ResourceList{
+					corev1.ResourceStorage: resource.MustParse(fmt.Sprintf("%dMi", s)),
+				},
+				Limits: corev1.ResourceList{
+					corev1.ResourceStorage: resource.MustParse(fmt.Sprintf("%dMi", s*2)),
+				},
+			}
 
-		return controllerutil.SetControllerReference(tun, pvc, r.Scheme())
+			return controllerutil.SetControllerReference(tun, pvc, r.Scheme())
+		}
+		_, err := controllerutil.CreateOrUpdate(ctx, r, pvc, pvcFn)
+		if err != nil {
+			aggregateErr = errors.Join(aggregateErr, fmt.Errorf("error creating pvc for %s: %w", n, err))
+		}
 	}
-	op, err := controllerutil.CreateOrUpdate(ctx, r, pvc, pvcFn)
-	if err == nil {
+
+	if aggregateErr == nil {
 		tun.Status.SetCondition(
-			glmv1.ConditionDNSConfigPVCReady,
+			glmv1.ConditionDNSPVCReady,
 			corev1.ConditionTrue,
-			reasonConfigPVCReady,
+			reasonPVCReady,
 			"",
 		)
 	} else {
 		tun.Status.SetCondition(
-			glmv1.ConditionDNSConfigPVCReady,
+			glmv1.ConditionDNSPVCReady,
 			corev1.ConditionFalse,
-			reasonConfigPVCError,
-			err.Error(),
+			reasonPVCError,
+			aggregateErr.Error(),
 		)
 	}
 
-	return op, err
+	return aggregateErr
 }
 
 func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
@@ -625,6 +637,10 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 						Name:      "adguardhome-config",
 						MountPath: "/opt/adguardhome/conf",
 					},
+					{
+						Name:      "adguardhome-data",
+						MountPath: "/opt/adguardhome/work/data",
+					},
 				},
 			},
 		}
@@ -645,6 +661,14 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 				VolumeSource: corev1.VolumeSource{
 					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
 						ClaimName: tun.AdGuardHomeConfigPVCName(),
+					},
+				},
+			},
+			{
+				Name: "adguardhome-data",
+				VolumeSource: corev1.VolumeSource{
+					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
+						ClaimName: tun.AdGuardHomeDataPVCName(),
 					},
 				},
 			},
