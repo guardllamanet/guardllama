@@ -109,10 +109,10 @@ type ValueFromSource struct {
 
 // TunnelStatus defines the observed state of Tunnel
 type TunnelStatus struct {
-	IngressPort int32           `json:"ingressPort,omitempty"`
-	DNS         TunnelDNSStatus `json:"dns"`
-	Conditions  Conditions      `json:"conditions,omitempty"`
-	UpdatedAt   *metav1.Time    `json:"updatedAt,omitempty"`
+	IngressPort int32        `json:"ingressPort,omitempty"`
+	DNS         []string     `json:"dns,omitempty"`
+	Conditions  Conditions   `json:"conditions,omitempty"`
+	UpdatedAt   *metav1.Time `json:"updatedAt,omitempty"`
 }
 
 func (s *TunnelStatus) SetCondition(ct ConditionType, status corev1.ConditionStatus, reason string, message string) {
@@ -121,14 +121,6 @@ func (s *TunnelStatus) SetCondition(ct ConditionType, status corev1.ConditionSta
 
 func (s *TunnelStatus) GetCondition(ct ConditionType) *Condition {
 	return tunnelConditions.GetCondition(s.Conditions, ct)
-}
-
-type TunnelDNSStatus struct {
-	AdGuardHome *AdGuardHomeStatus `json:"adGuardHome,omitempty"`
-}
-
-type AdGuardHomeStatus struct {
-	DNS []string `json:"dns,omitempty"`
 }
 
 // +kubebuilder:object:root=true

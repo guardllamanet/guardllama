@@ -704,9 +704,7 @@ func (r *TunnelReconciler) upsertAGHService(ctx context.Context, tun *glmv1.Tunn
 		}
 		svc.Spec.Selector = labelsDNSDeploy(tun)
 
-		tun.Status.DNS.AdGuardHome = &glmv1.AdGuardHomeStatus{
-			DNS: svc.Spec.ClusterIPs,
-		}
+		tun.Status.DNS = svc.Spec.ClusterIPs
 
 		return controllerutil.SetControllerReference(tun, svc, r.Scheme())
 	}

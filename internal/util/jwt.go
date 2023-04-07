@@ -21,8 +21,8 @@ func GenerateJWTRSAKey() (privBytes []byte, pubBytes []byte, err error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	privJWK.Set(jwk.KeyIDKey, "guardllama")
-	privJWK.Set(jwk.AlgorithmKey, jwa.RS256)
+	_ = privJWK.Set(jwk.KeyIDKey, "guardllama")
+	_ = privJWK.Set(jwk.AlgorithmKey, jwa.RS256)
 
 	privBytes, err = json.Marshal(privJWK)
 	if err != nil {

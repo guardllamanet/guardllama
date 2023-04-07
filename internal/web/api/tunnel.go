@@ -279,11 +279,6 @@ func (s *TunnelService) fetchClientTunnel(ctx context.Context, tun *glmv1.Tunnel
 		updatedAt = timestamppb.New(ua.Time)
 	}
 
-	var dns []string
-	if agh := tun.Status.DNS.AdGuardHome; agh != nil {
-		dns = agh.DNS
-	}
-
 	tunnel := &apiv1.Tunnel{
 		Name:   tun.Name,
 		Config: cfg,
@@ -292,7 +287,7 @@ func (s *TunnelService) fetchClientTunnel(ctx context.Context, tun *glmv1.Tunnel
 			Details: details,
 			Dns: &apiv1.TunnelStatus_Agh{
 				Agh: &apiv1.AdGuardHomeStatus{
-					Dns: dns,
+					Dns: tun.Status.DNS,
 				},
 			},
 		},
@@ -355,16 +350,11 @@ func (s *TunnelService) makeClientTunnelConfig(ctx context.Context, tun *glmv1.T
 		})
 	}
 
-	var dns []string
-	if aghs := tun.Status.DNS.AdGuardHome; aghs != nil {
-		dns = aghs.DNS
-	}
-
 	wg := &apiv1.WireGuardConfig{
 		Interface: &apiv1.WireGuardInterface{
 			PrivateKey: string(peerPrivateKey),
 			Address:    []string{configClientAddress},
-			Dns:        dns,
+			Dns:        tun.Status.DNS,
 		},
 		Peers: []*apiv1.WireGuardPeer{
 			{

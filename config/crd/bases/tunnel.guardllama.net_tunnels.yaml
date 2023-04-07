@@ -255,23 +255,15 @@ spec:
                   type: object
                 type: array
               dns:
-                properties:
-                  adGuardHome:
-                    properties:
-                      dns:
-                        items:
-                          type: string
-                        type: array
-                    type: object
-                type: object
+                items:
+                  type: string
+                type: array
               ingressPort:
                 format: int32
                 type: integer
               updatedAt:
                 format: date-time
                 type: string
-            required:
-            - dns
             type: object
         type: object
     served: true
