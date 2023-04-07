@@ -454,7 +454,7 @@ func (r *TunnelReconciler) upsertAGHInitialConfig(ctx context.Context, tun *glmv
 
 	cm := &corev1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      tun.AdGuardTypedName(),
+			Name:      tun.AdGuardHomeTypedName(),
 			Namespace: tun.Namespace,
 		},
 	}
@@ -489,7 +489,7 @@ func (r *TunnelReconciler) upsertAGHInitialConfig(ctx context.Context, tun *glmv
 func (r *TunnelReconciler) upsertAGHConfigPVC(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
 	pvc := &corev1.PersistentVolumeClaim{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      tun.AdGuardConfigPVCName(),
+			Name:      tun.AdGuardHomeConfigPVCName(),
 			Namespace: tun.Namespace,
 		},
 	}
@@ -533,7 +533,7 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 
 	deploy := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      tun.AdGuardTypedName(),
+			Name:      tun.AdGuardHomeTypedName(),
 			Namespace: tun.Namespace,
 		},
 	}
@@ -633,7 +633,7 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 					ConfigMap: &corev1.ConfigMapVolumeSource{
 						DefaultMode: &volumeMountDefaultMode,
 						LocalObjectReference: corev1.LocalObjectReference{
-							Name: tun.AdGuardTypedName(),
+							Name: tun.AdGuardHomeTypedName(),
 						},
 					},
 				},
@@ -642,7 +642,7 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 				Name: "adguardhome-config",
 				VolumeSource: corev1.VolumeSource{
 					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-						ClaimName: tun.AdGuardConfigPVCName(),
+						ClaimName: tun.AdGuardHomeConfigPVCName(),
 					},
 				},
 			},
@@ -676,7 +676,7 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 func (r *TunnelReconciler) upsertAGHService(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      tun.AdGuardServiceName(),
+			Name:      tun.AdGuardHomeServiceName(),
 			Namespace: tun.Namespace,
 		},
 	}
@@ -751,7 +751,7 @@ func (r *TunnelReconciler) upsertAGHConfig(ctx context.Context, tun *glmv1.Tunne
 
 	update := func(ctx context.Context, tun *glmv1.Tunnel) error {
 		conf := adguard.NewConfiguration()
-		conf.Host = tun.AdGuardServiceHost()
+		conf.Host = tun.AdGuardHomeServiceHost()
 		conf.Scheme = "http"
 		conf.HTTPClient = newHTTPClient()
 
@@ -850,7 +850,7 @@ func labelsDNSDeploy(tun *glmv1.Tunnel) map[string]string {
 	return MergeLabels(
 		filterSystemLabels(tun.Labels),
 		map[string]string{
-			labelTunnelName: tun.AdGuardTypedName(),
+			labelTunnelName: tun.AdGuardHomeTypedName(),
 		},
 	)
 }

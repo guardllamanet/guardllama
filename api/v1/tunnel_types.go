@@ -156,20 +156,20 @@ func (t Tunnel) WireGuardAdminServiceHost() string {
 	return fmt.Sprintf("%s.%s", t.WireGuardAdminServiceName(), t.Namespace)
 }
 
-func (t Tunnel) AdGuardTypedName() string {
-	return fmt.Sprintf("ag-%s", t.Name)
+func (t Tunnel) AdGuardHomeTypedName() string {
+	return fmt.Sprintf("agh-%s", t.Name)
 }
 
-func (t Tunnel) AdGuardServiceName() string {
-	return t.AdGuardTypedName()
+func (t Tunnel) AdGuardHomeServiceName() string {
+	return t.AdGuardHomeTypedName()
 }
 
-func (t Tunnel) AdGuardConfigPVCName() string {
-	return t.AdGuardTypedName()
+func (t Tunnel) AdGuardHomeConfigPVCName() string {
+	return t.AdGuardHomeTypedName()
 }
 
-func (t Tunnel) AdGuardServiceHost() string {
-	return fmt.Sprintf("%s.%s", t.AdGuardServiceName(), t.Namespace)
+func (t Tunnel) AdGuardHomeServiceHost() string {
+	return fmt.Sprintf("%s.%s", t.AdGuardHomeServiceName(), t.Namespace)
 }
 
 // +kubebuilder:object:root=true

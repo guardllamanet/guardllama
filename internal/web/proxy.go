@@ -42,7 +42,7 @@ func AGHProxyHandler(c *api.K8sClient) func(w http.ResponseWriter, r *http.Reque
 		r.URL.Path = trimPathPrefix(r.URL.Path, prefix)
 		r.URL.RawPath = trimPathPrefix(r.URL.RawPath, prefix)
 
-		u, err := url.Parse(fmt.Sprintf("http://%s", tun.AdGuardServiceHost()))
+		u, err := url.Parse(fmt.Sprintf("http://%s", tun.AdGuardHomeServiceHost()))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusPreconditionFailed)
 			return
