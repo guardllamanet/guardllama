@@ -490,8 +490,7 @@ func (r *TunnelReconciler) upsertAGHInitialConfig(ctx context.Context, tun *glmv
 
 func (r *TunnelReconciler) upsertAGHPVC(ctx context.Context, tun *glmv1.Tunnel) error {
 	sizeMap := map[string]int{
-		tun.AdGuardHomeConfigPVCName(): 2,
-		tun.AdGuardHomeDataPVCName():   128,
+		tun.AdGuardHomeDataPVCName(): 128,
 	}
 
 	var aggregateErr error
@@ -566,7 +565,7 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 				Command: []string{
 					"sh",
 					"-c",
-					`mkdir -p /opt/adguardhome/conf && [[ -f "/opt/adguardhome/conf/AdGuardHome.yaml" ]] && echo "AdGuardHome.yaml exists, skip copying" || cp /tmp/AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml`,
+					`mkdir -p /opt/adguardhome/work && [[ -f "/opt/adguardhome/work/AdGuardHome.yaml" ]] && echo "AdGuardHome.yaml exists, skip copying" || cp /tmp/AdGuardHome.yaml /opt/adguardhome/work/AdGuardHome.yaml`,
 				},
 				VolumeMounts: []corev1.VolumeMount{
 					{
@@ -576,8 +575,8 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 						ReadOnly:  true,
 					},
 					{
-						Name:      "adguardhome-config",
-						MountPath: "/opt/adguardhome/conf",
+						Name:      "adguardhome-data",
+						MountPath: "/opt/adguardhome/work",
 					},
 				},
 			},
@@ -588,7 +587,7 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 				Image: adGuardHomeImage,
 				Args: []string{
 					"--config",
-					"/opt/adguardhome/conf/AdGuardHome.yaml",
+					"/opt/adguardhome/work/AdGuardHome.yaml",
 					"--work-dir",
 					"/opt/adguardhome/work",
 					"--no-check-update",
@@ -634,12 +633,8 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 				},
 				VolumeMounts: []corev1.VolumeMount{
 					{
-						Name:      "adguardhome-config",
-						MountPath: "/opt/adguardhome/conf",
-					},
-					{
 						Name:      "adguardhome-data",
-						MountPath: "/opt/adguardhome/work/data",
+						MountPath: "/opt/adguardhome/work",
 					},
 				},
 			},
@@ -653,14 +648,6 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 						LocalObjectReference: corev1.LocalObjectReference{
 							Name: tun.AdGuardHomeTypedName(),
 						},
-					},
-				},
-			},
-			{
-				Name: "adguardhome-config",
-				VolumeSource: corev1.VolumeSource{
-					PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-						ClaimName: tun.AdGuardHomeConfigPVCName(),
 					},
 				},
 			},

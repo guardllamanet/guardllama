@@ -164,10 +164,6 @@ func (t Tunnel) AdGuardHomeServiceName() string {
 	return t.AdGuardHomeTypedName()
 }
 
-func (t Tunnel) AdGuardHomeConfigPVCName() string {
-	return fmt.Sprintf("%s-config", t.AdGuardHomeTypedName())
-}
-
 func (t Tunnel) AdGuardHomeDataPVCName() string {
 	return fmt.Sprintf("%s-data", t.AdGuardHomeTypedName())
 }
