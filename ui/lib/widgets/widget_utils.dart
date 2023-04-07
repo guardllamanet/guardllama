@@ -5,7 +5,9 @@ import 'snackbar_content.dart';
 
 class WidgetUtils {
   static void showInfo(BuildContext context, String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    final messager = ScaffoldMessenger.of(context);
+    messager.clearSnackBars();
+    messager.showSnackBar(SnackBar(
       margin: EdgeInsets.zero,
       behavior: SnackBarBehavior.floating,
       backgroundColor: Colors.transparent,

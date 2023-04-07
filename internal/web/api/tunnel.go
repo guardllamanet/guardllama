@@ -12,11 +12,14 @@ import (
 	"time"
 
 	"github.com/docker/docker/pkg/namesgenerator"
+	"github.com/go-chi/chi/v5/middleware"
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 	glmv1 "github.com/guardllamanet/guardllama/api/v1"
+	adguard "github.com/guardllamanet/guardllama/internal/adguard/gen"
 	"github.com/guardllamanet/guardllama/internal/controller"
 	"github.com/guardllamanet/guardllama/internal/log"
+	"github.com/guardllamanet/guardllama/internal/util"
 	apiv1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 	tunnelclient "github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/wire_guard_service"
@@ -34,6 +37,7 @@ import (
 
 const (
 	annonationTunnelSecretVersion = controller.SystemLabelPrefix + "/tunnel-secret-version"
+	annotationRequestID           = "request-id"
 
 	secretKeyServerPrivateKey = "serverPrivateKey"
 	secretKeyServerPublicKey  = "serverPublicKey"
@@ -211,6 +215,7 @@ func (s *TunnelService) UpdateDNSFilteringEnabled(ctx context.Context, req *apiv
 		return nil, StatusNotFound(err)
 	}
 
+	tun.Annotations = annotateWithRequestID(ctx, tun)
 	tun.Spec.DNS.AdGuardHome.FilteringEnabled = &req.FilteringEnabled
 	if err := s.K8sClient.Update(ctx, tun); err != nil {
 		return nil, StatusInternal(err)
@@ -229,6 +234,7 @@ func (s *TunnelService) UpdateDNSBlockLists(ctx context.Context, req *apiv1.Upda
 		return nil, StatusNotFound(err)
 	}
 
+	tun.Annotations = annotateWithRequestID(ctx, tun)
 	tun.Spec.DNS.AdGuardHome.BlockLists = convertBlockLists(req.BlockLists)
 	if err := s.K8sClient.Update(ctx, tun); err != nil {
 		return nil, StatusInternal(err)
@@ -311,6 +317,25 @@ func (s *TunnelService) fetchClientTunnel(ctx context.Context, tun *glmv1.Tunnel
 				Device: dev,
 			},
 		}
+
+		status, err := fetchAdGuardHomeStatus(ctx, tun)
+		if err != nil {
+			return nil, fmt.Errorf("error fetching AdGuardHome status: %w", err)
+		}
+
+		agh := tunnel.Status.GetAgh()
+		agh.FilteringEnabled = util.ToBool(status.Enabled)
+
+		var blocklists []*apiv1.AdGuardHomeConfig_BlockList
+		for _, bl := range status.Filters {
+			if bl.Enabled {
+				blocklists = append(blocklists, &apiv1.AdGuardHomeConfig_BlockList{
+					Name: bl.Name,
+					Url:  bl.Url,
+				})
+			}
+		}
+		agh.BlockLists = blocklists
 	}
 
 	return tunnel, nil
@@ -447,6 +472,22 @@ func fetchWireGuardDevice(ctx context.Context, tun *glmv1.Tunnel) (*apiv1.WireGu
 	}, nil
 }
 
+func fetchAdGuardHomeStatus(ctx context.Context, tun *glmv1.Tunnel) (*adguard.FilterStatus, error) {
+	conf := adguard.NewConfiguration()
+	conf.Host = tun.AdGuardHomeServiceHost()
+	conf.Scheme = "http"
+	conf.HTTPClient = newHTTPClient()
+
+	client := adguard.NewAPIClient(conf)
+
+	status, _, err := client.FilteringApi.FilteringStatus(ctx).Execute()
+	if err != nil {
+		return nil, err
+	}
+
+	return status, nil
+}
+
 func genKeyPair() (*device.NoisePrivateKey, *device.NoisePublicKey, error) {
 	var key device.NoisePrivateKey
 	if _, err := rand.Read(key[:]); err != nil {
@@ -505,7 +546,8 @@ func createTunnel(
 		},
 	}
 	tunFn := func() error {
-		tun.Annotations = controller.MergeLabels(tun.Annotations, annosTunnelSecretVersion(secret))
+		tun.Annotations = annotateWithRequestID(ctx, tun)
+		tun.Annotations = controller.MergeLabels(tun.Annotations, annotateTunnelSecretVersion(secret))
 		tun.Spec = glmv1.TunnelSpec{
 			Protocol: glmv1.TunnelProtocol{
 				WireGuard: &glmv1.WireGuardSpec{
@@ -585,7 +627,7 @@ func secretKeyNamePresharedKey(i int) string {
 	return fmt.Sprintf("%s-%d", secretKeyPresharedKey, i)
 }
 
-func annosTunnelSecretVersion(secret *corev1.Secret) map[string]string {
+func annotateTunnelSecretVersion(secret *corev1.Secret) map[string]string {
 	return map[string]string{
 		annonationTunnelSecretVersion: secret.ResourceVersion,
 	}
@@ -608,14 +650,18 @@ func newHTTPClient() *http.Client {
 	}
 }
 
-func convertBlockLists(blockLists []*apiv1.AdGuardHomeConfig_BlockList) []glmv1.TunnelDNSBlockList {
-	var bls []glmv1.TunnelDNSBlockList
+func convertBlockLists(blockLists []*apiv1.AdGuardHomeConfig_BlockList) []glmv1.AdGuardHomeBlockList {
+	var bls []glmv1.AdGuardHomeBlockList
 	for _, bl := range blockLists {
-		bls = append(bls, glmv1.TunnelDNSBlockList{
+		bls = append(bls, glmv1.AdGuardHomeBlockList{
 			Name: bl.Name,
 			URL:  bl.Url,
 		})
 	}
 
 	return bls
+}
+
+func annotateWithRequestID(ctx context.Context, tun *glmv1.Tunnel) map[string]string {
+	return controller.MergeLabels(tun.Annotations, map[string]string{annotationRequestID: middleware.GetReqID(ctx)})
 }

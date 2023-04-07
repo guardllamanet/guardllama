@@ -8,6 +8,7 @@ import (
 	"net/http/httputil"
 	"time"
 
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"k8s.io/apimachinery/pkg/api/equality"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -21,6 +22,7 @@ import (
 	"github.com/go-logr/logr"
 	glmv1 "github.com/guardllamanet/guardllama/api/v1"
 	adguard "github.com/guardllamanet/guardllama/internal/adguard/gen"
+	"github.com/guardllamanet/guardllama/internal/util"
 	apiv1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -761,7 +763,7 @@ func (r *TunnelReconciler) upsertAGHConfig(ctx context.Context, tun *glmv1.Tunne
 			return err
 		}
 
-		if tun.Spec.DNS.AdGuardHome.IsFilteringEnabled() != toBool(status.Enabled) {
+		enableFilter := func(ctx context.Context, tun *glmv1.Tunnel) error {
 			fc := adguard.NewFilterConfig()
 			fc.SetEnabled(tun.Spec.DNS.AdGuardHome.IsFilteringEnabled())
 			fc.SetInterval(24)
@@ -769,42 +771,91 @@ func (r *TunnelReconciler) upsertAGHConfig(ctx context.Context, tun *glmv1.Tunne
 			if resp, err := client.FilteringApi.FilteringConfig(ctx).FilterConfig(*fc).Execute(); err != nil {
 				return &errHTTPResponse{msg: "error updating filter config", resp: resp}
 			}
+
+			return nil
 		}
 
-		existingFilteringURLs := make(map[string]struct{})
+		g, ctx := errgroup.WithContext(ctx)
+
+		if tun.Spec.DNS.AdGuardHome.IsFilteringEnabled() != util.ToBool(status.Enabled) {
+			g.Go(func() error {
+				return enableFilter(ctx, tun)
+			})
+		}
+
+		existingFilteringURLs := make(map[string]adguard.Filter)
 		for _, fl := range status.Filters {
-			existingFilteringURLs[fl.Url] = struct{}{}
+			existingFilteringURLs[fl.Url] = fl
 		}
 
-		desiredFilteringURLs := make(map[string]glmv1.TunnelDNSBlockList)
+		desiredFilteringURLs := make(map[string]glmv1.AdGuardHomeBlockList)
 		for _, bl := range tun.Spec.DNS.AdGuardHome.BlockLists {
 			desiredFilteringURLs[bl.URL] = bl
 		}
 
+		enableURL := func(ctx context.Context, bl glmv1.AdGuardHomeBlockList) error {
+			req := adguard.NewFilterSetUrl()
+			req.Data = &adguard.FilterSetUrlData{
+				Enabled: true,
+				Name:    bl.Name,
+				Url:     bl.URL,
+			}
+			req.Url = &bl.URL
+
+			if resp, err := client.FilteringApi.FilteringSetURL(ctx).FilterSetUrl(*req).Execute(); err != nil {
+				return &errHTTPResponse{msg: "error enabling blocklist", resp: resp}
+			}
+
+			return nil
+		}
+		addURL := func(ctx context.Context, bl glmv1.AdGuardHomeBlockList) error {
+			req := adguard.NewAddUrlRequest()
+			req.SetName(bl.Name)
+			req.SetUrl(bl.URL)
+
+			if resp, err := client.FilteringApi.FilteringAddURL(ctx).AddUrlRequest(*req).Execute(); err != nil {
+				return &errHTTPResponse{msg: "error adding blocklist", resp: resp}
+			}
+
+			return nil
+		}
+		removeURL := func(ctx context.Context, fl adguard.Filter) error {
+			u := adguard.NewRemoveUrlRequestWithDefaults()
+			u.SetUrl(fl.Url)
+
+			if resp, err := client.FilteringApi.FilteringRemoveURL(ctx).RemoveUrlRequest(*u).Execute(); err != nil {
+				return &errHTTPResponse{msg: "error remove blocklist", resp: resp}
+			}
+
+			return nil
+		}
+
 		for _, bl := range desiredFilteringURLs {
-			if _, ok := existingFilteringURLs[bl.URL]; !ok {
-				u := adguard.NewAddUrlRequestWithDefaults()
-				u.SetName(bl.Name)
-				u.SetUrl(bl.URL)
+			bl := bl
 
-				if resp, err := client.FilteringApi.FilteringAddURL(ctx).AddUrlRequest(*u).Execute(); err != nil {
-					return &errHTTPResponse{msg: "error adding blocklist", resp: resp}
+			fl, ok := existingFilteringURLs[bl.URL]
+			if ok {
+				if !fl.Enabled {
+					g.Go(func() error {
+						return enableURL(ctx, bl)
+					})
 				}
+			} else {
+				g.Go(func() error {
+					return addURL(ctx, bl)
+				})
+			}
+		}
+		for _, fl := range existingFilteringURLs {
+			fl := fl
+			if _, ok := desiredFilteringURLs[fl.Url]; !ok {
+				g.Go(func() error {
+					return removeURL(ctx, fl)
+				})
 			}
 		}
 
-		for bl := range existingFilteringURLs {
-			if _, ok := desiredFilteringURLs[bl]; !ok {
-				u := adguard.NewRemoveUrlRequestWithDefaults()
-				u.SetUrl(bl)
-
-				if resp, err := client.FilteringApi.FilteringRemoveURL(ctx).RemoveUrlRequest(*u).Execute(); err != nil {
-					return &errHTTPResponse{msg: "error remove blocklist", resp: resp}
-				}
-			}
-		}
-
-		return nil
+		return g.Wait()
 	}
 
 	err := update(ctx, tun)
@@ -985,14 +1036,6 @@ func newHTTPClient() *http.Client {
 	return &http.Client{
 		Timeout: 5 * time.Second,
 	}
-}
-
-func toBool(value *bool) bool {
-	if value == nil {
-		return false
-	}
-
-	return *value
 }
 
 type errHTTPResponse struct {

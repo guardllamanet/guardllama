@@ -12,5 +12,15 @@ void main() {
       // TODO
     });
 
+    // bool filteringEnabled
+    test('to test the property `filteringEnabled`', () async {
+      // TODO
+    });
+
+    // BuiltList<AdGuardHomeConfigBlockList> blockLists
+    test('to test the property `blockLists`', () async {
+      // TODO
+    });
+
   });
 }

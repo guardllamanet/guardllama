@@ -77,15 +77,15 @@ type WireGuardInterface struct {
 }
 
 type AdGuardHomeSpec struct {
-	FilteringEnabled *bool                `json:"filteringEnabled,omitempty"`
-	BlockLists       []TunnelDNSBlockList `json:"blockLists,omitempty"`
+	FilteringEnabled *bool                  `json:"filteringEnabled,omitempty"`
+	BlockLists       []AdGuardHomeBlockList `json:"blockLists,omitempty"`
 }
 
 func (s AdGuardHomeSpec) IsFilteringEnabled() bool {
 	return s.FilteringEnabled == nil || *s.FilteringEnabled
 }
 
-type TunnelDNSBlockList struct {
+type AdGuardHomeBlockList struct {
 	Name string `json:"name"`
 	URL  string `json:"url"`
 }

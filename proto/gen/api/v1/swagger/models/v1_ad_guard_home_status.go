@@ -7,7 +7,9 @@ package models
 
 import (
 	"context"
+	"strconv"
 
+	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -17,17 +19,87 @@ import (
 // swagger:model v1AdGuardHomeStatus
 type V1AdGuardHomeStatus struct {
 
+	// block lists
+	BlockLists []*AdGuardHomeConfigBlockList `json:"block_lists"`
+
 	// dns
 	DNS []string `json:"dns"`
+
+	// filtering enabled
+	FilteringEnabled bool `json:"filtering_enabled,omitempty"`
 }
 
 // Validate validates this v1 ad guard home status
 func (m *V1AdGuardHomeStatus) Validate(formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.validateBlockLists(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
 	return nil
 }
 
-// ContextValidate validates this v1 ad guard home status based on context it is used
+func (m *V1AdGuardHomeStatus) validateBlockLists(formats strfmt.Registry) error {
+	if swag.IsZero(m.BlockLists) { // not required
+		return nil
+	}
+
+	for i := 0; i < len(m.BlockLists); i++ {
+		if swag.IsZero(m.BlockLists[i]) { // not required
+			continue
+		}
+
+		if m.BlockLists[i] != nil {
+			if err := m.BlockLists[i].Validate(formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("block_lists" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("block_lists" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
+	return nil
+}
+
+// ContextValidate validate this v1 ad guard home status based on the context it is used
 func (m *V1AdGuardHomeStatus) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
+	var res []error
+
+	if err := m.contextValidateBlockLists(ctx, formats); err != nil {
+		res = append(res, err)
+	}
+
+	if len(res) > 0 {
+		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+func (m *V1AdGuardHomeStatus) contextValidateBlockLists(ctx context.Context, formats strfmt.Registry) error {
+
+	for i := 0; i < len(m.BlockLists); i++ {
+
+		if m.BlockLists[i] != nil {
+			if err := m.BlockLists[i].ContextValidate(ctx, formats); err != nil {
+				if ve, ok := err.(*errors.Validation); ok {
+					return ve.ValidateName("block_lists" + "." + strconv.Itoa(i))
+				} else if ce, ok := err.(*errors.CompositeError); ok {
+					return ce.ValidateName("block_lists" + "." + strconv.Itoa(i))
+				}
+				return err
+			}
+		}
+
+	}
+
 	return nil
 }
 

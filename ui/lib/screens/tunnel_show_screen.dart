@@ -41,7 +41,7 @@ class _TunnelShowScreenState extends State<TunnelShowScreen> {
   @override
   Widget build(BuildContext context) {
     return TimerBuilder.periodic(
-      const Duration(seconds: 5),
+      const Duration(seconds: 4),
       builder: (context) {
         return FutureBuilder<V1Tunnel>(
           future: _pollGetTunnelFuture(context),

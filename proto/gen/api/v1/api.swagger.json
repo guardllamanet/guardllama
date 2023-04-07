@@ -541,6 +541,16 @@
           "items": {
             "type": "string"
           }
+        },
+        "filtering_enabled": {
+          "type": "boolean"
+        },
+        "block_lists": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/AdGuardHomeConfigBlockList"
+          }
         }
       }
     },

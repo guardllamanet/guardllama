@@ -23,20 +23,27 @@ class TunnelShowView extends StatefulWidget {
 }
 
 class _TunnelShowViewState extends State<TunnelShowView> {
+  AdBlockMode _getAdBlockMode() {
+    final agh = widget.tunnel.config!.agh!;
+    final bls = agh.blockLists ?? BuiltList();
+    final blockLists =
+        bls.map((bl) => AdBlockList(name: bl.name!, url: bl.url!)).toList();
+    final blockMode =
+        [AdBlockMode.defaultMode, AdBlockMode.strictMode].firstWhereOrNull(
+      (mode) => const SetEquality()
+          .equals(mode.blocklists.toSet(), blockLists.toSet()),
+    );
+
+    return blockMode ?? AdBlockMode.customMode;
+  }
+
   @override
   Widget build(BuildContext context) {
     final status = widget.tunnel.status!;
     final wgDev = status.wg?.device;
     final iface = widget.tunnel.config!.wg!.interface_!;
     final peer = widget.tunnel.config!.wg!.peers!.first;
-    final agh = widget.tunnel.config!.agh!;
-    final bls = agh.blockLists ?? BuiltList();
-    final blocklists =
-        bls.map((bl) => AdBlockList(name: bl.name!, url: bl.url!)).toList();
-    final blockMode =
-        [AdBlockMode.defaultMode, AdBlockMode.strictMode].firstWhereOrNull(
-      (mode) => const ListEquality().equals(mode.blocklists, blocklists),
-    );
+    final aghs = widget.tunnel.status!.agh!;
 
     buildTab(List<KeyValueRow> rows, double dataRowHeight) => Padding(
           padding: const EdgeInsets.all(8.0),
@@ -74,12 +81,16 @@ class _TunnelShowViewState extends State<TunnelShowView> {
         key: 'Filtering:',
         keyHelp: 'Turn on/off DNS filtering.',
         value: Switch(
-            value: agh.filteringEnabled!,
+            value: aghs.filteringEnabled!,
             onChanged: (value) {
               ContextScope.of(context)
                   .apiService
                   .updateDNSFiltering(widget.tunnel.name, value)
-                  .then((_) => widget.tunnelUpdated());
+                  .then((_) {
+                widget.tunnelUpdated();
+                WidgetUtils.showInfo(
+                    context, 'DNS filtering is ${value ? 'on' : 'off'}');
+              });
             },
             activeColor: Theme.of(context).iconTheme.color),
       ),
@@ -88,17 +99,21 @@ class _TunnelShowViewState extends State<TunnelShowView> {
           keyHelp:
               'Avaiable block modes:\n1. Default: a balance between adblocking and user experience (UX).\n2. Strict: blocks more ads and prioritizes privacy & safety over UX.',
           value: DropdownButton(
-            value: blockMode,
+            value: _getAdBlockMode(),
             hint: const Text("Select block mode"),
             items: [AdBlockMode.defaultMode, AdBlockMode.strictMode]
                 .map((m) => DropdownMenuItem(value: m, child: Text(m.name)))
                 .toList(),
-            onChanged: (mode) {
+            onChanged: (mode) async {
               if (mode != null) {
                 ContextScope.of(context)
                     .apiService
                     .updateDNSBlockMode(widget.tunnel.name, mode)
-                    .then((_) => widget.tunnelUpdated());
+                    .then((_) {
+                  widget.tunnelUpdated();
+                  WidgetUtils.showInfo(
+                      context, 'Block mode updated to ${mode.name}');
+                });
               }
             },
           )),

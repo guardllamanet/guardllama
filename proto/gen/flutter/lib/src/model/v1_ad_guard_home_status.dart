@@ -4,6 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
+import 'package:guardllama_api/src/model/ad_guard_home_config_block_list.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -13,10 +14,18 @@ part 'v1_ad_guard_home_status.g.dart';
 ///
 /// Properties:
 /// * [dns] 
+/// * [filteringEnabled] 
+/// * [blockLists] 
 @BuiltValue()
 abstract class V1AdGuardHomeStatus implements Built<V1AdGuardHomeStatus, V1AdGuardHomeStatusBuilder> {
   @BuiltValueField(wireName: r'dns')
   BuiltList<String>? get dns;
+
+  @BuiltValueField(wireName: r'filtering_enabled')
+  bool? get filteringEnabled;
+
+  @BuiltValueField(wireName: r'block_lists')
+  BuiltList<AdGuardHomeConfigBlockList>? get blockLists;
 
   V1AdGuardHomeStatus._();
 
@@ -48,6 +57,20 @@ class _$V1AdGuardHomeStatusSerializer implements PrimitiveSerializer<V1AdGuardHo
         specifiedType: const FullType(BuiltList, [FullType(String)]),
       );
     }
+    if (object.filteringEnabled != null) {
+      yield r'filtering_enabled';
+      yield serializers.serialize(
+        object.filteringEnabled,
+        specifiedType: const FullType(bool),
+      );
+    }
+    if (object.blockLists != null) {
+      yield r'block_lists';
+      yield serializers.serialize(
+        object.blockLists,
+        specifiedType: const FullType(BuiltList, [FullType(AdGuardHomeConfigBlockList)]),
+      );
+    }
   }
 
   @override
@@ -77,6 +100,20 @@ class _$V1AdGuardHomeStatusSerializer implements PrimitiveSerializer<V1AdGuardHo
             specifiedType: const FullType(BuiltList, [FullType(String)]),
           ) as BuiltList<String>;
           result.dns.replace(valueDes);
+          break;
+        case r'filtering_enabled':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(bool),
+          ) as bool;
+          result.filteringEnabled = valueDes;
+          break;
+        case r'block_lists':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(BuiltList, [FullType(AdGuardHomeConfigBlockList)]),
+          ) as BuiltList<AdGuardHomeConfigBlockList>;
+          result.blockLists.replace(valueDes);
           break;
         default:
           unhandled.add(key);

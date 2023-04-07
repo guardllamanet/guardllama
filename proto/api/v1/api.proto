@@ -402,6 +402,8 @@ message WireGuardStatus {
 
 message AdGuardHomeStatus {
   repeated string dns = 1;
+  bool filtering_enabled = 2;
+  repeated AdGuardHomeConfig.BlockList block_lists = 3;
 }
 
 service AuthService {

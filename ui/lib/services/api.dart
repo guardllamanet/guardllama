@@ -63,8 +63,12 @@ enum AdBlockMode {
       AdBlockList(
           name: "1Hosts (Lite)",
           url:
-              "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/master/SmartTV-AGH.txt"),
+              "https://adguardteam.github.io/HostlistsRegistry/assets/filter_24.txt"),
     ],
+  ),
+  customMode(
+    name: 'Custom',
+    blocklists: [],
   );
 
   const AdBlockMode({required this.name, required this.blocklists});
