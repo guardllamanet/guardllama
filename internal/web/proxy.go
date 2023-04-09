@@ -55,7 +55,6 @@ func AGHProxyHandler(c *api.K8sClient) func(w http.ResponseWriter, r *http.Reque
 
 func trimPathPrefix(s, prefix string) string {
 	r := strings.TrimPrefix(s, prefix)
-	fmt.Println(r)
 	if !strings.HasPrefix(r, "/") {
 		return "/" + r
 	}
