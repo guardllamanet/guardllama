@@ -16,6 +16,7 @@ import (
 	"github.com/guardllamanet/guardllama/internal/e2etest/testutil"
 	"github.com/guardllamanet/guardllama/internal/web/api"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client"
+	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/auth_service"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/server_service"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/tunnel_service"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/models"
@@ -53,16 +54,40 @@ func Test_APITunnel(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	runtime := httptransport.New(u.Host, u.Path, []string{u.Scheme})
-	runtime.DefaultAuthentication = httptransport.BasicAuth("", "root")
-	runtime.Debug = os.Getenv("DEBUG") != ""
-	c := client.New(runtime, strfmt.Default)
+	authRuntime := httptransport.New(u.Host, "/", []string{u.Scheme})
+	authRuntime.Debug = os.Getenv("DEBUG") != ""
+	authClient := client.New(authRuntime, strfmt.Default)
+
+	apiRuntime := httptransport.New(u.Host, "/api", []string{u.Scheme})
+	apiRuntime.Debug = os.Getenv("DEBUG") != ""
+	apiClient := client.New(apiRuntime, strfmt.Default)
 
 	steps := []testutil.Step{
 		{
+			Name: "authenticate",
+			Step: func(t *testing.T) {
+				token := "root"
+				resp, err := authClient.AuthService.AuthServiceAuthenticate(
+					auth_service.NewAuthServiceAuthenticateParams().WithBody(&models.V1AuthenticateRequest{
+						Creds: &models.Apiv1Credentials{
+							Token: &token,
+						},
+					}))
+				if err != nil {
+					t.Fatal(err)
+				}
+
+				apiRuntime.DefaultAuthentication = httptransport.APIKeyAuth(
+					"Authorization",
+					"header",
+					fmt.Sprintf("Bearer %s", resp.Payload.JwtToken.Token),
+				)
+			},
+		},
+		{
 			Name: "get server",
 			Step: func(t *testing.T) {
-				resp, err := c.ServerService.ServerServiceGetServer(server_service.NewServerServiceGetServerParams())
+				resp, err := apiClient.ServerService.ServerServiceGetServer(server_service.NewServerServiceGetServerParams())
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -78,16 +103,14 @@ func Test_APITunnel(t *testing.T) {
 		{
 			Name: "create a tunnel",
 			Step: func(t *testing.T) {
-				resp, err := c.TunnelService.TunnelServiceCreateTunnel(
+				resp, err := apiClient.TunnelService.TunnelServiceCreateTunnel(
 					tunnel_service.NewTunnelServiceCreateTunnelParams().
 						WithBody(&models.V1CreateTunnelRequest{
-							Ag: &models.V1AdGuardConfig{
-								BlockLists: []*models.AdGuardConfigBlockList{
+							Agh: &models.V1AdGuardHomeConfig{
+								BlockLists: []*models.AdGuardHomeConfigBlockList{
 									{
-										ID:      0,
-										Name:    "AdGuard DNS filter",
-										URL:     "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
-										Enabled: true,
+										Name: "AdGuard DNS filter",
+										URL:  "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
 									},
 								},
 							},
@@ -103,21 +126,25 @@ func Test_APITunnel(t *testing.T) {
 		{
 			Name: "list tunnel",
 			Step: func(t *testing.T) {
-				resp, err := c.TunnelService.TunnelServiceListTunnels(tunnel_service.NewTunnelServiceListTunnelsParams())
-				if err != nil {
-					t.Fatal(err)
-				}
+				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
+					resp, err := apiClient.TunnelService.TunnelServiceListTunnels(tunnel_service.NewTunnelServiceListTunnelsParams())
+					if err != nil {
+						return err
+					}
 
-				if diff := cmp.Diff(1, len(resp.Payload.Tunnels)); diff != "" {
-					t.Fatalf("mismatch of number of tunnels (-want +got): %s", diff)
-				}
+					if diff := cmp.Diff(1, len(resp.Payload.Tunnels)); diff != "" {
+						return fmt.Errorf("mismatch of number of tunnels (-want +got): %s", diff)
+					}
+
+					return nil
+				})
 			},
 		},
 		{
 			Name: "get a tunnel",
 			Step: func(t *testing.T) {
 				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
-					resp, err := c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+					resp, err := apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
 					if err != nil {
 						return err
 					}
@@ -127,9 +154,8 @@ func Test_APITunnel(t *testing.T) {
 						return nil
 					}
 
-					return fmt.Errorf("tunnel status not ready: %v", resp.Payload.Tunnel)
+					return fmt.Errorf("tunnel status not ready: %v", resp.Payload.Tunnel.Status)
 				})
-
 			},
 		},
 		{
@@ -144,16 +170,16 @@ func Test_APITunnel(t *testing.T) {
 		{
 			Name: "update dns filtering",
 			Step: func(t *testing.T) {
-				resp, err := c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+				resp, err := apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
 				if err != nil {
 					t.Fatal(err)
 				}
 
-				if !resp.Payload.Tunnel.Config.Ag.FilteringEnabled {
+				if !resp.Payload.Tunnel.Config.Agh.FilteringEnabled {
 					t.Fatalf("dns filering should be enabled")
 				}
 
-				_, err = c.TunnelService.TunnelServiceUpdateDNSFilteringEnabled(
+				_, err = apiClient.TunnelService.TunnelServiceUpdateDNSFilteringEnabled(
 					tunnel_service.NewTunnelServiceUpdateDNSFilteringEnabledParams().
 						WithName(*tun.Name).
 						WithBody(tunnel_service.TunnelServiceUpdateDNSFilteringEnabledBody{
@@ -165,12 +191,12 @@ func Test_APITunnel(t *testing.T) {
 				}
 
 				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
-					resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+					resp, err = apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
 					if err != nil {
 						return err
 					}
 
-					if resp.Payload.Tunnel.Config.Ag.FilteringEnabled {
+					if resp.Payload.Tunnel.Config.Agh.FilteringEnabled {
 						return fmt.Errorf("dns filering should be disabled")
 					}
 
@@ -181,31 +207,27 @@ func Test_APITunnel(t *testing.T) {
 		{
 			Name: "update dns block lists",
 			Step: func(t *testing.T) {
-				resp, err := c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+				resp, err := apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
 				if err != nil {
 					t.Fatal(err)
 				}
 
-				if diff := cmp.Diff(1, len(resp.Payload.Tunnel.Config.Ag.BlockLists)); diff != "" {
+				if diff := cmp.Diff(1, len(resp.Payload.Tunnel.Config.Agh.BlockLists)); diff != "" {
 					t.Fatalf("mismatch of number of blocklists (-want +got): %s", diff)
 				}
 
-				_, err = c.TunnelService.TunnelServiceUpdateDNSBlockLists(
+				_, err = apiClient.TunnelService.TunnelServiceUpdateDNSBlockLists(
 					tunnel_service.NewTunnelServiceUpdateDNSBlockListsParams().
 						WithName(*tun.Name).
 						WithBody(tunnel_service.TunnelServiceUpdateDNSBlockListsBody{
-							BlockLists: []*models.AdGuardConfigBlockList{
+							BlockLists: []*models.AdGuardHomeConfigBlockList{
 								{
-									ID:      0,
-									Name:    "AdGuard DNS filter",
-									URL:     "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
-									Enabled: true,
+									Name: "AdGuard DNS filter",
+									URL:  "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.tx",
 								},
 								{
-									ID:      1,
-									Name:    "AdAway Default Blocklist",
-									URL:     "https://adaway.org/hosts.txt",
-									Enabled: true,
+									Name: "AdAway Default Blocklist",
+									URL:  "https://adaway.org/hosts.txt",
 								},
 							},
 						}),
@@ -215,54 +237,13 @@ func Test_APITunnel(t *testing.T) {
 				}
 
 				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
-					resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+					resp, err = apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
 					if err != nil {
 						return err
 					}
 
-					if diff := cmp.Diff(2, len(resp.Payload.Tunnel.Config.Ag.BlockLists)); diff != "" {
+					if diff := cmp.Diff(2, len(resp.Payload.Tunnel.Config.Agh.BlockLists)); diff != "" {
 						return fmt.Errorf("mismatch of number of blocklists (-want +got): %s", diff)
-					}
-
-					return nil
-				})
-			},
-		},
-		{
-			Name: "update dns filtering rules",
-			Step: func(t *testing.T) {
-				resp, err := c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
-				if err != nil {
-					t.Fatal(err)
-				}
-
-				if diff := cmp.Diff([]*models.V1AdGuardConfigRule{}, resp.Payload.Tunnel.Config.Ag.Rules); diff != "" {
-					t.Fatalf("mismatch of filtering rules (-want +got): %s", diff)
-				}
-
-				_, err = c.TunnelService.TunnelServiceUpdateDNSFilteringRules(
-					tunnel_service.NewTunnelServiceUpdateDNSFilteringRulesParams().
-						WithName(*tun.Name).
-						WithBody(tunnel_service.TunnelServiceUpdateDNSFilteringRulesBody{
-							Rules: []*models.V1AdGuardConfigRule{
-								{
-									Rule: "||example.org^",
-								},
-							},
-						}),
-				)
-				if err != nil {
-					t.Fatal(err)
-				}
-
-				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
-					resp, err = c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
-					if err != nil {
-						return err
-					}
-
-					if diff := cmp.Diff([]*models.V1AdGuardConfigRule{{Rule: "||example.org^"}}, resp.Payload.Tunnel.Config.Ag.Rules); diff != "" {
-						return fmt.Errorf("mismatch of filtering rules (-want +got): %s", diff)
 					}
 
 					return nil
@@ -272,7 +253,7 @@ func Test_APITunnel(t *testing.T) {
 		{
 			Name: "remove a tunnel",
 			Step: func(t *testing.T) {
-				_, err := c.TunnelService.TunnelServiceRemoveTunnel(tunnel_service.NewTunnelServiceRemoveTunnelParams().WithName(*tun.Name))
+				_, err := apiClient.TunnelService.TunnelServiceRemoveTunnel(tunnel_service.NewTunnelServiceRemoveTunnelParams().WithName(*tun.Name))
 				if err != nil {
 					t.Fatal(err)
 				}
@@ -281,7 +262,7 @@ func Test_APITunnel(t *testing.T) {
 		{
 			Name: "get a tunnel not found",
 			Step: func(t *testing.T) {
-				_, err := c.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
+				_, err := apiClient.TunnelService.TunnelServiceGetTunnel(tunnel_service.NewTunnelServiceGetTunnelParams().WithName(*tun.Name))
 				if err == nil {
 					t.Fatal("error should not be nil")
 				}

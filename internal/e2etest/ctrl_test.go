@@ -72,7 +72,7 @@ func Test_Tunnel(t *testing.T) {
 					},
 					Spec: glmv1.TunnelSpec{
 						DNS: glmv1.TunnelDNS{
-							AdGuard: &glmv1.AdGuardSpec{},
+							AdGuardHome: &glmv1.AdGuardHomeSpec{},
 						},
 						Protocol: glmv1.TunnelProtocol{
 							WireGuard: &glmv1.WireGuardSpec{
@@ -133,7 +133,7 @@ func Test_Tunnel(t *testing.T) {
 		{
 			Name: "get a tunnel",
 			Step: func(t *testing.T) {
-				testutil.PollUntil(t, time.Second, 20*time.Second, func() error {
+				testutil.PollUntil(t, time.Second, 60*time.Second, func() error {
 					var tun glmv1.Tunnel
 					if err := c.Get(ctx, types.NamespacedName{Namespace: ns.Name, Name: tunName}, &tun); err != nil {
 						return err

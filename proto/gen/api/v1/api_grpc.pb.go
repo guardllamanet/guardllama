@@ -236,7 +236,6 @@ type TunnelServiceClient interface {
 	RemoveTunnel(ctx context.Context, in *RemoveTunnelRequest, opts ...grpc.CallOption) (*RemoveTunnelResponse, error)
 	UpdateDNSFilteringEnabled(ctx context.Context, in *UpdateDNSFilteringEnabledRequest, opts ...grpc.CallOption) (*UpdateDNSFilteringEnabledResponse, error)
 	UpdateDNSBlockLists(ctx context.Context, in *UpdateDNSBlockListsRequest, opts ...grpc.CallOption) (*UpdateDNSBlockListsResponse, error)
-	UpdateDNSFilteringRules(ctx context.Context, in *UpdateDNSFilteringRulesRequest, opts ...grpc.CallOption) (*UpdateDNSFilteringRulesResponse, error)
 }
 
 type tunnelServiceClient struct {
@@ -301,15 +300,6 @@ func (c *tunnelServiceClient) UpdateDNSBlockLists(ctx context.Context, in *Updat
 	return out, nil
 }
 
-func (c *tunnelServiceClient) UpdateDNSFilteringRules(ctx context.Context, in *UpdateDNSFilteringRulesRequest, opts ...grpc.CallOption) (*UpdateDNSFilteringRulesResponse, error) {
-	out := new(UpdateDNSFilteringRulesResponse)
-	err := c.cc.Invoke(ctx, "/api.v1.TunnelService/UpdateDNSFilteringRules", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // TunnelServiceServer is the server API for TunnelService service.
 // All implementations must embed UnimplementedTunnelServiceServer
 // for forward compatibility
@@ -320,7 +310,6 @@ type TunnelServiceServer interface {
 	RemoveTunnel(context.Context, *RemoveTunnelRequest) (*RemoveTunnelResponse, error)
 	UpdateDNSFilteringEnabled(context.Context, *UpdateDNSFilteringEnabledRequest) (*UpdateDNSFilteringEnabledResponse, error)
 	UpdateDNSBlockLists(context.Context, *UpdateDNSBlockListsRequest) (*UpdateDNSBlockListsResponse, error)
-	UpdateDNSFilteringRules(context.Context, *UpdateDNSFilteringRulesRequest) (*UpdateDNSFilteringRulesResponse, error)
 	mustEmbedUnimplementedTunnelServiceServer()
 }
 
@@ -345,9 +334,6 @@ func (UnimplementedTunnelServiceServer) UpdateDNSFilteringEnabled(context.Contex
 }
 func (UnimplementedTunnelServiceServer) UpdateDNSBlockLists(context.Context, *UpdateDNSBlockListsRequest) (*UpdateDNSBlockListsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateDNSBlockLists not implemented")
-}
-func (UnimplementedTunnelServiceServer) UpdateDNSFilteringRules(context.Context, *UpdateDNSFilteringRulesRequest) (*UpdateDNSFilteringRulesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateDNSFilteringRules not implemented")
 }
 func (UnimplementedTunnelServiceServer) mustEmbedUnimplementedTunnelServiceServer() {}
 
@@ -470,24 +456,6 @@ func _TunnelService_UpdateDNSBlockLists_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TunnelService_UpdateDNSFilteringRules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateDNSFilteringRulesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TunnelServiceServer).UpdateDNSFilteringRules(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/api.v1.TunnelService/UpdateDNSFilteringRules",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TunnelServiceServer).UpdateDNSFilteringRules(ctx, req.(*UpdateDNSFilteringRulesRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // TunnelService_ServiceDesc is the grpc.ServiceDesc for TunnelService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -519,9 +487,91 @@ var TunnelService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "UpdateDNSBlockLists",
 			Handler:    _TunnelService_UpdateDNSBlockLists_Handler,
 		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "api/v1/api.proto",
+}
+
+// AuthServiceClient is the client API for AuthService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type AuthServiceClient interface {
+	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
+}
+
+type authServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
+	return &authServiceClient{cc}
+}
+
+func (c *authServiceClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error) {
+	out := new(AuthenticateResponse)
+	err := c.cc.Invoke(ctx, "/api.v1.AuthService/Authenticate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// AuthServiceServer is the server API for AuthService service.
+// All implementations must embed UnimplementedAuthServiceServer
+// for forward compatibility
+type AuthServiceServer interface {
+	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
+	mustEmbedUnimplementedAuthServiceServer()
+}
+
+// UnimplementedAuthServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedAuthServiceServer struct {
+}
+
+func (UnimplementedAuthServiceServer) Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
+}
+func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
+
+// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServiceServer will
+// result in compilation errors.
+type UnsafeAuthServiceServer interface {
+	mustEmbedUnimplementedAuthServiceServer()
+}
+
+func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
+	s.RegisterService(&AuthService_ServiceDesc, srv)
+}
+
+func _AuthService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).Authenticate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/api.v1.AuthService/Authenticate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).Authenticate(ctx, req.(*AuthenticateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var AuthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "api.v1.AuthService",
+	HandlerType: (*AuthServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "UpdateDNSFilteringRules",
-			Handler:    _TunnelService_UpdateDNSFilteringRules_Handler,
+			MethodName: "Authenticate",
+			Handler:    _AuthService_Authenticate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

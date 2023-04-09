@@ -3,7 +3,7 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:guardllama_api/src/model/v1_ad_guard_status.dart';
+import 'package:guardllama_api/src/model/v1_ad_guard_home_status.dart';
 import 'package:guardllama_api/src/model/v1_wire_guard_status.dart';
 import 'package:guardllama_api/src/model/tunnel_status_state.dart';
 import 'package:built_value/built_value.dart';
@@ -17,7 +17,7 @@ part 'v1_tunnel_status.g.dart';
 /// * [state] 
 /// * [details] 
 /// * [wg] 
-/// * [ag] 
+/// * [agh] 
 @BuiltValue()
 abstract class V1TunnelStatus implements Built<V1TunnelStatus, V1TunnelStatusBuilder> {
   @BuiltValueField(wireName: r'state')
@@ -30,8 +30,8 @@ abstract class V1TunnelStatus implements Built<V1TunnelStatus, V1TunnelStatusBui
   @BuiltValueField(wireName: r'wg')
   V1WireGuardStatus? get wg;
 
-  @BuiltValueField(wireName: r'ag')
-  V1AdGuardStatus? get ag;
+  @BuiltValueField(wireName: r'agh')
+  V1AdGuardHomeStatus? get agh;
 
   V1TunnelStatus._();
 
@@ -77,11 +77,11 @@ class _$V1TunnelStatusSerializer implements PrimitiveSerializer<V1TunnelStatus> 
         specifiedType: const FullType(V1WireGuardStatus),
       );
     }
-    if (object.ag != null) {
-      yield r'ag';
+    if (object.agh != null) {
+      yield r'agh';
       yield serializers.serialize(
-        object.ag,
-        specifiedType: const FullType(V1AdGuardStatus),
+        object.agh,
+        specifiedType: const FullType(V1AdGuardHomeStatus),
       );
     }
   }
@@ -128,12 +128,12 @@ class _$V1TunnelStatusSerializer implements PrimitiveSerializer<V1TunnelStatus> 
           ) as V1WireGuardStatus;
           result.wg.replace(valueDes);
           break;
-        case r'ag':
+        case r'agh':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(V1AdGuardStatus),
-          ) as V1AdGuardStatus;
-          result.ag.replace(valueDes);
+            specifiedType: const FullType(V1AdGuardHomeStatus),
+          ) as V1AdGuardHomeStatus;
+          result.agh.replace(valueDes);
           break;
         default:
           unhandled.add(key);

@@ -4,7 +4,7 @@
 
 // ignore_for_file: unused_element
 import 'package:built_collection/built_collection.dart';
-import 'package:guardllama_api/src/model/ad_guard_config_block_list.dart';
+import 'package:guardllama_api/src/model/ad_guard_home_config_block_list.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -17,7 +17,7 @@ part 'tunnel_service_update_dns_block_lists_request.g.dart';
 @BuiltValue()
 abstract class TunnelServiceUpdateDNSBlockListsRequest implements Built<TunnelServiceUpdateDNSBlockListsRequest, TunnelServiceUpdateDNSBlockListsRequestBuilder> {
   @BuiltValueField(wireName: r'block_lists')
-  BuiltList<AdGuardConfigBlockList>? get blockLists;
+  BuiltList<AdGuardHomeConfigBlockList>? get blockLists;
 
   TunnelServiceUpdateDNSBlockListsRequest._();
 
@@ -46,7 +46,7 @@ class _$TunnelServiceUpdateDNSBlockListsRequestSerializer implements PrimitiveSe
       yield r'block_lists';
       yield serializers.serialize(
         object.blockLists,
-        specifiedType: const FullType(BuiltList, [FullType(AdGuardConfigBlockList)]),
+        specifiedType: const FullType(BuiltList, [FullType(AdGuardHomeConfigBlockList)]),
       );
     }
   }
@@ -75,8 +75,8 @@ class _$TunnelServiceUpdateDNSBlockListsRequestSerializer implements PrimitiveSe
         case r'block_lists':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(BuiltList, [FullType(AdGuardConfigBlockList)]),
-          ) as BuiltList<AdGuardConfigBlockList>;
+            specifiedType: const FullType(BuiltList, [FullType(AdGuardHomeConfigBlockList)]),
+          ) as BuiltList<AdGuardHomeConfigBlockList>;
           result.blockLists.replace(valueDes);
           break;
         default:

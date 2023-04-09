@@ -4,6 +4,7 @@ import 'package:talker/talker.dart';
 import 'package:talker_dio_logger/talker_dio_logger.dart';
 
 import 'services/api.dart';
+import 'services/auth.dart';
 import 'services/session.dart';
 
 class Context extends ChangeNotifier {
@@ -13,9 +14,11 @@ class Context extends ChangeNotifier {
 
   late final TalkerDioLogger _talkerLogger;
 
-  String? _token;
+  String? _jwtToken;
 
   late ApiService _api;
+
+  late AuthService _auth;
 
   ApiService get apiService => _api;
 
@@ -30,14 +33,15 @@ class Context extends ChangeNotifier {
           printResponseData: false,
           printRequestData: false,
         ));
-    _api = ApiService(token: '', talkerLogger: _talkerLogger);
+    _api = ApiService(jwtToken: '', talkerLogger: _talkerLogger);
+    _auth = AuthService(talkerLogger: _talkerLogger);
   }
 
   Future<bool> isLoggedIn() async {
     try {
-      _token ??= await _session.getToken();
-      _api = ApiService(token: _token ?? '', talkerLogger: _talkerLogger);
-      return Future.value(_token != null && _token!.isNotEmpty);
+      _jwtToken = await _session.getJWTToken();
+      _api = ApiService(jwtToken: _jwtToken, talkerLogger: _talkerLogger);
+      return Future.value(_jwtToken == null ? false : _jwtToken!.isNotEmpty);
     } catch (e, s) {
       talker.handle(e, s);
     }
@@ -48,9 +52,9 @@ class Context extends ChangeNotifier {
 
   Future<void> logOut() async {
     try {
-      await _session.deleteToken();
-      _api = ApiService(token: '', talkerLogger: _talkerLogger);
-      _token = null;
+      _session.clearSession();
+      _jwtToken = null;
+      _api = ApiService(jwtToken: '', talkerLogger: _talkerLogger);
       notifyListeners();
     } catch (e, s) {
       talker.handle(e, s);
@@ -60,15 +64,16 @@ class Context extends ChangeNotifier {
   Future<bool> logIn(String token) async {
     try {
       // check token
-      _api = ApiService(token: token, talkerLogger: _talkerLogger);
-      await _api.getServerConfig();
+      final resp = await _auth.authenticate(token);
 
-      // add token to session
-      await _session.addToken(token);
+      // upsert session
+      await _session.upsertSession(resp);
 
-      _token = token;
+      _jwtToken = await _session.getJWTToken();
+      _api = ApiService(jwtToken: _jwtToken, talkerLogger: _talkerLogger);
       notifyListeners();
-      return Future.value(_token?.isNotEmpty);
+
+      return Future.value(_jwtToken == null ? false : _jwtToken!.isNotEmpty);
     } catch (e, s) {
       talker.handle(e, s);
     }

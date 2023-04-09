@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/guardllamanet/guardllama/internal/log"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -23,6 +24,15 @@ func HeaderMatcher(key string) (string, bool) {
 	default:
 		return runtime.DefaultHeaderMatcher(key)
 	}
+}
+
+func WithRequestMetadata() runtime.ServeMuxOption {
+	return runtime.WithMetadata(func(ctx context.Context, req *http.Request) metadata.MD {
+		return metadata.Pairs(
+			RequestIDHeader, middleware.GetReqID(ctx),
+			HTTPEndpointHeader, extractEndpoint(req),
+		)
+	})
 }
 
 func WithPrettyJSONMarshaler() runtime.ServeMuxOption {

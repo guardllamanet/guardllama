@@ -66,7 +66,7 @@ func unmarshalFlags(cmd *cobra.Command, opts interface{}) error {
 
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return fmt.Errorf("Error loading config file %s: %w", cfgFile, err)
+			return fmt.Errorf("error loading config file %s: %w", cfgFile, err)
 		}
 	}
 

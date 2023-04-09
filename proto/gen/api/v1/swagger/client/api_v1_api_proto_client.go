@@ -10,6 +10,7 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
+	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/auth_service"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/server_service"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/tunnel_service"
 	"github.com/guardllamanet/guardllama/proto/gen/api/v1/swagger/client/wire_guard_service"
@@ -57,6 +58,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *APIV1APIPr
 
 	cli := new(APIV1APIProto)
 	cli.Transport = transport
+	cli.AuthService = auth_service.New(transport, formats)
 	cli.ServerService = server_service.New(transport, formats)
 	cli.TunnelService = tunnel_service.New(transport, formats)
 	cli.WireGuardService = wire_guard_service.New(transport, formats)
@@ -104,6 +106,8 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // APIV1APIProto is a client for API v1 API proto
 type APIV1APIProto struct {
+	AuthService auth_service.ClientService
+
 	ServerService server_service.ClientService
 
 	TunnelService tunnel_service.ClientService
@@ -116,6 +120,7 @@ type APIV1APIProto struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *APIV1APIProto) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
+	c.AuthService.SetTransport(transport)
 	c.ServerService.SetTransport(transport)
 	c.TunnelService.SetTransport(transport)
 	c.WireGuardService.SetTransport(transport)

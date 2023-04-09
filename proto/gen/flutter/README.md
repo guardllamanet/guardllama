@@ -46,13 +46,14 @@ Please follow the [installation procedure](#installation--usage) and then run th
 import 'package:guardllama_api/guardllama_api.dart';
 
 
-final api = GuardllamaApi().getServerServiceApi();
+final api = GuardllamaApi().getAuthServiceApi();
+final V1AuthenticateRequest body = ; // V1AuthenticateRequest | 
 
 try {
-    final response = await api.serverServiceGetServer();
+    final response = await api.authServiceAuthenticate(body);
     print(response);
 } catch on DioError (e) {
-    print("Exception when calling ServerServiceApi->serverServiceGetServer: $e\n");
+    print("Exception when calling AuthServiceApi->authServiceAuthenticate: $e\n");
 }
 
 ```
@@ -63,6 +64,7 @@ All URIs are relative to *http://localhost*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+[*AuthServiceApi*](doc/AuthServiceApi.md) | [**authServiceAuthenticate**](doc/AuthServiceApi.md#authserviceauthenticate) | **POST** /authenticate | 
 [*ServerServiceApi*](doc/ServerServiceApi.md) | [**serverServiceGetServer**](doc/ServerServiceApi.md#serverservicegetserver) | **GET** /server | 
 [*ServerServiceApi*](doc/ServerServiceApi.md) | [**serverServiceGetServerConfig**](doc/ServerServiceApi.md#serverservicegetserverconfig) | **GET** /server/config | 
 [*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceCreateTunnel**](doc/TunnelServiceApi.md#tunnelservicecreatetunnel) | **POST** /tunnels | 
@@ -71,47 +73,42 @@ Class | Method | HTTP request | Description
 [*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceRemoveTunnel**](doc/TunnelServiceApi.md#tunnelserviceremovetunnel) | **DELETE** /tunnels/{name} | 
 [*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceUpdateDNSBlockLists**](doc/TunnelServiceApi.md#tunnelserviceupdatednsblocklists) | **PUT** /tunnels/{name}/dns_block_lists | 
 [*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceUpdateDNSFilteringEnabled**](doc/TunnelServiceApi.md#tunnelserviceupdatednsfilteringenabled) | **PUT** /tunnels/{name}/dns_filtering_enabled | 
-[*TunnelServiceApi*](doc/TunnelServiceApi.md) | [**tunnelServiceUpdateDNSFilteringRules**](doc/TunnelServiceApi.md#tunnelserviceupdatednsfilteringrules) | **PUT** /tunnels/{name}/dns_filtering_rules | 
 [*WireGuardServiceApi*](doc/WireGuardServiceApi.md) | [**wireGuardServiceGetWireGuardDevice**](doc/WireGuardServiceApi.md#wireguardservicegetwireguarddevice) | **GET** /device | 
 
 
 ## Documentation For Models
 
- - [AdGuardConfigBlockList](doc/AdGuardConfigBlockList.md)
- - [AdGuardStatusQueryLog](doc/AdGuardStatusQueryLog.md)
- - [AdGuardStatusQueryLogResponse](doc/AdGuardStatusQueryLogResponse.md)
- - [AdGuardStatusQueryLogRule](doc/AdGuardStatusQueryLogRule.md)
+ - [AdGuardHomeConfigBlockList](doc/AdGuardHomeConfigBlockList.md)
+ - [Apiv1Credentials](doc/Apiv1Credentials.md)
  - [ClusterK3d](doc/ClusterK3d.md)
  - [CredentialsApi](doc/CredentialsApi.md)
+ - [CredentialsJwt](doc/CredentialsJwt.md)
  - [ImageImagePullPolicy](doc/ImageImagePullPolicy.md)
  - [ImageImagePullSecret](doc/ImageImagePullSecret.md)
  - [K3dNodePortRange](doc/K3dNodePortRange.md)
  - [NodePortRangeProtocol](doc/NodePortRangeProtocol.md)
  - [ProtobufAny](doc/ProtobufAny.md)
- - [QueryLogClient](doc/QueryLogClient.md)
- - [QueryLogReason](doc/QueryLogReason.md)
- - [QueryLogRequest](doc/QueryLogRequest.md)
- - [ResponseAnswer](doc/ResponseAnswer.md)
  - [RpcStatus](doc/RpcStatus.md)
  - [ServerConfigCluster](doc/ServerConfigCluster.md)
- - [ServerConfigCredentials](doc/ServerConfigCredentials.md)
  - [ServerConfigImage](doc/ServerConfigImage.md)
  - [TunnelServiceUpdateDNSBlockListsRequest](doc/TunnelServiceUpdateDNSBlockListsRequest.md)
  - [TunnelServiceUpdateDNSFilteringEnabledRequest](doc/TunnelServiceUpdateDNSFilteringEnabledRequest.md)
- - [TunnelServiceUpdateDNSFilteringRulesRequest](doc/TunnelServiceUpdateDNSFilteringRulesRequest.md)
  - [TunnelStatusState](doc/TunnelStatusState.md)
- - [V1AdGuardConfig](doc/V1AdGuardConfig.md)
- - [V1AdGuardConfigRule](doc/V1AdGuardConfigRule.md)
- - [V1AdGuardStatus](doc/V1AdGuardStatus.md)
+ - [V1AdGuardHomeConfig](doc/V1AdGuardHomeConfig.md)
+ - [V1AdGuardHomeStatus](doc/V1AdGuardHomeStatus.md)
+ - [V1AuthenticateRequest](doc/V1AuthenticateRequest.md)
+ - [V1AuthenticateResponse](doc/V1AuthenticateResponse.md)
  - [V1CreateTunnelRequest](doc/V1CreateTunnelRequest.md)
  - [V1CreateTunnelResponse](doc/V1CreateTunnelResponse.md)
  - [V1GetServerConfigResponse](doc/V1GetServerConfigResponse.md)
  - [V1GetServerResponse](doc/V1GetServerResponse.md)
  - [V1GetTunnelResponse](doc/V1GetTunnelResponse.md)
  - [V1GetWireGuardDeviceResponse](doc/V1GetWireGuardDeviceResponse.md)
+ - [V1JwtToken](doc/V1JwtToken.md)
  - [V1ListTunnelsResponse](doc/V1ListTunnelsResponse.md)
  - [V1Server](doc/V1Server.md)
  - [V1ServerConfig](doc/V1ServerConfig.md)
+ - [V1ServerConfigCredentials](doc/V1ServerConfigCredentials.md)
  - [V1ServerStatus](doc/V1ServerStatus.md)
  - [V1Tunnel](doc/V1Tunnel.md)
  - [V1TunnelConfig](doc/V1TunnelConfig.md)

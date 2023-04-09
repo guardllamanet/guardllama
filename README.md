@@ -43,7 +43,7 @@ GuardLlama is licensed under the [Apache 2.0 License](LICENSE.md).
 This software wouldn't have been possible without the incredible work of several open-source projects, including:
 
 - [WireGuard](https://www.wireguard.com)
-- [AdGuard Home](https://github.com/AdguardTeam/AdGuardHome)
+- [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome)
 - [Unbound](https://github.com/NLnetLabs/unbound)
 - [K3S](https://k3s.io)
 

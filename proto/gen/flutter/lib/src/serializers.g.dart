@@ -7,41 +7,37 @@ part of 'serializers.dart';
 // **************************************************************************
 
 Serializers _$serializers = (new Serializers().toBuilder()
-      ..add(AdGuardConfigBlockList.serializer)
-      ..add(AdGuardStatusQueryLog.serializer)
-      ..add(AdGuardStatusQueryLogResponse.serializer)
-      ..add(AdGuardStatusQueryLogRule.serializer)
+      ..add(AdGuardHomeConfigBlockList.serializer)
+      ..add(Apiv1Credentials.serializer)
       ..add(ClusterK3d.serializer)
       ..add(CredentialsApi.serializer)
+      ..add(CredentialsJwt.serializer)
       ..add(ImageImagePullPolicy.serializer)
       ..add(ImageImagePullSecret.serializer)
       ..add(K3dNodePortRange.serializer)
       ..add(NodePortRangeProtocol.serializer)
       ..add(ProtobufAny.serializer)
-      ..add(QueryLogClient.serializer)
-      ..add(QueryLogReason.serializer)
-      ..add(QueryLogRequest.serializer)
-      ..add(ResponseAnswer.serializer)
       ..add(RpcStatus.serializer)
       ..add(ServerConfigCluster.serializer)
-      ..add(ServerConfigCredentials.serializer)
       ..add(ServerConfigImage.serializer)
       ..add(TunnelServiceUpdateDNSBlockListsRequest.serializer)
       ..add(TunnelServiceUpdateDNSFilteringEnabledRequest.serializer)
-      ..add(TunnelServiceUpdateDNSFilteringRulesRequest.serializer)
       ..add(TunnelStatusState.serializer)
-      ..add(V1AdGuardConfig.serializer)
-      ..add(V1AdGuardConfigRule.serializer)
-      ..add(V1AdGuardStatus.serializer)
+      ..add(V1AdGuardHomeConfig.serializer)
+      ..add(V1AdGuardHomeStatus.serializer)
+      ..add(V1AuthenticateRequest.serializer)
+      ..add(V1AuthenticateResponse.serializer)
       ..add(V1CreateTunnelRequest.serializer)
       ..add(V1CreateTunnelResponse.serializer)
       ..add(V1GetServerConfigResponse.serializer)
       ..add(V1GetServerResponse.serializer)
       ..add(V1GetTunnelResponse.serializer)
       ..add(V1GetWireGuardDeviceResponse.serializer)
+      ..add(V1JwtToken.serializer)
       ..add(V1ListTunnelsResponse.serializer)
       ..add(V1Server.serializer)
       ..add(V1ServerConfig.serializer)
+      ..add(V1ServerConfigCredentials.serializer)
       ..add(V1ServerStatus.serializer)
       ..add(V1Tunnel.serializer)
       ..add(V1TunnelConfig.serializer)
@@ -55,24 +51,12 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(WireGuardDeviceDeviceType.serializer)
       ..addBuilderFactory(
           const FullType(
-              BuiltList, const [const FullType(AdGuardConfigBlockList)]),
-          () => new ListBuilder<AdGuardConfigBlockList>())
+              BuiltList, const [const FullType(AdGuardHomeConfigBlockList)]),
+          () => new ListBuilder<AdGuardHomeConfigBlockList>())
       ..addBuilderFactory(
           const FullType(
-              BuiltList, const [const FullType(AdGuardConfigBlockList)]),
-          () => new ListBuilder<AdGuardConfigBlockList>())
-      ..addBuilderFactory(
-          const FullType(
-              BuiltList, const [const FullType(V1AdGuardConfigRule)]),
-          () => new ListBuilder<V1AdGuardConfigRule>())
-      ..addBuilderFactory(
-          const FullType(
-              BuiltList, const [const FullType(AdGuardStatusQueryLog)]),
-          () => new ListBuilder<AdGuardStatusQueryLog>())
-      ..addBuilderFactory(
-          const FullType(
-              BuiltList, const [const FullType(AdGuardStatusQueryLogRule)]),
-          () => new ListBuilder<AdGuardStatusQueryLogRule>())
+              BuiltList, const [const FullType(AdGuardHomeConfigBlockList)]),
+          () => new ListBuilder<AdGuardHomeConfigBlockList>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(K3dNodePortRange)]),
           () => new ListBuilder<K3dNodePortRange>())
@@ -80,12 +64,6 @@ Serializers _$serializers = (new Serializers().toBuilder()
           const FullType(BuiltList, const [const FullType(ProtobufAny)]),
           () => new ListBuilder<ProtobufAny>())
       ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(ResponseAnswer)]),
-          () => new ListBuilder<ResponseAnswer>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>())
-      ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => new ListBuilder<String>())
       ..addBuilderFactory(
@@ -96,8 +74,14 @@ Serializers _$serializers = (new Serializers().toBuilder()
           () => new ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(
-              BuiltList, const [const FullType(V1AdGuardConfigRule)]),
-          () => new ListBuilder<V1AdGuardConfigRule>())
+              BuiltList, const [const FullType(AdGuardHomeConfigBlockList)]),
+          () => new ListBuilder<AdGuardHomeConfigBlockList>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(V1Tunnel)]),
           () => new ListBuilder<V1Tunnel>())

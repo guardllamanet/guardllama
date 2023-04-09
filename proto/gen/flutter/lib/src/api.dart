@@ -9,6 +9,7 @@ import 'package:guardllama_api/src/auth/api_key_auth.dart';
 import 'package:guardllama_api/src/auth/basic_auth.dart';
 import 'package:guardllama_api/src/auth/bearer_auth.dart';
 import 'package:guardllama_api/src/auth/oauth.dart';
+import 'package:guardllama_api/src/api/auth_service_api.dart';
 import 'package:guardllama_api/src/api/server_service_api.dart';
 import 'package:guardllama_api/src/api/tunnel_service_api.dart';
 import 'package:guardllama_api/src/api/wire_guard_service_api.dart';
@@ -65,6 +66,12 @@ class GuardllamaApi {
     if (this.dio.interceptors.any((i) => i is ApiKeyAuthInterceptor)) {
       (this.dio.interceptors.firstWhere((element) => element is ApiKeyAuthInterceptor) as ApiKeyAuthInterceptor).apiKeys[name] = apiKey;
     }
+  }
+
+  /// Get AuthServiceApi instance, base route and serializer can be overridden by a given but be careful,
+  /// by doing that all interceptors will not be executed
+  AuthServiceApi getAuthServiceApi() {
+    return AuthServiceApi(dio, serializers);
   }
 
   /// Get ServerServiceApi instance, base route and serializer can be overridden by a given but be careful,

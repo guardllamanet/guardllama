@@ -15,7 +15,6 @@ Method | HTTP request | Description
 [**tunnelServiceRemoveTunnel**](TunnelServiceApi.md#tunnelserviceremovetunnel) | **DELETE** /tunnels/{name} | 
 [**tunnelServiceUpdateDNSBlockLists**](TunnelServiceApi.md#tunnelserviceupdatednsblocklists) | **PUT** /tunnels/{name}/dns_block_lists | 
 [**tunnelServiceUpdateDNSFilteringEnabled**](TunnelServiceApi.md#tunnelserviceupdatednsfilteringenabled) | **PUT** /tunnels/{name}/dns_filtering_enabled | 
-[**tunnelServiceUpdateDNSFilteringRules**](TunnelServiceApi.md#tunnelserviceupdatednsfilteringrules) | **PUT** /tunnels/{name}/dns_filtering_rules | 
 
 
 # **tunnelServiceCreateTunnel**
@@ -248,49 +247,6 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **name** | **String**|  | 
  **body** | [**TunnelServiceUpdateDNSFilteringEnabledRequest**](TunnelServiceUpdateDNSFilteringEnabledRequest.md)|  | 
-
-### Return type
-
-[**JsonObject**](JsonObject.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
- - **Content-Type**: application/json
- - **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-# **tunnelServiceUpdateDNSFilteringRules**
-> JsonObject tunnelServiceUpdateDNSFilteringRules(name, body)
-
-
-
-### Example
-```dart
-import 'package:guardllama_api/api.dart';
-
-final api = GuardllamaApi().getTunnelServiceApi();
-final String name = name_example; // String | 
-final TunnelServiceUpdateDNSFilteringRulesRequest body = ; // TunnelServiceUpdateDNSFilteringRulesRequest | 
-
-try {
-    final response = api.tunnelServiceUpdateDNSFilteringRules(name, body);
-    print(response);
-} catch on DioError (e) {
-    print('Exception when calling TunnelServiceApi->tunnelServiceUpdateDNSFilteringRules: $e\n');
-}
-```
-
-### Parameters
-
-Name | Type | Description  | Notes
-------------- | ------------- | ------------- | -------------
- **name** | **String**|  | 
- **body** | [**TunnelServiceUpdateDNSFilteringRulesRequest**](TunnelServiceUpdateDNSFilteringRulesRequest.md)|  | 
 
 ### Return type
 

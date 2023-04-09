@@ -15,10 +15,12 @@ const (
 	ConditionTunnelPodReady     ConditionType = "TunnelPodReady"
 	ConditionTunnelServiceReady ConditionType = "TunnelServiceReady"
 
-	ConditionDNSConfigReady  ConditionType = "DNSConfigReady"
-	ConditionDNSDeployReady  ConditionType = "DNSDeployReady"
-	ConditionDNSPodReady     ConditionType = "DNSPodReady"
-	ConditionDNSServiceReady ConditionType = "DNSServiceReady"
+	ConditionDNSInitConfigReady ConditionType = "DNSInitConfigReady"
+	ConditionDNSConfigReady     ConditionType = "DNSConfigReady"
+	ConditionDNSPVCReady        ConditionType = "DNSPVCReady"
+	ConditionDNSDeployReady     ConditionType = "DNSDeployReady"
+	ConditionDNSPodReady        ConditionType = "DNSPodReady"
+	ConditionDNSServiceReady    ConditionType = "DNSServiceReady"
 )
 
 var (
@@ -30,7 +32,9 @@ var (
 		ConditionTunnelServiceReady,
 		ConditionTunnelPodReady,
 
+		ConditionDNSInitConfigReady,
 		ConditionDNSConfigReady,
+		ConditionDNSPVCReady,
 		ConditionDNSDeployReady,
 		ConditionDNSPodReady,
 		ConditionDNSServiceReady,
@@ -47,7 +51,7 @@ type TunnelProtocol struct {
 }
 
 type TunnelDNS struct {
-	AdGuard *AdGuardSpec `json:"adGuard,omitempty"`
+	AdGuardHome *AdGuardHomeSpec `json:"adGuardHome,omitempty"`
 }
 
 type WireGuardSpec struct {
@@ -72,17 +76,18 @@ type WireGuardInterface struct {
 	PostDown     string   `json:"postDown,omitempty"`
 }
 
-type AdGuardSpec struct {
-	FilteringEnabled *bool                `json:"filteringEnabled,omitempty"`
-	BlockLists       []TunnelDNSBlockList `json:"blockLists,omitempty"`
-	Rules            []string             `json:"rules,omitempty"`
+type AdGuardHomeSpec struct {
+	FilteringEnabled *bool                  `json:"filteringEnabled,omitempty"`
+	BlockLists       []AdGuardHomeBlockList `json:"blockLists,omitempty"`
 }
 
-type TunnelDNSBlockList struct {
-	ID      int32  `json:"id"`
-	Name    string `json:"name"`
-	URL     string `json:"url"`
-	Enabled *bool  `json:"enabled,omitempty"`
+func (s AdGuardHomeSpec) IsFilteringEnabled() bool {
+	return s.FilteringEnabled == nil || *s.FilteringEnabled
+}
+
+type AdGuardHomeBlockList struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
 }
 
 type WireGuardPeer struct {
@@ -151,16 +156,20 @@ func (t Tunnel) WireGuardAdminServiceHost() string {
 	return fmt.Sprintf("%s.%s", t.WireGuardAdminServiceName(), t.Namespace)
 }
 
-func (t Tunnel) AdGuardTypedName() string {
-	return fmt.Sprintf("ag-%s", t.Name)
+func (t Tunnel) AdGuardHomeTypedName() string {
+	return fmt.Sprintf("agh-%s", t.Name)
 }
 
-func (t Tunnel) AdGuardAdminServiceName() string {
-	return t.AdGuardTypedName()
+func (t Tunnel) AdGuardHomeServiceName() string {
+	return t.AdGuardHomeTypedName()
 }
 
-func (t Tunnel) AdGuardAdminServiceHost() string {
-	return fmt.Sprintf("%s.%s", t.AdGuardAdminServiceName(), t.Namespace)
+func (t Tunnel) AdGuardHomeDataPVCName() string {
+	return fmt.Sprintf("%s-data", t.AdGuardHomeTypedName())
+}
+
+func (t Tunnel) AdGuardHomeServiceHost() string {
+	return fmt.Sprintf("%s.%s", t.AdGuardHomeServiceName(), t.Namespace)
 }
 
 // +kubebuilder:object:root=true

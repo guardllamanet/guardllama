@@ -10,12 +10,12 @@ class _$V1TunnelConfig extends V1TunnelConfig {
   @override
   final V1WireGuardConfig? wg;
   @override
-  final V1AdGuardConfig? ag;
+  final V1AdGuardHomeConfig? agh;
 
   factory _$V1TunnelConfig([void Function(V1TunnelConfigBuilder)? updates]) =>
       (new V1TunnelConfigBuilder()..update(updates))._build();
 
-  _$V1TunnelConfig._({this.wg, this.ag}) : super._();
+  _$V1TunnelConfig._({this.wg, this.agh}) : super._();
 
   @override
   V1TunnelConfig rebuild(void Function(V1TunnelConfigBuilder) updates) =>
@@ -28,14 +28,14 @@ class _$V1TunnelConfig extends V1TunnelConfig {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is V1TunnelConfig && wg == other.wg && ag == other.ag;
+    return other is V1TunnelConfig && wg == other.wg && agh == other.agh;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, wg.hashCode);
-    _$hash = $jc(_$hash, ag.hashCode);
+    _$hash = $jc(_$hash, agh.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -44,7 +44,7 @@ class _$V1TunnelConfig extends V1TunnelConfig {
   String toString() {
     return (newBuiltValueToStringHelper(r'V1TunnelConfig')
           ..add('wg', wg)
-          ..add('ag', ag))
+          ..add('agh', agh))
         .toString();
   }
 }
@@ -58,9 +58,10 @@ class V1TunnelConfigBuilder
       _$this._wg ??= new V1WireGuardConfigBuilder();
   set wg(V1WireGuardConfigBuilder? wg) => _$this._wg = wg;
 
-  V1AdGuardConfigBuilder? _ag;
-  V1AdGuardConfigBuilder get ag => _$this._ag ??= new V1AdGuardConfigBuilder();
-  set ag(V1AdGuardConfigBuilder? ag) => _$this._ag = ag;
+  V1AdGuardHomeConfigBuilder? _agh;
+  V1AdGuardHomeConfigBuilder get agh =>
+      _$this._agh ??= new V1AdGuardHomeConfigBuilder();
+  set agh(V1AdGuardHomeConfigBuilder? agh) => _$this._agh = agh;
 
   V1TunnelConfigBuilder() {
     V1TunnelConfig._defaults(this);
@@ -70,7 +71,7 @@ class V1TunnelConfigBuilder
     final $v = _$v;
     if ($v != null) {
       _wg = $v.wg?.toBuilder();
-      _ag = $v.ag?.toBuilder();
+      _agh = $v.agh?.toBuilder();
       _$v = null;
     }
     return this;
@@ -94,14 +95,14 @@ class V1TunnelConfigBuilder
     _$V1TunnelConfig _$result;
     try {
       _$result =
-          _$v ?? new _$V1TunnelConfig._(wg: _wg?.build(), ag: _ag?.build());
+          _$v ?? new _$V1TunnelConfig._(wg: _wg?.build(), agh: _agh?.build());
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'wg';
         _wg?.build();
-        _$failedField = 'ag';
-        _ag?.build();
+        _$failedField = 'agh';
+        _agh?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'V1TunnelConfig', _$failedField, e.toString());

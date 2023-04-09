@@ -190,7 +190,7 @@ swagger:model TunnelServiceUpdateDNSBlockListsBody
 type TunnelServiceUpdateDNSBlockListsBody struct {
 
 	// block lists
-	BlockLists []*models.AdGuardConfigBlockList `json:"block_lists"`
+	BlockLists []*models.AdGuardHomeConfigBlockList `json:"block_lists"`
 }
 
 // Validate validates this tunnel service update DNS block lists body

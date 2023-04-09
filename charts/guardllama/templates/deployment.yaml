@@ -140,6 +140,10 @@ spec:
           env:
             - name: GLMMGR_WEB_ADDR
               value: ":{{ .Values.service.web.port }}"
+            - name: GLMMGR_JWT_SIGN_KEY_PATH
+              value: /tmp/glmmgr/jwt/signKey
+            - name: GLMMGR_JWT_VERIFY_KEY_PATH
+              value: /tmp/glmmgr/jwt/verifyKey
           ports:
             - name: web
               containerPort: {{ .Values.service.web.port }}
@@ -154,6 +158,15 @@ spec:
               port: web
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /tmp/glmmgr/jwt
+              name: jwt
+              readOnly: true
+      volumes:
+        - name: jwt
+          secret:
+            defaultMode: 420
+            secretName: {{ include "guardllama.fullname" . }}-jwtkey
       terminationGracePeriodSeconds: 10
       {{- with .Values.nodeSelector }}
       nodeSelector:

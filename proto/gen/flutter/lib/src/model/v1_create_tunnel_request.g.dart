@@ -10,13 +10,13 @@ class _$V1CreateTunnelRequest extends V1CreateTunnelRequest {
   @override
   final String? name;
   @override
-  final V1AdGuardConfig? ag;
+  final V1AdGuardHomeConfig? agh;
 
   factory _$V1CreateTunnelRequest(
           [void Function(V1CreateTunnelRequestBuilder)? updates]) =>
       (new V1CreateTunnelRequestBuilder()..update(updates))._build();
 
-  _$V1CreateTunnelRequest._({this.name, this.ag}) : super._();
+  _$V1CreateTunnelRequest._({this.name, this.agh}) : super._();
 
   @override
   V1CreateTunnelRequest rebuild(
@@ -32,14 +32,14 @@ class _$V1CreateTunnelRequest extends V1CreateTunnelRequest {
     if (identical(other, this)) return true;
     return other is V1CreateTunnelRequest &&
         name == other.name &&
-        ag == other.ag;
+        agh == other.agh;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, name.hashCode);
-    _$hash = $jc(_$hash, ag.hashCode);
+    _$hash = $jc(_$hash, agh.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
@@ -48,7 +48,7 @@ class _$V1CreateTunnelRequest extends V1CreateTunnelRequest {
   String toString() {
     return (newBuiltValueToStringHelper(r'V1CreateTunnelRequest')
           ..add('name', name)
-          ..add('ag', ag))
+          ..add('agh', agh))
         .toString();
   }
 }
@@ -61,9 +61,10 @@ class V1CreateTunnelRequestBuilder
   String? get name => _$this._name;
   set name(String? name) => _$this._name = name;
 
-  V1AdGuardConfigBuilder? _ag;
-  V1AdGuardConfigBuilder get ag => _$this._ag ??= new V1AdGuardConfigBuilder();
-  set ag(V1AdGuardConfigBuilder? ag) => _$this._ag = ag;
+  V1AdGuardHomeConfigBuilder? _agh;
+  V1AdGuardHomeConfigBuilder get agh =>
+      _$this._agh ??= new V1AdGuardHomeConfigBuilder();
+  set agh(V1AdGuardHomeConfigBuilder? agh) => _$this._agh = agh;
 
   V1CreateTunnelRequestBuilder() {
     V1CreateTunnelRequest._defaults(this);
@@ -73,7 +74,7 @@ class V1CreateTunnelRequestBuilder
     final $v = _$v;
     if ($v != null) {
       _name = $v.name;
-      _ag = $v.ag?.toBuilder();
+      _agh = $v.agh?.toBuilder();
       _$v = null;
     }
     return this;
@@ -97,12 +98,12 @@ class V1CreateTunnelRequestBuilder
     _$V1CreateTunnelRequest _$result;
     try {
       _$result =
-          _$v ?? new _$V1CreateTunnelRequest._(name: name, ag: _ag?.build());
+          _$v ?? new _$V1CreateTunnelRequest._(name: name, agh: _agh?.build());
     } catch (_) {
       late String _$failedField;
       try {
-        _$failedField = 'ag';
-        _ag?.build();
+        _$failedField = 'agh';
+        _agh?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'V1CreateTunnelRequest', _$failedField, e.toString());

@@ -22,7 +22,7 @@ type V1ServerConfig struct {
 	Cluster *ServerConfigCluster `json:"cluster,omitempty"`
 
 	// credentials
-	Credentials *ServerConfigCredentials `json:"credentials,omitempty"`
+	Credentials *V1ServerConfigCredentials `json:"credentials,omitempty"`
 
 	// debug
 	Debug bool `json:"debug,omitempty"`

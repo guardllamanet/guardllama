@@ -4,8 +4,8 @@
 
 // ignore_for_file: unused_element
 import 'package:guardllama_api/src/model/server_config_image.dart';
-import 'package:guardllama_api/src/model/server_config_credentials.dart';
 import 'package:guardllama_api/src/model/server_config_cluster.dart';
+import 'package:guardllama_api/src/model/v1_server_config_credentials.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -31,7 +31,7 @@ abstract class V1ServerConfig implements Built<V1ServerConfig, V1ServerConfigBui
   ServerConfigImage? get wg;
 
   @BuiltValueField(wireName: r'credentials')
-  ServerConfigCredentials? get credentials;
+  V1ServerConfigCredentials? get credentials;
 
   @BuiltValueField(wireName: r'debug')
   bool? get debug;
@@ -84,7 +84,7 @@ class _$V1ServerConfigSerializer implements PrimitiveSerializer<V1ServerConfig> 
       yield r'credentials';
       yield serializers.serialize(
         object.credentials,
-        specifiedType: const FullType(ServerConfigCredentials),
+        specifiedType: const FullType(V1ServerConfigCredentials),
       );
     }
     if (object.debug != null) {
@@ -141,8 +141,8 @@ class _$V1ServerConfigSerializer implements PrimitiveSerializer<V1ServerConfig> 
         case r'credentials':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(ServerConfigCredentials),
-          ) as ServerConfigCredentials;
+            specifiedType: const FullType(V1ServerConfigCredentials),
+          ) as V1ServerConfigCredentials;
           result.credentials.replace(valueDes);
           break;
         case r'debug':

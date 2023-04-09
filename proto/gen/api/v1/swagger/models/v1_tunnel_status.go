@@ -18,8 +18,8 @@ import (
 // swagger:model v1TunnelStatus
 type V1TunnelStatus struct {
 
-	// ag
-	Ag *V1AdGuardStatus `json:"ag,omitempty"`
+	// agh
+	Agh *V1AdGuardHomeStatus `json:"agh,omitempty"`
 
 	// details
 	Details string `json:"details,omitempty"`
@@ -35,7 +35,7 @@ type V1TunnelStatus struct {
 func (m *V1TunnelStatus) Validate(formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.validateAg(formats); err != nil {
+	if err := m.validateAgh(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -53,17 +53,17 @@ func (m *V1TunnelStatus) Validate(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *V1TunnelStatus) validateAg(formats strfmt.Registry) error {
-	if swag.IsZero(m.Ag) { // not required
+func (m *V1TunnelStatus) validateAgh(formats strfmt.Registry) error {
+	if swag.IsZero(m.Agh) { // not required
 		return nil
 	}
 
-	if m.Ag != nil {
-		if err := m.Ag.Validate(formats); err != nil {
+	if m.Agh != nil {
+		if err := m.Agh.Validate(formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("ag")
+				return ve.ValidateName("agh")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("ag")
+				return ce.ValidateName("agh")
 			}
 			return err
 		}
@@ -114,7 +114,7 @@ func (m *V1TunnelStatus) validateWg(formats strfmt.Registry) error {
 func (m *V1TunnelStatus) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
 	var res []error
 
-	if err := m.contextValidateAg(ctx, formats); err != nil {
+	if err := m.contextValidateAgh(ctx, formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -132,14 +132,14 @@ func (m *V1TunnelStatus) ContextValidate(ctx context.Context, formats strfmt.Reg
 	return nil
 }
 
-func (m *V1TunnelStatus) contextValidateAg(ctx context.Context, formats strfmt.Registry) error {
+func (m *V1TunnelStatus) contextValidateAgh(ctx context.Context, formats strfmt.Registry) error {
 
-	if m.Ag != nil {
-		if err := m.Ag.ContextValidate(ctx, formats); err != nil {
+	if m.Agh != nil {
+		if err := m.Agh.ContextValidate(ctx, formats); err != nil {
 			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("ag")
+				return ve.ValidateName("agh")
 			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("ag")
+				return ce.ValidateName("agh")
 			}
 			return err
 		}

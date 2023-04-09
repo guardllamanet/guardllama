@@ -1,10 +1,9 @@
-import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
 import 'package:guardllama_api/guardllama_api.dart';
 import 'package:dio/dio.dart';
 import 'package:talker_dio_logger/talker_dio_logger.dart';
 import 'package:built_collection/built_collection.dart';
+
+import 'service_utils.dart';
 
 class AdBlockList {
   final String name;
@@ -64,8 +63,12 @@ enum AdBlockMode {
       AdBlockList(
           name: "1Hosts (Lite)",
           url:
-              "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/master/SmartTV-AGH.txt"),
+              "https://adguardteam.github.io/HostlistsRegistry/assets/filter_24.txt"),
     ],
+  ),
+  customMode(
+    name: 'Custom',
+    blocklists: [],
   );
 
   const AdBlockMode({required this.name, required this.blocklists});
@@ -75,25 +78,23 @@ enum AdBlockMode {
 }
 
 class ApiService {
-  final String token;
+  final String? jwtToken;
 
   late final GuardllamaApi client;
 
-  ApiService({required this.token, TalkerDioLogger? talkerLogger}) {
+  ApiService({required this.jwtToken, TalkerDioLogger? talkerLogger}) {
     final List<Interceptor> interceptors = [];
     if (talkerLogger != null) {
       interceptors.add(talkerLogger);
     }
-    if (token.isNotEmpty) {
-      interceptors.add(_BasicAuthInterceptor(token));
+    if (jwtToken != null && jwtToken!.isNotEmpty) {
+      interceptors.add(_JWTAuthInterceptor(jwtToken!));
     }
 
     client = GuardllamaApi(
       dio: Dio(
         BaseOptions(
-          baseUrl: kDebugMode
-              ? 'http://localhost:38080/api'
-              : '${Uri.base.origin}/api',
+          baseUrl: '${ServiceUtils.serverOrigin()}/api',
         ),
       ),
       interceptors: interceptors,
@@ -103,9 +104,8 @@ class ApiService {
   Future<V1Tunnel> createTunnel() async {
     final api = client.getTunnelServiceApi();
     final bodyBuilder = V1CreateTunnelRequestBuilder()
-      ..ag = (V1AdGuardConfigBuilder()
+      ..agh = (V1AdGuardHomeConfigBuilder()
         ..filteringEnabled = true
-        ..rules = ListBuilder([])
         ..blockLists =
             ListBuilder(_asBlockLists(AdBlockMode.defaultMode.blocklists)));
     final resp = await api.tunnelServiceCreateTunnel(body: bodyBuilder.build());
@@ -179,22 +179,6 @@ class ApiService {
     }
   }
 
-  Future<void> updateDNSFilteringRules(String name, List<String> rules) async {
-    final api = client.getTunnelServiceApi();
-    final bodyBuilder = TunnelServiceUpdateDNSFilteringRulesRequestBuilder()
-      ..rules = ListBuilder(rules.map((r) {
-        final builder = V1AdGuardConfigRuleBuilder()..rule = r;
-        return builder.build();
-      }));
-    final resp = await api.tunnelServiceUpdateDNSFilteringRules(
-        name: name, body: bodyBuilder.build());
-    if (resp.statusCode! >= 200 && resp.statusCode! < 300) {
-      return;
-    } else {
-      throw Exception('Failed to update dns filtering rules');
-    }
-  }
-
   Future<void> updateDNSBlockMode(String name, AdBlockMode mode) async {
     final api = client.getTunnelServiceApi();
     final bodyBuilder = TunnelServiceUpdateDNSBlockListsRequestBuilder()
@@ -208,30 +192,27 @@ class ApiService {
     }
   }
 
-  List<AdGuardConfigBlockList> _asBlockLists(List<AdBlockList> blocklists) {
+  List<AdGuardHomeConfigBlockList> _asBlockLists(List<AdBlockList> blocklists) {
     return blocklists.asMap().entries.map((e) {
-      final builder = AdGuardConfigBlockListBuilder()
-        ..id = e.key
+      final builder = AdGuardHomeConfigBlockListBuilder()
         ..name = e.value.name
-        ..url = e.value.url
-        ..enabled = true;
+        ..url = e.value.url;
       return builder.build();
     }).toList();
   }
 }
 
-class _BasicAuthInterceptor extends Interceptor {
+class _JWTAuthInterceptor extends Interceptor {
   final String token;
 
-  _BasicAuthInterceptor(this.token);
+  _JWTAuthInterceptor(this.token);
 
   @override
   void onRequest(
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) {
-    options.headers['Authorization'] =
-        'Basic ${base64Encode(utf8.encode(':$token'))}';
+    options.headers['Authorization'] = 'Bearer $token';
     super.onRequest(options, handler);
   }
 }
