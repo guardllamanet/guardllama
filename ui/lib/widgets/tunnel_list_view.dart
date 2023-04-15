@@ -1,10 +1,11 @@
-import 'package:guardllama/context.dart';
 import 'package:guardllama/widgets/header_listile.dart';
 import 'package:guardllama/widgets/rounded_button.dart';
 import 'package:guardllama_api/guardllama_api.dart';
 import 'package:delayed_display/delayed_display.dart';
 import 'package:flutter/material.dart';
 
+import 'capitalize_text_button.dart';
+import 'create_tunnel_view.dart';
 import 'tunnel_row.dart';
 
 class TunnelListView extends StatefulWidget {
@@ -79,9 +80,36 @@ class _TunnelListViewState extends State<TunnelListView> {
           iconData: Icons.add_rounded,
           text: 'Create Tunnel',
           onPressed: () async {
-            final tun =
-                await ContextScope.of(context).apiService.createTunnel();
-            _tunnelAdded(tun);
+            showDialog<String>(
+              context: context,
+              builder: (context) {
+                final formKey = GlobalKey<FormState>();
+
+                return AlertDialog(
+                  title: const Text('Create a tunnel'),
+                  content: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    height: MediaQuery.of(context).size.height * 0.1,
+                    child: CreateTunnelView(
+                      tunnelAdded: _tunnelAdded,
+                      formKey: formKey,
+                    ),
+                  ),
+                  actions: <Widget>[
+                    CapitalizedTextButton(
+                      text: 'Cancel',
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                    CapitalizedTextButton(
+                      text: 'Create',
+                      onPressed: () => formKey.currentState!.save(),
+                    ),
+                  ],
+                );
+              },
+            );
           },
         ),
       ),

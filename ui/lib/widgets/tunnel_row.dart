@@ -7,6 +7,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:timeago_flutter/timeago_flutter.dart';
 
 import '../services/service_utils.dart';
+import 'capitalize_text_button.dart';
 
 class TunnelRow extends StatefulWidget {
   const TunnelRow({
@@ -137,23 +138,26 @@ class _TunnelRowState extends State<TunnelRow> {
                       showDialog<String>(
                         context: context,
                         builder: (BuildContext context) => AlertDialog(
+                          title: const Text('Confirmation'),
                           content: Text(
                               'Are you sure you want to remove tunnel ${widget.tunnel.name}?'),
                           actions: [
-                            TextButton(
+                            CapitalizedTextButton(
                               onPressed: () => Navigator.pop(context, 'No'),
-                              child: const Text('No'),
+                              text: 'No',
                             ),
-                            TextButton(
-                              onPressed: () async {
-                                Navigator.pop(context, 'Yes');
-                                await ContextScope.of(context)
+                            CapitalizedTextButton(
+                              onPressed: () {
+                                ContextScope.of(context)
                                     .apiService
-                                    .removeTunnel(widget.tunnel.name);
-                                widget
-                                    .tunnelRemovedCallback(widget.tunnel.name);
+                                    .removeTunnel(widget.tunnel.name)
+                                    .then((_) {
+                                  widget.tunnelRemovedCallback(
+                                      widget.tunnel.name);
+                                  Navigator.pop(context, 'Yes');
+                                });
                               },
-                              child: const Text('Yes'),
+                              text: 'Yes',
                             ),
                           ],
                         ),

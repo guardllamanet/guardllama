@@ -101,9 +101,10 @@ class ApiService {
     );
   }
 
-  Future<V1Tunnel> createTunnel() async {
+  Future<V1Tunnel> createTunnel(String name) async {
     final api = client.getTunnelServiceApi();
     final bodyBuilder = V1CreateTunnelRequestBuilder()
+      ..name = name
       ..agh = (V1AdGuardHomeConfigBuilder()
         ..filteringEnabled = true
         ..blockLists =

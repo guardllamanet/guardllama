@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -31,6 +32,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/util/validation"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 )
@@ -70,9 +72,14 @@ func (s *TunnelService) CreateTunnel(ctx context.Context, req *apiv1.CreateTunne
 		name = strings.ReplaceAll(namesgenerator.GetRandomName(10), "_", "-")
 	}
 
+	errList := validation.IsDNS1123Subdomain(name)
+	if len(errList) > 0 {
+		return nil, StatusInvalidArg(errors.New(strings.Join(errList, ", ")))
+	}
+
 	var existingTun glmv1.Tunnel
 	if err := s.Get(ctx, client.ObjectKey{Namespace: name, Name: name}, &existingTun); err == nil {
-		return nil, StatusInvalidArg(fmt.Errorf("tunnel %s already exists", name))
+		return nil, StatusInvalidArg(fmt.Errorf("tunnel %q already exists", name))
 	}
 
 	skey, spub, err := genKeyPair()

@@ -24,4 +24,14 @@ class WidgetUtils {
     return Uri.parse(
         '${ServiceUtils.serverOrigin()}/tunnels/$tunnelName/agh/#filters');
   }
+
+  static const int _dns1123SubdomainMaxLength = 253;
+  static const String _dns1123SubdomainRules =
+      r'^[a-z0-9]([-a-z0-9]*[a-z0-9])?$';
+
+  static bool validDns1123Subdomain(String value) {
+    return value.length > _dns1123SubdomainMaxLength
+        ? false
+        : RegExp(_dns1123SubdomainRules).hasMatch(value);
+  }
 }
