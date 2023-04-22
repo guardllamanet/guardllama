@@ -84,29 +84,27 @@ message ServerConfig {
     message K3s {}
 
     message K3d {
-      message NodePortRange {
-        enum Protocol {
-          // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
-          // buf:lint:ignore ENUM_VALUE_PREFIX
-          TCP = 0;
-          // buf:lint:ignore ENUM_VALUE_PREFIX
-          UDP = 1;
-        }
+      string name = 1;
+    }
 
-        int32 from_port = 1 [(validate.rules).int32 = {
-          gte: 30000,
-          lte: 32767
-        }];
-        int32 to_port = 2 [(validate.rules).int32 = {
-          gte: 30000,
-          lte: 32767
-        }];
-        string host = 3;
-        Protocol protocol = 4 [(validate.rules).enum.defined_only = true];
+    message VpnPortRange {
+      enum Protocol {
+        // buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX
+        // buf:lint:ignore ENUM_VALUE_PREFIX
+        TCP = 0;
+        // buf:lint:ignore ENUM_VALUE_PREFIX
+        UDP = 1;
       }
 
-      string name = 1;
-      repeated NodePortRange node_port_ranges = 2;
+      int32 from_port = 1 [(validate.rules).int32 = {
+        gte: 30000,
+        lte: 32767
+      }];
+      int32 to_port = 2 [(validate.rules).int32 = {
+        gte: 30000,
+        lte: 32768
+      }];
+      Protocol protocol = 3 [(validate.rules).enum.defined_only = true];
     }
 
     string kube_config = 1 [(validate.rules).string.min_len = 1];
@@ -114,7 +112,8 @@ message ServerConfig {
       K3s k3s = 2;
       K3d k3d = 3;
     }
-    string host = 4;
+    VpnPortRange vpn_port_range = 4;
+    string host = 5;
   }
 
   message Image {

@@ -9,13 +9,11 @@ part of 'cluster_k3d.dart';
 class _$ClusterK3d extends ClusterK3d {
   @override
   final String? name;
-  @override
-  final BuiltList<K3dNodePortRange>? nodePortRanges;
 
   factory _$ClusterK3d([void Function(ClusterK3dBuilder)? updates]) =>
       (new ClusterK3dBuilder()..update(updates))._build();
 
-  _$ClusterK3d._({this.name, this.nodePortRanges}) : super._();
+  _$ClusterK3d._({this.name}) : super._();
 
   @override
   ClusterK3d rebuild(void Function(ClusterK3dBuilder) updates) =>
@@ -27,25 +25,20 @@ class _$ClusterK3d extends ClusterK3d {
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is ClusterK3d &&
-        name == other.name &&
-        nodePortRanges == other.nodePortRanges;
+    return other is ClusterK3d && name == other.name;
   }
 
   @override
   int get hashCode {
     var _$hash = 0;
     _$hash = $jc(_$hash, name.hashCode);
-    _$hash = $jc(_$hash, nodePortRanges.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
   }
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'ClusterK3d')
-          ..add('name', name)
-          ..add('nodePortRanges', nodePortRanges))
+    return (newBuiltValueToStringHelper(r'ClusterK3d')..add('name', name))
         .toString();
   }
 }
@@ -57,12 +50,6 @@ class ClusterK3dBuilder implements Builder<ClusterK3d, ClusterK3dBuilder> {
   String? get name => _$this._name;
   set name(String? name) => _$this._name = name;
 
-  ListBuilder<K3dNodePortRange>? _nodePortRanges;
-  ListBuilder<K3dNodePortRange> get nodePortRanges =>
-      _$this._nodePortRanges ??= new ListBuilder<K3dNodePortRange>();
-  set nodePortRanges(ListBuilder<K3dNodePortRange>? nodePortRanges) =>
-      _$this._nodePortRanges = nodePortRanges;
-
   ClusterK3dBuilder() {
     ClusterK3d._defaults(this);
   }
@@ -71,7 +58,6 @@ class ClusterK3dBuilder implements Builder<ClusterK3d, ClusterK3dBuilder> {
     final $v = _$v;
     if ($v != null) {
       _name = $v.name;
-      _nodePortRanges = $v.nodePortRanges?.toBuilder();
       _$v = null;
     }
     return this;
@@ -92,22 +78,7 @@ class ClusterK3dBuilder implements Builder<ClusterK3d, ClusterK3dBuilder> {
   ClusterK3d build() => _build();
 
   _$ClusterK3d _build() {
-    _$ClusterK3d _$result;
-    try {
-      _$result = _$v ??
-          new _$ClusterK3d._(
-              name: name, nodePortRanges: _nodePortRanges?.build());
-    } catch (_) {
-      late String _$failedField;
-      try {
-        _$failedField = 'nodePortRanges';
-        _nodePortRanges?.build();
-      } catch (e) {
-        throw new BuiltValueNestedFieldError(
-            r'ClusterK3d', _$failedField, e.toString());
-      }
-      rethrow;
-    }
+    final _$result = _$v ?? new _$ClusterK3d._(name: name);
     replace(_$result);
     return _$result;
   }

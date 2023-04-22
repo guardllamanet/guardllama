@@ -3,55 +3,51 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:guardllama_api/src/model/node_port_range_protocol.dart';
+import 'package:guardllama_api/src/model/vpn_port_range_protocol.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
-part 'k3d_node_port_range.g.dart';
+part 'cluster_vpn_port_range.g.dart';
 
-/// K3dNodePortRange
+/// ClusterVpnPortRange
 ///
 /// Properties:
 /// * [fromPort] 
 /// * [toPort] 
-/// * [host] 
 /// * [protocol] 
 @BuiltValue()
-abstract class K3dNodePortRange implements Built<K3dNodePortRange, K3dNodePortRangeBuilder> {
+abstract class ClusterVpnPortRange implements Built<ClusterVpnPortRange, ClusterVpnPortRangeBuilder> {
   @BuiltValueField(wireName: r'from_port')
   int? get fromPort;
 
   @BuiltValueField(wireName: r'to_port')
   int? get toPort;
 
-  @BuiltValueField(wireName: r'host')
-  String? get host;
-
   @BuiltValueField(wireName: r'protocol')
-  NodePortRangeProtocol? get protocol;
+  VpnPortRangeProtocol? get protocol;
   // enum protocolEnum {  TCP,  UDP,  };
 
-  K3dNodePortRange._();
+  ClusterVpnPortRange._();
 
-  factory K3dNodePortRange([void updates(K3dNodePortRangeBuilder b)]) = _$K3dNodePortRange;
+  factory ClusterVpnPortRange([void updates(ClusterVpnPortRangeBuilder b)]) = _$ClusterVpnPortRange;
 
   @BuiltValueHook(initializeBuilder: true)
-  static void _defaults(K3dNodePortRangeBuilder b) => b;
+  static void _defaults(ClusterVpnPortRangeBuilder b) => b;
 
   @BuiltValueSerializer(custom: true)
-  static Serializer<K3dNodePortRange> get serializer => _$K3dNodePortRangeSerializer();
+  static Serializer<ClusterVpnPortRange> get serializer => _$ClusterVpnPortRangeSerializer();
 }
 
-class _$K3dNodePortRangeSerializer implements PrimitiveSerializer<K3dNodePortRange> {
+class _$ClusterVpnPortRangeSerializer implements PrimitiveSerializer<ClusterVpnPortRange> {
   @override
-  final Iterable<Type> types = const [K3dNodePortRange, _$K3dNodePortRange];
+  final Iterable<Type> types = const [ClusterVpnPortRange, _$ClusterVpnPortRange];
 
   @override
-  final String wireName = r'K3dNodePortRange';
+  final String wireName = r'ClusterVpnPortRange';
 
   Iterable<Object?> _serializeProperties(
     Serializers serializers,
-    K3dNodePortRange object, {
+    ClusterVpnPortRange object, {
     FullType specifiedType = FullType.unspecified,
   }) sync* {
     if (object.fromPort != null) {
@@ -68,18 +64,11 @@ class _$K3dNodePortRangeSerializer implements PrimitiveSerializer<K3dNodePortRan
         specifiedType: const FullType(int),
       );
     }
-    if (object.host != null) {
-      yield r'host';
-      yield serializers.serialize(
-        object.host,
-        specifiedType: const FullType(String),
-      );
-    }
     if (object.protocol != null) {
       yield r'protocol';
       yield serializers.serialize(
         object.protocol,
-        specifiedType: const FullType(NodePortRangeProtocol),
+        specifiedType: const FullType(VpnPortRangeProtocol),
       );
     }
   }
@@ -87,7 +76,7 @@ class _$K3dNodePortRangeSerializer implements PrimitiveSerializer<K3dNodePortRan
   @override
   Object serialize(
     Serializers serializers,
-    K3dNodePortRange object, {
+    ClusterVpnPortRange object, {
     FullType specifiedType = FullType.unspecified,
   }) {
     return _serializeProperties(serializers, object, specifiedType: specifiedType).toList();
@@ -98,7 +87,7 @@ class _$K3dNodePortRangeSerializer implements PrimitiveSerializer<K3dNodePortRan
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
     required List<Object?> serializedList,
-    required K3dNodePortRangeBuilder result,
+    required ClusterVpnPortRangeBuilder result,
     required List<Object?> unhandled,
   }) {
     for (var i = 0; i < serializedList.length; i += 2) {
@@ -119,18 +108,11 @@ class _$K3dNodePortRangeSerializer implements PrimitiveSerializer<K3dNodePortRan
           ) as int;
           result.toPort = valueDes;
           break;
-        case r'host':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(String),
-          ) as String;
-          result.host = valueDes;
-          break;
         case r'protocol':
           final valueDes = serializers.deserialize(
             value,
-            specifiedType: const FullType(NodePortRangeProtocol),
-          ) as NodePortRangeProtocol;
+            specifiedType: const FullType(VpnPortRangeProtocol),
+          ) as VpnPortRangeProtocol;
           result.protocol = valueDes;
           break;
         default:
@@ -142,12 +124,12 @@ class _$K3dNodePortRangeSerializer implements PrimitiveSerializer<K3dNodePortRan
   }
 
   @override
-  K3dNodePortRange deserialize(
+  ClusterVpnPortRange deserialize(
     Serializers serializers,
     Object serialized, {
     FullType specifiedType = FullType.unspecified,
   }) {
-    final result = K3dNodePortRangeBuilder();
+    final result = ClusterVpnPortRangeBuilder();
     final serializedList = (serialized as Iterable<Object?>).toList();
     final unhandled = <Object?>[];
     _deserializeProperties(

@@ -1,12 +1,12 @@
 import 'package:test/test.dart';
 import 'package:guardllama_api/guardllama_api.dart';
 
-// tests for K3dNodePortRange
+// tests for ClusterVpnPortRange
 void main() {
-  final instance = K3dNodePortRangeBuilder();
+  final instance = ClusterVpnPortRangeBuilder();
   // TODO add properties to the builder and call build()
 
-  group(K3dNodePortRange, () {
+  group(ClusterVpnPortRange, () {
     // int fromPort
     test('to test the property `fromPort`', () async {
       // TODO
@@ -17,12 +17,7 @@ void main() {
       // TODO
     });
 
-    // String host
-    test('to test the property `host`', () async {
-      // TODO
-    });
-
-    // NodePortRangeProtocol protocol
+    // VpnPortRangeProtocol protocol
     test('to test the property `protocol`', () async {
       // TODO
     });

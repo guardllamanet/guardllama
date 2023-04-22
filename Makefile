@@ -39,14 +39,12 @@ debug: true
 cluster:
   kube_config: ~/.kube/config
   host: 127.0.0.1
+  vpn_port_range:
+    from_port: 31001
+    to_port: 31005
+    protocol: UDP
   k3d:
     name: guardllama
-    nodePortRanges:
-      # wg
-      - fromPort: 31000
-        toPort: 31019
-        host: 0.0.0.0
-        protocol: UDP
 manager:
   image: "$(MGR_REPO):$(TS)"
 

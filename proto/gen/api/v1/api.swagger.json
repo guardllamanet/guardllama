@@ -341,18 +341,27 @@
       "properties": {
         "name": {
           "type": "string"
-        },
-        "node_port_ranges": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "$ref": "#/definitions/K3dNodePortRange"
-          }
         }
       }
     },
     "ClusterK3s": {
       "type": "object"
+    },
+    "ClusterVpnPortRange": {
+      "type": "object",
+      "properties": {
+        "from_port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "to_port": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "protocol": {
+          "$ref": "#/definitions/VpnPortRangeProtocol"
+        }
+      }
     },
     "CredentialsApi": {
       "type": "object",
@@ -397,34 +406,6 @@
         }
       }
     },
-    "K3dNodePortRange": {
-      "type": "object",
-      "properties": {
-        "from_port": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "to_port": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "host": {
-          "type": "string"
-        },
-        "protocol": {
-          "$ref": "#/definitions/NodePortRangeProtocol"
-        }
-      }
-    },
-    "NodePortRangeProtocol": {
-      "type": "string",
-      "enum": [
-        "TCP",
-        "UDP"
-      ],
-      "default": "TCP",
-      "title": "- TCP: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\nbuf:lint:ignore ENUM_VALUE_PREFIX\n - UDP: buf:lint:ignore ENUM_VALUE_PREFIX"
-    },
     "ServerConfigCluster": {
       "type": "object",
       "properties": {
@@ -436,6 +417,9 @@
         },
         "k3d": {
           "$ref": "#/definitions/ClusterK3d"
+        },
+        "vpn_port_range": {
+          "$ref": "#/definitions/ClusterVpnPortRange"
         },
         "host": {
           "type": "string"
@@ -465,6 +449,15 @@
       ],
       "default": "PENDING",
       "title": "- PENDING: buf:lint:ignore ENUM_VALUE_PREFIX\nbuf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\n - READY: buf:lint:ignore ENUM_VALUE_PREFIX\n - ERROR: buf:lint:ignore ENUM_VALUE_PREFIX"
+    },
+    "VpnPortRangeProtocol": {
+      "type": "string",
+      "enum": [
+        "TCP",
+        "UDP"
+      ],
+      "default": "TCP",
+      "title": "- TCP: buf:lint:ignore ENUM_ZERO_VALUE_SUFFIX\nbuf:lint:ignore ENUM_VALUE_PREFIX\n - UDP: buf:lint:ignore ENUM_VALUE_PREFIX"
     },
     "WireGuardDeviceDeviceType": {
       "type": "string",

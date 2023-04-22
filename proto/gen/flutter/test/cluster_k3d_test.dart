@@ -12,10 +12,5 @@ void main() {
       // TODO
     });
 
-    // BuiltList<K3dNodePortRange> nodePortRanges
-    test('to test the property `nodePortRanges`', () async {
-      // TODO
-    });
-
   });
 }

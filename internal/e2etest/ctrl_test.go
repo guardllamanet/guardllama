@@ -18,18 +18,21 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Test_Tunnel(t *testing.T) {
 	c := testutil.NewClient(t)
 	defer c.Cleanup(t)
 
-	ctx := context.Background()
-	ns := c.CreateNS(t, ctx)
-	tunName := xid.New().String()
+	var (
+		ctx      = context.Background()
+		ns       = c.CreateNS(t, ctx)
+		tunName  = xid.New().String()
+		tunName2 = xid.New().String()
 
-	var skey, ckey, pkey device.NoisePrivateKey
+		skey, ckey, pkey device.NoisePrivateKey
+	)
+
 	if _, err := rand.Read(skey[:]); err != nil {
 		t.Fatal(err)
 	}
@@ -40,11 +43,6 @@ func Test_Tunnel(t *testing.T) {
 		t.Fatal(err)
 	}
 	spub, cpub := publicKey(&skey), publicKey(&ckey)
-
-	var (
-		createdTun  *glmv1.Tunnel
-		createdTun2 *glmv1.Tunnel
-	)
 
 	steps := []testutil.Step{
 		{
@@ -87,11 +85,10 @@ func Test_Tunnel(t *testing.T) {
 											},
 										},
 									},
-									ListenPort:  51820,
-									IngressPort: 31821,
-									Address:     []string{"10.6.0.1/32"},
-									PostUp:      "iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.6.0.2/32 -o eth+ -j MASQUERADE",
-									PostDown:    "iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.6.0.2/32 -o eth+ -j MASQUERADE",
+									ListenPort: 51820,
+									Address:    []string{"10.6.0.1/32"},
+									PostUp:     "iptables -A FORWARD -i %i -j ACCEPT; iptables -A FORWARD -o %i -j ACCEPT; iptables -t nat -I POSTROUTING 1 -s 10.6.0.2/32 -o eth+ -j MASQUERADE",
+									PostDown:   "iptables -D FORWARD -i %i -j ACCEPT; iptables -D FORWARD -o %i -j ACCEPT; iptables -t nat -D POSTROUTING 1 -s 10.6.0.2/32 -o eth+ -j MASQUERADE",
 								},
 								Peers: []glmv1.WireGuardPeer{
 									{
@@ -126,8 +123,6 @@ func Test_Tunnel(t *testing.T) {
 				if err := c.Create(ctx, tun); err != nil {
 					t.Fatal(err)
 				}
-
-				createdTun = tun
 			},
 		},
 		{
@@ -187,18 +182,24 @@ Endpoint = %s`,
 		{
 			Name: "create a new tunnel with the same ingress port",
 			Step: func(t *testing.T) {
+				var existingTun glmv1.Tunnel
+				if err := c.Get(ctx, types.NamespacedName{Namespace: ns.Name, Name: tunName}, &existingTun); err != nil {
+					t.Fatal(err)
+				}
+
+				spec := existingTun.Spec
+				spec.Protocol.WireGuard.Interface.IngressPort = existingTun.Status.IngressPort
+
 				tun := &glmv1.Tunnel{
 					ObjectMeta: metav1.ObjectMeta{
-						Name:      xid.New().String(),
-						Namespace: createdTun.Namespace,
+						Name:      tunName2,
+						Namespace: ns.Name,
 					},
-					Spec: createdTun.Spec,
+					Spec: spec,
 				}
 				if err := c.Create(ctx, tun); err != nil {
 					t.Fatal(err)
 				}
-
-				createdTun2 = tun
 			},
 		},
 		{
@@ -206,7 +207,7 @@ Endpoint = %s`,
 			Step: func(t *testing.T) {
 				testutil.PollUntil(t, time.Second, 10*time.Second, func() error {
 					var tun glmv1.Tunnel
-					if err := c.Get(ctx, client.ObjectKeyFromObject(createdTun2), &tun); err != nil {
+					if err := c.Get(ctx, types.NamespacedName{Namespace: ns.Name, Name: tunName2}, &tun); err != nil {
 						return err
 					}
 

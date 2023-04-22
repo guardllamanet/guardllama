@@ -3,8 +3,6 @@
 //
 
 // ignore_for_file: unused_element
-import 'package:built_collection/built_collection.dart';
-import 'package:guardllama_api/src/model/k3d_node_port_range.dart';
 import 'package:built_value/built_value.dart';
 import 'package:built_value/serializer.dart';
 
@@ -14,14 +12,10 @@ part 'cluster_k3d.g.dart';
 ///
 /// Properties:
 /// * [name] 
-/// * [nodePortRanges] 
 @BuiltValue()
 abstract class ClusterK3d implements Built<ClusterK3d, ClusterK3dBuilder> {
   @BuiltValueField(wireName: r'name')
   String? get name;
-
-  @BuiltValueField(wireName: r'node_port_ranges')
-  BuiltList<K3dNodePortRange>? get nodePortRanges;
 
   ClusterK3d._();
 
@@ -53,13 +47,6 @@ class _$ClusterK3dSerializer implements PrimitiveSerializer<ClusterK3d> {
         specifiedType: const FullType(String),
       );
     }
-    if (object.nodePortRanges != null) {
-      yield r'node_port_ranges';
-      yield serializers.serialize(
-        object.nodePortRanges,
-        specifiedType: const FullType(BuiltList, [FullType(K3dNodePortRange)]),
-      );
-    }
   }
 
   @override
@@ -89,13 +76,6 @@ class _$ClusterK3dSerializer implements PrimitiveSerializer<ClusterK3d> {
             specifiedType: const FullType(String),
           ) as String;
           result.name = valueDes;
-          break;
-        case r'node_port_ranges':
-          final valueDes = serializers.deserialize(
-            value,
-            specifiedType: const FullType(BuiltList, [FullType(K3dNodePortRange)]),
-          ) as BuiltList<K3dNodePortRange>;
-          result.nodePortRanges.replace(valueDes);
           break;
         default:
           unhandled.add(key);

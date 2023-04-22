@@ -5216,6 +5216,35 @@ func (m *ServerConfig_Cluster) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if all {
+		switch v := interface{}(m.GetVpnPortRange()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ServerConfig_ClusterValidationError{
+					field:  "VpnPortRange",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ServerConfig_ClusterValidationError{
+					field:  "VpnPortRange",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetVpnPortRange()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ServerConfig_ClusterValidationError{
+				field:  "VpnPortRange",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	// no validation rules for Host
 
 	switch v := m.Distribution.(type) {
@@ -5824,40 +5853,6 @@ func (m *ServerConfig_Cluster_K3D) validate(all bool) error {
 
 	// no validation rules for Name
 
-	for idx, item := range m.GetNodePortRanges() {
-		_, _ = idx, item
-
-		if all {
-			switch v := interface{}(item).(type) {
-			case interface{ ValidateAll() error }:
-				if err := v.ValidateAll(); err != nil {
-					errors = append(errors, ServerConfig_Cluster_K3DValidationError{
-						field:  fmt.Sprintf("NodePortRanges[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			case interface{ Validate() error }:
-				if err := v.Validate(); err != nil {
-					errors = append(errors, ServerConfig_Cluster_K3DValidationError{
-						field:  fmt.Sprintf("NodePortRanges[%v]", idx),
-						reason: "embedded message failed validation",
-						cause:  err,
-					})
-				}
-			}
-		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
-			if err := v.Validate(); err != nil {
-				return ServerConfig_Cluster_K3DValidationError{
-					field:  fmt.Sprintf("NodePortRanges[%v]", idx),
-					reason: "embedded message failed validation",
-					cause:  err,
-				}
-			}
-		}
-
-	}
-
 	if len(errors) > 0 {
 		return ServerConfig_Cluster_K3DMultiError(errors)
 	}
@@ -5938,24 +5933,23 @@ var _ interface {
 	ErrorName() string
 } = ServerConfig_Cluster_K3DValidationError{}
 
-// Validate checks the field values on ServerConfig_Cluster_K3D_NodePortRange
-// with the rules defined in the proto definition for this message. If any
-// rules are violated, the first error encountered is returned, or nil if
-// there are no violations.
-func (m *ServerConfig_Cluster_K3D_NodePortRange) Validate() error {
+// Validate checks the field values on ServerConfig_Cluster_VpnPortRange with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ServerConfig_Cluster_VpnPortRange) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on
-// ServerConfig_Cluster_K3D_NodePortRange with the rules defined in the proto
-// definition for this message. If any rules are violated, the result is a
-// list of violation errors wrapped in
-// ServerConfig_Cluster_K3D_NodePortRangeMultiError, or nil if none found.
-func (m *ServerConfig_Cluster_K3D_NodePortRange) ValidateAll() error {
+// ValidateAll checks the field values on ServerConfig_Cluster_VpnPortRange
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// ServerConfig_Cluster_VpnPortRangeMultiError, or nil if none found.
+func (m *ServerConfig_Cluster_VpnPortRange) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *ServerConfig_Cluster_K3D_NodePortRange) validate(all bool) error {
+func (m *ServerConfig_Cluster_VpnPortRange) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -5963,7 +5957,7 @@ func (m *ServerConfig_Cluster_K3D_NodePortRange) validate(all bool) error {
 	var errors []error
 
 	if val := m.GetFromPort(); val < 30000 || val > 32767 {
-		err := ServerConfig_Cluster_K3D_NodePortRangeValidationError{
+		err := ServerConfig_Cluster_VpnPortRangeValidationError{
 			field:  "FromPort",
 			reason: "value must be inside range [30000, 32767]",
 		}
@@ -5973,10 +5967,10 @@ func (m *ServerConfig_Cluster_K3D_NodePortRange) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if val := m.GetToPort(); val < 30000 || val > 32767 {
-		err := ServerConfig_Cluster_K3D_NodePortRangeValidationError{
+	if val := m.GetToPort(); val < 30000 || val > 32768 {
+		err := ServerConfig_Cluster_VpnPortRangeValidationError{
 			field:  "ToPort",
-			reason: "value must be inside range [30000, 32767]",
+			reason: "value must be inside range [30000, 32768]",
 		}
 		if !all {
 			return err
@@ -5984,10 +5978,8 @@ func (m *ServerConfig_Cluster_K3D_NodePortRange) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	// no validation rules for Host
-
-	if _, ok := ServerConfig_Cluster_K3D_NodePortRange_Protocol_name[int32(m.GetProtocol())]; !ok {
-		err := ServerConfig_Cluster_K3D_NodePortRangeValidationError{
+	if _, ok := ServerConfig_Cluster_VpnPortRange_Protocol_name[int32(m.GetProtocol())]; !ok {
+		err := ServerConfig_Cluster_VpnPortRangeValidationError{
 			field:  "Protocol",
 			reason: "value must be one of the defined enum values",
 		}
@@ -5998,20 +5990,20 @@ func (m *ServerConfig_Cluster_K3D_NodePortRange) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return ServerConfig_Cluster_K3D_NodePortRangeMultiError(errors)
+		return ServerConfig_Cluster_VpnPortRangeMultiError(errors)
 	}
 
 	return nil
 }
 
-// ServerConfig_Cluster_K3D_NodePortRangeMultiError is an error wrapping
-// multiple validation errors returned by
-// ServerConfig_Cluster_K3D_NodePortRange.ValidateAll() if the designated
+// ServerConfig_Cluster_VpnPortRangeMultiError is an error wrapping multiple
+// validation errors returned by
+// ServerConfig_Cluster_VpnPortRange.ValidateAll() if the designated
 // constraints aren't met.
-type ServerConfig_Cluster_K3D_NodePortRangeMultiError []error
+type ServerConfig_Cluster_VpnPortRangeMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m ServerConfig_Cluster_K3D_NodePortRangeMultiError) Error() string {
+func (m ServerConfig_Cluster_VpnPortRangeMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -6020,12 +6012,12 @@ func (m ServerConfig_Cluster_K3D_NodePortRangeMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m ServerConfig_Cluster_K3D_NodePortRangeMultiError) AllErrors() []error { return m }
+func (m ServerConfig_Cluster_VpnPortRangeMultiError) AllErrors() []error { return m }
 
-// ServerConfig_Cluster_K3D_NodePortRangeValidationError is the validation
-// error returned by ServerConfig_Cluster_K3D_NodePortRange.Validate if the
-// designated constraints aren't met.
-type ServerConfig_Cluster_K3D_NodePortRangeValidationError struct {
+// ServerConfig_Cluster_VpnPortRangeValidationError is the validation error
+// returned by ServerConfig_Cluster_VpnPortRange.Validate if the designated
+// constraints aren't met.
+type ServerConfig_Cluster_VpnPortRangeValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -6033,24 +6025,24 @@ type ServerConfig_Cluster_K3D_NodePortRangeValidationError struct {
 }
 
 // Field function returns field value.
-func (e ServerConfig_Cluster_K3D_NodePortRangeValidationError) Field() string { return e.field }
+func (e ServerConfig_Cluster_VpnPortRangeValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e ServerConfig_Cluster_K3D_NodePortRangeValidationError) Reason() string { return e.reason }
+func (e ServerConfig_Cluster_VpnPortRangeValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e ServerConfig_Cluster_K3D_NodePortRangeValidationError) Cause() error { return e.cause }
+func (e ServerConfig_Cluster_VpnPortRangeValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e ServerConfig_Cluster_K3D_NodePortRangeValidationError) Key() bool { return e.key }
+func (e ServerConfig_Cluster_VpnPortRangeValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e ServerConfig_Cluster_K3D_NodePortRangeValidationError) ErrorName() string {
-	return "ServerConfig_Cluster_K3D_NodePortRangeValidationError"
+func (e ServerConfig_Cluster_VpnPortRangeValidationError) ErrorName() string {
+	return "ServerConfig_Cluster_VpnPortRangeValidationError"
 }
 
 // Error satisfies the builtin error interface
-func (e ServerConfig_Cluster_K3D_NodePortRangeValidationError) Error() string {
+func (e ServerConfig_Cluster_VpnPortRangeValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -6062,14 +6054,14 @@ func (e ServerConfig_Cluster_K3D_NodePortRangeValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sServerConfig_Cluster_K3D_NodePortRange.%s: %s%s",
+		"invalid %sServerConfig_Cluster_VpnPortRange.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = ServerConfig_Cluster_K3D_NodePortRangeValidationError{}
+var _ error = ServerConfig_Cluster_VpnPortRangeValidationError{}
 
 var _ interface {
 	Field() string
@@ -6077,7 +6069,7 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = ServerConfig_Cluster_K3D_NodePortRangeValidationError{}
+} = ServerConfig_Cluster_VpnPortRangeValidationError{}
 
 // Validate checks the field values on ServerConfig_Image_ImagePullSecret with
 // the rules defined in the proto definition for this message. If any rules

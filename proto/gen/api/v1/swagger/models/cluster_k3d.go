@@ -7,9 +7,7 @@ package models
 
 import (
 	"context"
-	"strconv"
 
-	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
 	"github.com/go-openapi/swag"
 )
@@ -21,82 +19,15 @@ type ClusterK3d struct {
 
 	// name
 	Name string `json:"name,omitempty"`
-
-	// node port ranges
-	NodePortRanges []*K3dNodePortRange `json:"node_port_ranges"`
 }
 
 // Validate validates this cluster k3d
 func (m *ClusterK3d) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateNodePortRanges(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
 	return nil
 }
 
-func (m *ClusterK3d) validateNodePortRanges(formats strfmt.Registry) error {
-	if swag.IsZero(m.NodePortRanges) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.NodePortRanges); i++ {
-		if swag.IsZero(m.NodePortRanges[i]) { // not required
-			continue
-		}
-
-		if m.NodePortRanges[i] != nil {
-			if err := m.NodePortRanges[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("node_port_ranges" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("node_port_ranges" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// ContextValidate validate this cluster k3d based on the context it is used
+// ContextValidate validates this cluster k3d based on context it is used
 func (m *ClusterK3d) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.contextValidateNodePortRanges(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *ClusterK3d) contextValidateNodePortRanges(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.NodePortRanges); i++ {
-
-		if m.NodePortRanges[i] != nil {
-			if err := m.NodePortRanges[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("node_port_ranges" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("node_port_ranges" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
 	return nil
 }
 

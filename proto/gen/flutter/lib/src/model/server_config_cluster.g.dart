@@ -14,13 +14,16 @@ class _$ServerConfigCluster extends ServerConfigCluster {
   @override
   final ClusterK3d? k3d;
   @override
+  final ClusterVpnPortRange? vpnPortRange;
+  @override
   final String? host;
 
   factory _$ServerConfigCluster(
           [void Function(ServerConfigClusterBuilder)? updates]) =>
       (new ServerConfigClusterBuilder()..update(updates))._build();
 
-  _$ServerConfigCluster._({this.kubeConfig, this.k3s, this.k3d, this.host})
+  _$ServerConfigCluster._(
+      {this.kubeConfig, this.k3s, this.k3d, this.vpnPortRange, this.host})
       : super._();
 
   @override
@@ -39,6 +42,7 @@ class _$ServerConfigCluster extends ServerConfigCluster {
         kubeConfig == other.kubeConfig &&
         k3s == other.k3s &&
         k3d == other.k3d &&
+        vpnPortRange == other.vpnPortRange &&
         host == other.host;
   }
 
@@ -48,6 +52,7 @@ class _$ServerConfigCluster extends ServerConfigCluster {
     _$hash = $jc(_$hash, kubeConfig.hashCode);
     _$hash = $jc(_$hash, k3s.hashCode);
     _$hash = $jc(_$hash, k3d.hashCode);
+    _$hash = $jc(_$hash, vpnPortRange.hashCode);
     _$hash = $jc(_$hash, host.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -59,6 +64,7 @@ class _$ServerConfigCluster extends ServerConfigCluster {
           ..add('kubeConfig', kubeConfig)
           ..add('k3s', k3s)
           ..add('k3d', k3d)
+          ..add('vpnPortRange', vpnPortRange)
           ..add('host', host))
         .toString();
   }
@@ -80,6 +86,12 @@ class ServerConfigClusterBuilder
   ClusterK3dBuilder get k3d => _$this._k3d ??= new ClusterK3dBuilder();
   set k3d(ClusterK3dBuilder? k3d) => _$this._k3d = k3d;
 
+  ClusterVpnPortRangeBuilder? _vpnPortRange;
+  ClusterVpnPortRangeBuilder get vpnPortRange =>
+      _$this._vpnPortRange ??= new ClusterVpnPortRangeBuilder();
+  set vpnPortRange(ClusterVpnPortRangeBuilder? vpnPortRange) =>
+      _$this._vpnPortRange = vpnPortRange;
+
   String? _host;
   String? get host => _$this._host;
   set host(String? host) => _$this._host = host;
@@ -94,6 +106,7 @@ class ServerConfigClusterBuilder
       _kubeConfig = $v.kubeConfig;
       _k3s = $v.k3s;
       _k3d = $v.k3d?.toBuilder();
+      _vpnPortRange = $v.vpnPortRange?.toBuilder();
       _host = $v.host;
       _$v = null;
     }
@@ -119,12 +132,18 @@ class ServerConfigClusterBuilder
     try {
       _$result = _$v ??
           new _$ServerConfigCluster._(
-              kubeConfig: kubeConfig, k3s: k3s, k3d: _k3d?.build(), host: host);
+              kubeConfig: kubeConfig,
+              k3s: k3s,
+              k3d: _k3d?.build(),
+              vpnPortRange: _vpnPortRange?.build(),
+              host: host);
     } catch (_) {
       late String _$failedField;
       try {
         _$failedField = 'k3d';
         _k3d?.build();
+        _$failedField = 'vpnPortRange';
+        _vpnPortRange?.build();
       } catch (e) {
         throw new BuiltValueNestedFieldError(
             r'ServerConfigCluster', _$failedField, e.toString());
