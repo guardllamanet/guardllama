@@ -62,6 +62,7 @@ func InstallCluster(ctx context.Context, cfg *apiv1.ServerConfig) error {
 	k := k3s.NewWithOpts(
 		k3s.WithKubeConfig(cfg.Cluster.KubeConfig),
 		k3s.WithK3sVersion(build.K3sVersion),
+		k3s.WithVPNPortRange(cfg.Cluster.VpnPortRange),
 		k3s.WithLogger(logger),
 	)
 
