@@ -143,6 +143,12 @@ func defaultServerConfig() (*apiv1.ServerConfig, error) {
 	return &apiv1.ServerConfig{
 		Cluster: &apiv1.ServerConfig_Cluster{
 			KubeConfig: filepath.Join(dir, "kubeconfig.yml"),
+			Host:       "0.0.0.0",
+			VpnPortRange: &apiv1.ServerConfig_Cluster_VpnPortRange{
+				FromPort: 30001,
+				ToPort:   30005,
+				Protocol: apiv1.ServerConfig_Cluster_VpnPortRange_UDP,
+			},
 		},
 		Manager: &apiv1.ServerConfig_Image{
 			Image: "ghcr.io/guardllamanet/glmmgr",

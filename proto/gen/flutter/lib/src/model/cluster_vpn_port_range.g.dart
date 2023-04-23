@@ -1,43 +1,41 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'k3d_node_port_range.dart';
+part of 'cluster_vpn_port_range.dart';
 
 // **************************************************************************
 // BuiltValueGenerator
 // **************************************************************************
 
-class _$K3dNodePortRange extends K3dNodePortRange {
+class _$ClusterVpnPortRange extends ClusterVpnPortRange {
   @override
   final int? fromPort;
   @override
   final int? toPort;
   @override
-  final String? host;
-  @override
-  final NodePortRangeProtocol? protocol;
+  final VpnPortRangeProtocol? protocol;
 
-  factory _$K3dNodePortRange(
-          [void Function(K3dNodePortRangeBuilder)? updates]) =>
-      (new K3dNodePortRangeBuilder()..update(updates))._build();
+  factory _$ClusterVpnPortRange(
+          [void Function(ClusterVpnPortRangeBuilder)? updates]) =>
+      (new ClusterVpnPortRangeBuilder()..update(updates))._build();
 
-  _$K3dNodePortRange._({this.fromPort, this.toPort, this.host, this.protocol})
+  _$ClusterVpnPortRange._({this.fromPort, this.toPort, this.protocol})
       : super._();
 
   @override
-  K3dNodePortRange rebuild(void Function(K3dNodePortRangeBuilder) updates) =>
+  ClusterVpnPortRange rebuild(
+          void Function(ClusterVpnPortRangeBuilder) updates) =>
       (toBuilder()..update(updates)).build();
 
   @override
-  K3dNodePortRangeBuilder toBuilder() =>
-      new K3dNodePortRangeBuilder()..replace(this);
+  ClusterVpnPortRangeBuilder toBuilder() =>
+      new ClusterVpnPortRangeBuilder()..replace(this);
 
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) return true;
-    return other is K3dNodePortRange &&
+    return other is ClusterVpnPortRange &&
         fromPort == other.fromPort &&
         toPort == other.toPort &&
-        host == other.host &&
         protocol == other.protocol;
   }
 
@@ -46,7 +44,6 @@ class _$K3dNodePortRange extends K3dNodePortRange {
     var _$hash = 0;
     _$hash = $jc(_$hash, fromPort.hashCode);
     _$hash = $jc(_$hash, toPort.hashCode);
-    _$hash = $jc(_$hash, host.hashCode);
     _$hash = $jc(_$hash, protocol.hashCode);
     _$hash = $jf(_$hash);
     return _$hash;
@@ -54,18 +51,17 @@ class _$K3dNodePortRange extends K3dNodePortRange {
 
   @override
   String toString() {
-    return (newBuiltValueToStringHelper(r'K3dNodePortRange')
+    return (newBuiltValueToStringHelper(r'ClusterVpnPortRange')
           ..add('fromPort', fromPort)
           ..add('toPort', toPort)
-          ..add('host', host)
           ..add('protocol', protocol))
         .toString();
   }
 }
 
-class K3dNodePortRangeBuilder
-    implements Builder<K3dNodePortRange, K3dNodePortRangeBuilder> {
-  _$K3dNodePortRange? _$v;
+class ClusterVpnPortRangeBuilder
+    implements Builder<ClusterVpnPortRange, ClusterVpnPortRangeBuilder> {
+  _$ClusterVpnPortRange? _$v;
 
   int? _fromPort;
   int? get fromPort => _$this._fromPort;
@@ -75,24 +71,19 @@ class K3dNodePortRangeBuilder
   int? get toPort => _$this._toPort;
   set toPort(int? toPort) => _$this._toPort = toPort;
 
-  String? _host;
-  String? get host => _$this._host;
-  set host(String? host) => _$this._host = host;
+  VpnPortRangeProtocol? _protocol;
+  VpnPortRangeProtocol? get protocol => _$this._protocol;
+  set protocol(VpnPortRangeProtocol? protocol) => _$this._protocol = protocol;
 
-  NodePortRangeProtocol? _protocol;
-  NodePortRangeProtocol? get protocol => _$this._protocol;
-  set protocol(NodePortRangeProtocol? protocol) => _$this._protocol = protocol;
-
-  K3dNodePortRangeBuilder() {
-    K3dNodePortRange._defaults(this);
+  ClusterVpnPortRangeBuilder() {
+    ClusterVpnPortRange._defaults(this);
   }
 
-  K3dNodePortRangeBuilder get _$this {
+  ClusterVpnPortRangeBuilder get _$this {
     final $v = _$v;
     if ($v != null) {
       _fromPort = $v.fromPort;
       _toPort = $v.toPort;
-      _host = $v.host;
       _protocol = $v.protocol;
       _$v = null;
     }
@@ -100,23 +91,23 @@ class K3dNodePortRangeBuilder
   }
 
   @override
-  void replace(K3dNodePortRange other) {
+  void replace(ClusterVpnPortRange other) {
     ArgumentError.checkNotNull(other, 'other');
-    _$v = other as _$K3dNodePortRange;
+    _$v = other as _$ClusterVpnPortRange;
   }
 
   @override
-  void update(void Function(K3dNodePortRangeBuilder)? updates) {
+  void update(void Function(ClusterVpnPortRangeBuilder)? updates) {
     if (updates != null) updates(this);
   }
 
   @override
-  K3dNodePortRange build() => _build();
+  ClusterVpnPortRange build() => _build();
 
-  _$K3dNodePortRange _build() {
+  _$ClusterVpnPortRange _build() {
     final _$result = _$v ??
-        new _$K3dNodePortRange._(
-            fromPort: fromPort, toPort: toPort, host: host, protocol: protocol);
+        new _$ClusterVpnPortRange._(
+            fromPort: fromPort, toPort: toPort, protocol: protocol);
     replace(_$result);
     return _$result;
   }

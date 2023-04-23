@@ -17,12 +17,11 @@ import 'package:guardllama_api/src/model/date.dart';
 import 'package:guardllama_api/src/model/ad_guard_home_config_block_list.dart';
 import 'package:guardllama_api/src/model/apiv1_credentials.dart';
 import 'package:guardllama_api/src/model/cluster_k3d.dart';
+import 'package:guardllama_api/src/model/cluster_vpn_port_range.dart';
 import 'package:guardllama_api/src/model/credentials_api.dart';
 import 'package:guardllama_api/src/model/credentials_jwt.dart';
 import 'package:guardllama_api/src/model/image_image_pull_policy.dart';
 import 'package:guardllama_api/src/model/image_image_pull_secret.dart';
-import 'package:guardllama_api/src/model/k3d_node_port_range.dart';
-import 'package:guardllama_api/src/model/node_port_range_protocol.dart';
 import 'package:guardllama_api/src/model/protobuf_any.dart';
 import 'package:guardllama_api/src/model/rpc_status.dart';
 import 'package:guardllama_api/src/model/server_config_cluster.dart';
@@ -55,6 +54,7 @@ import 'package:guardllama_api/src/model/v1_wire_guard_device_peer.dart';
 import 'package:guardllama_api/src/model/v1_wire_guard_interface.dart';
 import 'package:guardllama_api/src/model/v1_wire_guard_peer.dart';
 import 'package:guardllama_api/src/model/v1_wire_guard_status.dart';
+import 'package:guardllama_api/src/model/vpn_port_range_protocol.dart';
 import 'package:guardllama_api/src/model/wire_guard_device_device_type.dart';
 
 part 'serializers.g.dart';
@@ -63,12 +63,11 @@ part 'serializers.g.dart';
   AdGuardHomeConfigBlockList,
   Apiv1Credentials,
   ClusterK3d,
+  ClusterVpnPortRange,
   CredentialsApi,
   CredentialsJwt,
   ImageImagePullPolicy,
   ImageImagePullSecret,
-  K3dNodePortRange,
-  NodePortRangeProtocol,
   ProtobufAny,
   RpcStatus,
   ServerConfigCluster,
@@ -101,6 +100,7 @@ part 'serializers.g.dart';
   V1WireGuardInterface,
   V1WireGuardPeer,
   V1WireGuardStatus,
+  VpnPortRangeProtocol,
   WireGuardDeviceDeviceType,
 ])
 Serializers serializers = (_$serializers.toBuilder()

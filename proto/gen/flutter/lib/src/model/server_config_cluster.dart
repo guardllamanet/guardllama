@@ -3,6 +3,7 @@
 //
 
 // ignore_for_file: unused_element
+import 'package:guardllama_api/src/model/cluster_vpn_port_range.dart';
 import 'package:guardllama_api/src/model/cluster_k3d.dart';
 import 'package:built_value/json_object.dart';
 import 'package:built_value/built_value.dart';
@@ -16,6 +17,7 @@ part 'server_config_cluster.g.dart';
 /// * [kubeConfig] 
 /// * [k3s] 
 /// * [k3d] 
+/// * [vpnPortRange] 
 /// * [host] 
 @BuiltValue()
 abstract class ServerConfigCluster implements Built<ServerConfigCluster, ServerConfigClusterBuilder> {
@@ -27,6 +29,9 @@ abstract class ServerConfigCluster implements Built<ServerConfigCluster, ServerC
 
   @BuiltValueField(wireName: r'k3d')
   ClusterK3d? get k3d;
+
+  @BuiltValueField(wireName: r'vpn_port_range')
+  ClusterVpnPortRange? get vpnPortRange;
 
   @BuiltValueField(wireName: r'host')
   String? get host;
@@ -73,6 +78,13 @@ class _$ServerConfigClusterSerializer implements PrimitiveSerializer<ServerConfi
       yield serializers.serialize(
         object.k3d,
         specifiedType: const FullType(ClusterK3d),
+      );
+    }
+    if (object.vpnPortRange != null) {
+      yield r'vpn_port_range';
+      yield serializers.serialize(
+        object.vpnPortRange,
+        specifiedType: const FullType(ClusterVpnPortRange),
       );
     }
     if (object.host != null) {
@@ -125,6 +137,13 @@ class _$ServerConfigClusterSerializer implements PrimitiveSerializer<ServerConfi
             specifiedType: const FullType(ClusterK3d),
           ) as ClusterK3d;
           result.k3d.replace(valueDes);
+          break;
+        case r'vpn_port_range':
+          final valueDes = serializers.deserialize(
+            value,
+            specifiedType: const FullType(ClusterVpnPortRange),
+          ) as ClusterVpnPortRange;
+          result.vpnPortRange.replace(valueDes);
           break;
         case r'host':
           final valueDes = serializers.deserialize(

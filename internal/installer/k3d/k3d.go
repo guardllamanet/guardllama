@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/guardllamanet/guardllama/internal/log"
+	v1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 	"github.com/k3d-io/k3d/v5/cmd/util"
 	"github.com/k3d-io/k3d/v5/pkg/client"
 	"github.com/k3d-io/k3d/v5/pkg/config"
@@ -31,11 +32,12 @@ func NewWithOpts(opts ...K3dOption) *K3d {
 }
 
 type K3d struct {
-	name       string
-	kubeConfig string
-	k3sVersion string
-	ports      []string
-	logger     *log.Logger
+	name         string
+	host         string
+	kubeConfig   string
+	k3sVersion   string
+	vpnPortRange *v1.ServerConfig_Cluster_VpnPortRange
+	logger       *log.Logger
 }
 
 type K3dOption interface {
@@ -48,9 +50,15 @@ func WithName(name string) K3dOption {
 	})
 }
 
-func WithPorts(ports []string) K3dOption {
+func WithHost(host string) K3dOption {
 	return withOption(func(k *K3d) {
-		k.ports = ports
+		k.host = host
+	})
+}
+
+func WithVPNPortRange(portRange *v1.ServerConfig_Cluster_VpnPortRange) K3dOption {
+	return withOption(func(k *K3d) {
+		k.vpnPortRange = portRange
 	})
 }
 
@@ -100,25 +108,36 @@ func (k *K3d) Ensure(ctx context.Context) error {
 	registries := v1alpha4.SimpleConfigRegistries{
 		Create: &v1alpha4.SimpleConfigRegistryCreateConfig{
 			Name:     registryName(k.name),
-			Host:     "127.0.0.1",
+			Host:     k.host,
 			HostPort: "5111",
 		},
 	}
 
 	pnf := []v1alpha4.PortWithNodeFilters{
 		{
-			Port:        "38080:80",
+			Port:        fmt.Sprintf("%s:38080:80/tcp", k.host),
 			NodeFilters: []string{"loadbalancer"},
 		},
 		{
-			Port:        "38443:443",
+			Port:        fmt.Sprintf("%s:38443:443", k.host),
 			NodeFilters: []string{"loadbalancer"},
 		},
 	}
-	for _, port := range k.ports {
+	extraArgs := []v1alpha4.K3sArgWithNodeFilters{
+		{
+			Arg:         "--disable=metrics-server",
+			NodeFilters: []string{"servers:*"},
+		},
+	}
+
+	if pr := k.vpnPortRange; pr != nil {
 		pnf = append(pnf, v1alpha4.PortWithNodeFilters{
-			Port:        port,
+			Port:        fmt.Sprintf("%s:%d-%d:%d-%d/%s", k.host, pr.FromPort, pr.ToPort, pr.FromPort, pr.ToPort, pr.Protocol),
 			NodeFilters: []string{"server:0:direct"},
+		})
+		extraArgs = append(extraArgs, v1alpha4.K3sArgWithNodeFilters{
+			Arg:         fmt.Sprintf("--kube-apiserver-arg=service-node-port-range=%d-%d", k.vpnPortRange.FromPort, k.vpnPortRange.ToPort+2), // Add 2 to account for traefik port 80 & 443
+			NodeFilters: []string{"all"},
 		})
 	}
 
@@ -137,12 +156,7 @@ func (k *K3d) Ensure(ctx context.Context) error {
 		Registries: registries,
 		Options: v1alpha4.SimpleConfigOptions{
 			K3sOptions: v1alpha4.SimpleConfigOptionsK3s{
-				ExtraArgs: []v1alpha4.K3sArgWithNodeFilters{
-					{
-						Arg:         "--disable=metrics-server",
-						NodeFilters: []string{"servers:*"},
-					},
-				},
+				ExtraArgs: extraArgs,
 			},
 			K3dOptions: v1alpha4.SimpleConfigOptionsK3d{
 				Wait:       true,

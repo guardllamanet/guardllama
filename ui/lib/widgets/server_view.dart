@@ -22,6 +22,8 @@ class _ServerViewState extends State<ServerView> {
   Widget build(BuildContext context) {
     final config = widget._server.config!;
     final status = widget._server.status!;
+    final host = config.cluster!.host!;
+    final vpnPortRange = config.cluster!.vpnPortRange!;
 
     final rows = [
       KeyValueRow(
@@ -47,11 +49,8 @@ class _ServerViewState extends State<ServerView> {
       ),
       KeyValueRow(
         key: 'Exposed ports:',
-        value: Text(config.cluster!.k3d == null
-            ? '30000-32767'
-            : config.cluster!.k3d!.nodePortRanges!
-                .map((p) => '${p.host}:${p.fromPort}-${p.toPort}/${p.protocol}')
-                .join("\n")),
+        value: Text(
+            '$host:${vpnPortRange.fromPort}-${vpnPortRange.toPort}/${vpnPortRange.protocol}'),
       ),
     ];
 

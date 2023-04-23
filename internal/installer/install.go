@@ -47,20 +47,10 @@ func InstallCluster(ctx context.Context, cfg *apiv1.ServerConfig) error {
 	}
 
 	if k3dCluster := cfg.Cluster.GetK3D(); k3dCluster != nil {
-		var ports []string
-		for _, npr := range k3dCluster.NodePortRanges {
-			host := npr.Host
-			if host == "" {
-				host = "0.0.0.0"
-			}
-
-			port := fmt.Sprintf("%s:%d-%d:%d-%d/%s", host, npr.FromPort, npr.ToPort, npr.FromPort, npr.ToPort, npr.Protocol)
-			ports = append(ports, port)
-		}
-
 		k := k3d.NewWithOpts(
 			k3d.WithName(k3dCluster.Name),
-			k3d.WithPorts(ports),
+			k3d.WithHost(cfg.Cluster.Host),
+			k3d.WithVPNPortRange(cfg.Cluster.VpnPortRange),
 			k3d.WithKubeConfig(cfg.Cluster.KubeConfig),
 			k3d.WithK3sVersion(build.K3sVersion),
 			k3d.WithLogger(logger),

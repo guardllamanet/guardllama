@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/guardllamanet/guardllama/internal/log"
+	v1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 )
 
 const (
@@ -30,9 +31,10 @@ func NewWithOpts(opts ...K3sOption) *K3s {
 }
 
 type K3s struct {
-	kubeConfig string
-	k3sVersion string
-	logger     *log.Logger
+	kubeConfig   string
+	k3sVersion   string
+	vpnPortRange *v1.ServerConfig_Cluster_VpnPortRange
+	logger       *log.Logger
 }
 
 type K3sOption interface {
@@ -42,6 +44,12 @@ type K3sOption interface {
 func WithKubeConfig(kc string) K3sOption {
 	return withOption(func(k *K3s) {
 		k.kubeConfig = kc
+	})
+}
+
+func WithVPNPortRange(portRange *v1.ServerConfig_Cluster_VpnPortRange) K3sOption {
+	return withOption(func(k *K3s) {
+		k.vpnPortRange = portRange
 	})
 }
 
@@ -93,6 +101,8 @@ func (k *K3s) Ensure(ctx context.Context) error {
 		"644",
 		"--disable",
 		"metrics-server",
+		"--kube-apiserver-arg",
+		fmt.Sprintf("service-node-port-range=%d-%d", k.vpnPortRange.FromPort, k.vpnPortRange.ToPort),
 	)
 
 	cmd.Env = os.Environ()

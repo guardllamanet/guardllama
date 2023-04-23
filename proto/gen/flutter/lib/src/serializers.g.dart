@@ -10,12 +10,11 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(AdGuardHomeConfigBlockList.serializer)
       ..add(Apiv1Credentials.serializer)
       ..add(ClusterK3d.serializer)
+      ..add(ClusterVpnPortRange.serializer)
       ..add(CredentialsApi.serializer)
       ..add(CredentialsJwt.serializer)
       ..add(ImageImagePullPolicy.serializer)
       ..add(ImageImagePullSecret.serializer)
-      ..add(K3dNodePortRange.serializer)
-      ..add(NodePortRangeProtocol.serializer)
       ..add(ProtobufAny.serializer)
       ..add(RpcStatus.serializer)
       ..add(ServerConfigCluster.serializer)
@@ -48,6 +47,7 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(V1WireGuardInterface.serializer)
       ..add(V1WireGuardPeer.serializer)
       ..add(V1WireGuardStatus.serializer)
+      ..add(VpnPortRangeProtocol.serializer)
       ..add(WireGuardDeviceDeviceType.serializer)
       ..addBuilderFactory(
           const FullType(
@@ -57,9 +57,6 @@ Serializers _$serializers = (new Serializers().toBuilder()
           const FullType(
               BuiltList, const [const FullType(AdGuardHomeConfigBlockList)]),
           () => new ListBuilder<AdGuardHomeConfigBlockList>())
-      ..addBuilderFactory(
-          const FullType(BuiltList, const [const FullType(K3dNodePortRange)]),
-          () => new ListBuilder<K3dNodePortRange>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(ProtobufAny)]),
           () => new ListBuilder<ProtobufAny>())

@@ -22,6 +22,11 @@ void main() {
       // TODO
     });
 
+    // ClusterVpnPortRange vpnPortRange
+    test('to test the property `vpnPortRange`', () async {
+      // TODO
+    });
+
     // String host
     test('to test the property `host`', () async {
       // TODO

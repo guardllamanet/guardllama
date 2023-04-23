@@ -6,12 +6,11 @@ doc/AdGuardHomeConfigBlockList.md
 doc/Apiv1Credentials.md
 doc/AuthServiceApi.md
 doc/ClusterK3d.md
+doc/ClusterVpnPortRange.md
 doc/CredentialsApi.md
 doc/CredentialsJwt.md
 doc/ImageImagePullPolicy.md
 doc/ImageImagePullSecret.md
-doc/K3dNodePortRange.md
-doc/NodePortRangeProtocol.md
 doc/ProtobufAny.md
 doc/RpcStatus.md
 doc/ServerConfigCluster.md
@@ -46,6 +45,7 @@ doc/V1WireGuardDevicePeer.md
 doc/V1WireGuardInterface.md
 doc/V1WireGuardPeer.md
 doc/V1WireGuardStatus.md
+doc/VpnPortRangeProtocol.md
 doc/WireGuardDeviceDeviceType.md
 doc/WireGuardServiceApi.md
 lib/guardllama_api.dart
@@ -64,13 +64,12 @@ lib/src/date_serializer.dart
 lib/src/model/ad_guard_home_config_block_list.dart
 lib/src/model/apiv1_credentials.dart
 lib/src/model/cluster_k3d.dart
+lib/src/model/cluster_vpn_port_range.dart
 lib/src/model/credentials_api.dart
 lib/src/model/credentials_jwt.dart
 lib/src/model/date.dart
 lib/src/model/image_image_pull_policy.dart
 lib/src/model/image_image_pull_secret.dart
-lib/src/model/k3d_node_port_range.dart
-lib/src/model/node_port_range_protocol.dart
 lib/src/model/protobuf_any.dart
 lib/src/model/rpc_status.dart
 lib/src/model/server_config_cluster.dart
@@ -103,6 +102,7 @@ lib/src/model/v1_wire_guard_device_peer.dart
 lib/src/model/v1_wire_guard_interface.dart
 lib/src/model/v1_wire_guard_peer.dart
 lib/src/model/v1_wire_guard_status.dart
+lib/src/model/vpn_port_range_protocol.dart
 lib/src/model/wire_guard_device_device_type.dart
 lib/src/serializers.dart
 pubspec.yaml
@@ -110,12 +110,11 @@ test/ad_guard_home_config_block_list_test.dart
 test/apiv1_credentials_test.dart
 test/auth_service_api_test.dart
 test/cluster_k3d_test.dart
+test/cluster_vpn_port_range_test.dart
 test/credentials_api_test.dart
 test/credentials_jwt_test.dart
 test/image_image_pull_policy_test.dart
 test/image_image_pull_secret_test.dart
-test/k3d_node_port_range_test.dart
-test/node_port_range_protocol_test.dart
 test/protobuf_any_test.dart
 test/rpc_status_test.dart
 test/server_config_cluster_test.dart
@@ -150,5 +149,6 @@ test/v1_wire_guard_device_test.dart
 test/v1_wire_guard_interface_test.dart
 test/v1_wire_guard_peer_test.dart
 test/v1_wire_guard_status_test.dart
+test/vpn_port_range_protocol_test.dart
 test/wire_guard_device_device_type_test.dart
 test/wire_guard_service_api_test.dart

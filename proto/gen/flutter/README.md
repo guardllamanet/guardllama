@@ -81,12 +81,11 @@ Class | Method | HTTP request | Description
  - [AdGuardHomeConfigBlockList](doc/AdGuardHomeConfigBlockList.md)
  - [Apiv1Credentials](doc/Apiv1Credentials.md)
  - [ClusterK3d](doc/ClusterK3d.md)
+ - [ClusterVpnPortRange](doc/ClusterVpnPortRange.md)
  - [CredentialsApi](doc/CredentialsApi.md)
  - [CredentialsJwt](doc/CredentialsJwt.md)
  - [ImageImagePullPolicy](doc/ImageImagePullPolicy.md)
  - [ImageImagePullSecret](doc/ImageImagePullSecret.md)
- - [K3dNodePortRange](doc/K3dNodePortRange.md)
- - [NodePortRangeProtocol](doc/NodePortRangeProtocol.md)
  - [ProtobufAny](doc/ProtobufAny.md)
  - [RpcStatus](doc/RpcStatus.md)
  - [ServerConfigCluster](doc/ServerConfigCluster.md)
@@ -119,6 +118,7 @@ Class | Method | HTTP request | Description
  - [V1WireGuardInterface](doc/V1WireGuardInterface.md)
  - [V1WireGuardPeer](doc/V1WireGuardPeer.md)
  - [V1WireGuardStatus](doc/V1WireGuardStatus.md)
+ - [VpnPortRangeProtocol](doc/VpnPortRangeProtocol.md)
  - [WireGuardDeviceDeviceType](doc/WireGuardDeviceDeviceType.md)
 
 
