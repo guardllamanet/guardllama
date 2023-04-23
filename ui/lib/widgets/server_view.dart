@@ -49,8 +49,8 @@ class _ServerViewState extends State<ServerView> {
       ),
       KeyValueRow(
         key: 'Exposed ports:',
-        value:
-            Text('$host:${vpnPortRange.fromPort}-${vpnPortRange.toPort}/udp'),
+        value: Text(
+            '$host:${vpnPortRange.fromPort}-${vpnPortRange.toPort}/${vpnPortRange.protocol}'),
       ),
     ];
 

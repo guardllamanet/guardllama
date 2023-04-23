@@ -2,6 +2,7 @@ package v1
 
 import (
 	"sort"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -92,6 +93,10 @@ func (l ConditionSet) SetCondition(
 
 	hasFailedCond := false
 	hasUnknownCond := false
+	var (
+		failedMsgs  []string
+		unknownMsgs []string
+	)
 
 	for _, dep := range l.deps {
 		found := false
@@ -101,8 +106,10 @@ func (l ConditionSet) SetCondition(
 				found = true
 				if cond.IsFalse() {
 					hasFailedCond = true
+					failedMsgs = append(failedMsgs, cond.Message)
 				} else if cond.IsUnknown() {
 					hasUnknownCond = true
+					unknownMsgs = append(unknownMsgs, cond.Message)
 				}
 			}
 		}
@@ -113,9 +120,9 @@ func (l ConditionSet) SetCondition(
 	}
 
 	if hasFailedCond {
-		return setCondition(newConds, l.main, corev1.ConditionFalse, "ConditionFailed", "Conditions failed")
+		return setCondition(newConds, l.main, corev1.ConditionFalse, "ConditionFailed", strings.Join(failedMsgs, "; "))
 	} else if hasUnknownCond {
-		return setCondition(newConds, l.main, corev1.ConditionUnknown, "ConditionUnknown", "Conditions unknown")
+		return setCondition(newConds, l.main, corev1.ConditionUnknown, "ConditionUnknown", strings.Join(unknownMsgs, "; "))
 	}
 
 	return setCondition(newConds, l.main, corev1.ConditionTrue, "OK", "")
