@@ -123,8 +123,6 @@ jobs:
             *.args.BUILD_VERSION=${{ env.build_version }}
             *.args.BUILD_DATE=${{ env.build_date }}
             *.platform=linux/arm64,linux/amd64
-            *.cache-from=type=gha
-            *.cache-to=type=gha,mode=max
 
   installer_test:
     name: Installer Test

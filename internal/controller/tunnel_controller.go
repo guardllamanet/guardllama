@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httputil"
+	"syscall"
 	"time"
 
 	"golang.org/x/sync/errgroup"
@@ -878,12 +879,21 @@ func (r *TunnelReconciler) upsertAGHConfig(ctx context.Context, tun *glmv1.Tunne
 			"",
 		)
 	} else {
-		tun.Status.SetCondition(
-			glmv1.ConditionDNSConfigReady,
-			corev1.ConditionFalse,
-			reasonConfigError,
-			err.Error(),
-		)
+		if errors.Is(err, syscall.ECONNREFUSED) {
+			tun.Status.SetCondition(
+				glmv1.ConditionDNSConfigReady,
+				corev1.ConditionUnknown,
+				"",
+				err.Error(),
+			)
+		} else {
+			tun.Status.SetCondition(
+				glmv1.ConditionDNSConfigReady,
+				corev1.ConditionFalse,
+				reasonConfigError,
+				err.Error(),
+			)
+		}
 	}
 
 	return err
