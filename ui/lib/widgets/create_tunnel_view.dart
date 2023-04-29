@@ -58,7 +58,7 @@ class _CreateTunnelViewState extends State<CreateTunnelView> {
                 }
               }
 
-              return _errorMessage;
+              return WidgetUtils.titlize(_errorMessage);
             },
           ),
         ],

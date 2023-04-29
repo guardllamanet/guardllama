@@ -82,29 +82,33 @@ func (s *TunnelService) CreateTunnel(ctx context.Context, req *apiv1.CreateTunne
 		return nil, StatusInvalidArg(fmt.Errorf("tunnel %q already exists", name))
 	}
 
+	if err := s.validateAvailablePorts(ctx); err != nil {
+		return nil, StatusResourceExhausted(err)
+	}
+
 	skey, spub, err := genKeyPair()
 	if err != nil {
-		return nil, StatusInternal(fmt.Errorf("error generating interface keypair: %w", err))
+		return nil, StatusInternal(fmt.Errorf("generate interface keypair: %w", err))
 	}
 
 	ckey, cpub, err := genKeyPair()
 	if err != nil {
-		return nil, StatusInternal(fmt.Errorf("error generating peer keypair: %w", err))
+		return nil, StatusInternal(fmt.Errorf("generate peer keypair: %w", err))
 	}
 
 	pkey, _, err := genKeyPair()
 	if err != nil {
-		return nil, StatusInternal(fmt.Errorf("error generating preshared key: %w", err))
+		return nil, StatusInternal(fmt.Errorf("generate preshared key: %w", err))
 	}
 
 	tun, err := createTunnel(ctx, s.K8sClient, name, skey, spub, ckey, cpub, pkey, req.Agh)
 	if err != nil {
-		return nil, StatusInternal(fmt.Errorf("error creating tunnel: %w", err))
+		return nil, StatusInternal(fmt.Errorf("create tunnel: %w", err))
 	}
 
 	tunnel, err := s.fetchClientTunnel(ctx, tun, false)
 	if err != nil {
-		return nil, StatusInternal(fmt.Errorf("error getting tunnel info: %w", err))
+		return nil, StatusInternal(fmt.Errorf("get tunnel info: %w", err))
 	}
 
 	return &apiv1.CreateTunnelResponse{
@@ -620,6 +624,25 @@ func createTunnel(
 	}
 
 	return tun, nil
+}
+
+func (s *TunnelService) validateAvailablePorts(ctx context.Context) error {
+	scfg, err := s.GetServerConfig(ctx)
+	if err != nil {
+		return fmt.Errorf("get server config: %w", err)
+	}
+	numOfPorts := int(scfg.Cluster.VpnPortRange.ToPort - scfg.Cluster.VpnPortRange.FromPort + 1)
+
+	var tunList glmv1.TunnelList
+	if err := s.List(ctx, &tunList); err != nil {
+		return fmt.Errorf("list tunnels: %w", err)
+	}
+
+	if len(tunList.Items) >= numOfPorts {
+		return fmt.Errorf("no more ports available")
+	}
+
+	return nil
 }
 
 func secretKeyNameClientPrivateKey(i int) string {

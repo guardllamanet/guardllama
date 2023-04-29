@@ -9,6 +9,10 @@ func StatusInvalidArg(err error) error {
 	return status.Error(codes.InvalidArgument, err.Error())
 }
 
+func StatusResourceExhausted(err error) error {
+	return status.Error(codes.ResourceExhausted, err.Error())
+}
+
 func StatusNotFound(err error) error {
 	return status.Error(codes.NotFound, err.Error())
 }
