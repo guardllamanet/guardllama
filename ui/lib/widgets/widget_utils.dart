@@ -34,4 +34,21 @@ class WidgetUtils {
         ? false
         : RegExp(_dns1123SubdomainRules).hasMatch(value);
   }
+
+  static titlize(String? msg) {
+    if (msg == null) {
+      return null;
+    }
+
+    if (msg.isEmpty) {
+      return msg;
+    }
+
+    msg = '${msg[0].toUpperCase()}${msg.substring(1).toLowerCase()}';
+    if (!msg.endsWith('.')) {
+      msg = '$msg.';
+    }
+
+    return msg;
+  }
 }
