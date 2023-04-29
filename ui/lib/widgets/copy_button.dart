@@ -21,7 +21,7 @@ class _CopyIconButtonState extends State<CopyIconButton> {
     color: Colors.green,
   );
 
-  final afterCopyTooltip = "Copied";
+  final afterCopyTooltip = 'Copied';
 
   late Icon _icon;
 

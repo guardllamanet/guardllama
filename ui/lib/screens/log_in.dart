@@ -102,7 +102,7 @@ class _LogInScreenState extends State<LogInScreen> {
                   padding: const EdgeInsets.all(20.0),
                   child: RoundedButton(
                     iconData: Icons.login_rounded,
-                    text: "Log In",
+                    text: 'Log In',
                     disabled: _tokenStringEmpty,
                     onPressed: () => _logIn(),
                   ),

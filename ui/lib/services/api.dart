@@ -25,45 +25,45 @@ enum AdBlockMode {
     name: 'Default',
     blocklists: [
       AdBlockList(
-          name: "AdGuard DNS filter",
+          name: 'AdGuard DNS filter',
           url:
-              "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"),
+              'https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt'),
       AdBlockList(
-          name: "AdAway Default Blocklist",
-          url: "https://adaway.org/hosts.txt"),
+          name: 'AdAway Default Blocklist',
+          url: 'https://adaway.org/hosts.txt'),
     ],
   ),
   strictMode(
     name: 'Strict',
     blocklists: [
       AdBlockList(
-          name: "AdGuard DNS filter",
+          name: 'AdGuard DNS filter',
           url:
-              "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"),
+              'https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt'),
       AdBlockList(
-          name: "AdAway Default Blocklist",
-          url: "https://adaway.org/hosts.txt"),
+          name: 'AdAway Default Blocklist',
+          url: 'https://adaway.org/hosts.txt'),
       AdBlockList(
           name: "Peter Lowe's List",
           url:
-              "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&showintro=1&mimetype=plaintext"),
+              'https://pgl.yoyo.org/adservers/serverlist.php?hostformat=adblockplus&showintro=1&mimetype=plaintext'),
       AdBlockList(
           name: "Dan Pollock's List",
-          url: "https://someonewhocares.org/hosts/zero/hosts"),
+          url: 'https://someonewhocares.org/hosts/zero/hosts'),
       AdBlockList(
-          name: "OISD Blocklist Basic", url: "https://abp.oisd.nl/basic/"),
+          name: 'OISD Blocklist Basic', url: 'https://abp.oisd.nl/basic/'),
       AdBlockList(
-          name: "Game Console Adblock List",
+          name: 'Game Console Adblock List',
           url:
-              "https://raw.githubusercontent.com/DandelionSprout/adfilt/master/GameConsoleAdblockList.txt"),
+              'https://raw.githubusercontent.com/DandelionSprout/adfilt/master/GameConsoleAdblockList.txt'),
       AdBlockList(
           name: "Perflyst and Dandelion Sprout's Smart-TV Blocklist",
           url:
-              "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/master/SmartTV-AGH.txt"),
+              'https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/master/SmartTV-AGH.txt'),
       AdBlockList(
-          name: "1Hosts (Lite)",
+          name: '1Hosts (Lite)',
           url:
-              "https://adguardteam.github.io/HostlistsRegistry/assets/filter_24.txt"),
+              'https://adguardteam.github.io/HostlistsRegistry/assets/filter_24.txt'),
     ],
   ),
   customMode(
