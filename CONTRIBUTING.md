@@ -20,7 +20,7 @@ After you have installed the required tools and cloned the repository to your lo
 
 ### 1. Set Up Development Instance
 
-Run `make glm_install` to set up a development instance of GuardLlama using [k3d](https://k3d.io/). The GuardLlama API server will be accessible at `http://localhost:38080`. The VPN port range will be `31001-31005`.
+Run `make glm_install` to set up a development instance of GuardLlama using [k3d](https://k3d.io/). The GuardLlama API server will be accessible at `http://localhost:38080`. The VPN port range will be `30001-30005`.
 
 ### 2. Access Web UI
 

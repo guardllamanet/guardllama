@@ -40,8 +40,8 @@ cluster:
   kube_config: ~/.kube/config
   host: 127.0.0.1
   vpn_port_range:
-    from_port: 31001
-    to_port: 31005
+    from_port: 30001
+    to_port: 30005
     protocol: UDP
   k3d:
     name: guardllama
