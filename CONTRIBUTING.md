@@ -24,7 +24,7 @@ Run `make glm_install` to set up a development instance of GuardLlama using [k3d
 
 ### 2. Access Web UI
 
-Navigate to the `ui` directory by running `cd ui`. Then, execute `flutter run -d chrome` to start the web UI. To log in during the development instance, use the token `root`.
+Navigate to the `ui` directory by running `cd ui`. Then, execute `flutter run -d chrome` to start the web UI. To log in the development instance, use the token `root`.
 
 ### Additional Development Tasks
 
