@@ -1,6 +1,6 @@
 # GuardLlama Contribution Guidelines
 
-We appreciate your interest in contributing to the GuardLlama project. To ensure a smooth and efficient collaboration, please follow these guidelines when submitting your contributions.
+Thank you for your interest in contributing to GuardLlama! To ensure smooth and efficient collaboration, please follow these guidelines when submitting your contributions.
 
 ## Getting Started
 
@@ -8,9 +8,31 @@ We appreciate your interest in contributing to the GuardLlama project. To ensure
 2. Clone the forked repository to your local machine.
 3. Create a new branch with a descriptive name related to the feature or bugfix you plan to implement.
 
+## Development
+
+To get started with developing GuardLlama, you'll need to install the following prerequisites:
+
+- [Go](https://go.dev/)
+- [Flutter Web](https://docs.flutter.dev/get-started/install)
+- [Docker](https://docs.docker.com/get-docker/)
+
+After you have installed the required tools and cloned the repository to your local machine, follow these steps:
+
+### 1. Set Up Development Instance
+
+Run `make glm_install` to set up a development instance of GuardLlama using [k3d](https://k3d.io/). The GuardLlama API server will be accessible at `http://localhost:38080`. The VPN port range will be `31001-31005`.
+
+### 2. Access Web UI
+
+Navigate to the `ui` directory by running `cd ui`. Then, execute `flutter run -d chrome` to start the web UI. To log in during the development instance, use the token `root`.
+
+### Additional Development Tasks
+
+You can also perform various tasks to build and run tests, such as `make build`, `make test` and `make e2etest`.
+
 ## Contribution Process
 
-1. Make sure your changes follow the project's coding style and conventions.
+1. Ensure your changes follow the project's coding style and conventions.
 2. Keep your commits small and focused, with clear and concise commit messages.
 3. Rebase your branch frequently to incorporate any upstream changes.
 4. Write and run tests to verify the functionality and performance of your changes.
