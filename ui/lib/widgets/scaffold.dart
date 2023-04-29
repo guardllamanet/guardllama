@@ -41,7 +41,7 @@ class NavigationScaffold extends StatelessWidget {
                       onPressed: () {
                         ContextScope.of(context).logOut();
                       },
-                      tooltip: "Log out",
+                      tooltip: 'Log out',
                       icon: Icon(
                         Icons.logout_rounded,
                         color: Theme.of(context).iconTheme.color,

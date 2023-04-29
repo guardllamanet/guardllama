@@ -18,8 +18,8 @@ class ServiceUtils {
   ) {
     var data = base64Url.encode(utf8.encode(content));
     AnchorElement(
-        href: "data:application/octet-stream;charset=utf-16le;base64,$data")
-      ..setAttribute("download", downloadName)
+        href: 'data:application/octet-stream;charset=utf-16le;base64,$data')
+      ..setAttribute('download', downloadName)
       ..click();
   }
 

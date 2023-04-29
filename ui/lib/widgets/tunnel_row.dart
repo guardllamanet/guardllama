@@ -87,7 +87,7 @@ class _TunnelRowState extends State<TunnelRow> {
 
     downloadButtonOnPressed() {
       ServiceUtils.download(widget.tunnel.config!.wg!.wgConfig.toString(),
-          "${widget.tunnel.name}.conf");
+          '${widget.tunnel.name}.conf');
     }
 
     copyButtonOnPressed() {
@@ -118,22 +118,22 @@ class _TunnelRowState extends State<TunnelRow> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   IconButton(
-                    tooltip: "Show WireGuard QR Code",
+                    tooltip: 'Show WireGuard QR Code',
                     onPressed: _isTunnelReady() ? qrButtonOnPressed : null,
                     icon: const Icon(Icons.qr_code_rounded),
                   ),
                   IconButton(
-                    tooltip: "Download WireGuard config",
+                    tooltip: 'Download WireGuard config',
                     onPressed:
                         _isTunnelReady() ? downloadButtonOnPressed : null,
                     icon: const Icon(Icons.download_rounded),
                   ),
                   CopyIconButton(
-                    tooltip: "Copy WireGuard config",
+                    tooltip: 'Copy WireGuard config',
                     onPressed: _isTunnelReady() ? copyButtonOnPressed : null,
                   ),
                   IconButton(
-                    tooltip: "Remove Tunnel",
+                    tooltip: 'Remove Tunnel',
                     onPressed: () {
                       showDialog<String>(
                         context: context,

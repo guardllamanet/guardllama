@@ -100,7 +100,7 @@ class _TunnelShowViewState extends State<TunnelShowView> {
               'Avaiable block modes:\n1. Default: a balance between adblocking and user experience (UX).\n2. Strict: blocks more ads and prioritizes privacy & safety over UX.',
           value: DropdownButton(
             value: _getAdBlockMode(),
-            hint: const Text("Select block mode"),
+            hint: const Text('Select block mode'),
             items: [AdBlockMode.defaultMode, AdBlockMode.strictMode]
                 .map((m) => DropdownMenuItem(value: m, child: Text(m.name)))
                 .toList(),
@@ -179,11 +179,11 @@ class _TunnelShowViewState extends State<TunnelShowView> {
                   tabs: const [
                     Tab(
                       icon: Icon(Icons.vpn_key_rounded),
-                      text: "WireGuard",
+                      text: 'WireGuard',
                     ),
                     Tab(
                       icon: Icon(Icons.filter_rounded),
-                      text: "AdGuardHome",
+                      text: 'AdGuardHome',
                     ),
                   ],
                 ),

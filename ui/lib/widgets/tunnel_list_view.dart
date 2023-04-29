@@ -44,7 +44,7 @@ class _TunnelListViewState extends State<TunnelListView> {
             title: Transform.translate(
               offset: const Offset(-8, 0),
               child: const Text(
-                "No tunnel is found. Start by creating one.",
+                'No tunnel is found. Start by creating one.',
               ),
             ),
           ),
