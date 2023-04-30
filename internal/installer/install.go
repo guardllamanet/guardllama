@@ -47,9 +47,14 @@ func InstallCluster(ctx context.Context, cfg *apiv1.ServerConfig) error {
 	}
 
 	if k3dCluster := cfg.Cluster.GetK3D(); k3dCluster != nil {
+		host := cfg.Cluster.Host
+		if host == "" {
+			host = "127.0.0.1"
+		}
+
 		k := k3d.NewWithOpts(
 			k3d.WithName(k3dCluster.Name),
-			k3d.WithHost(cfg.Cluster.Host),
+			k3d.WithHost(host),
 			k3d.WithVPNPortRange(cfg.Cluster.VpnPortRange),
 			k3d.WithKubeConfig(cfg.Cluster.KubeConfig),
 			k3d.WithK3sVersion(build.K3sVersion),
@@ -105,7 +110,7 @@ func InstallCharts(ctx context.Context, cfg *apiv1.ServerConfig) error {
 		redirectHttps bool
 	)
 
-	if cfg.Cluster.GetK3D() == nil {
+	if cfg.Cluster.GetK3S() != nil {
 		// for k3s, set to machine ip if host is empty
 		if host == "" {
 			host = util.MachineIP()

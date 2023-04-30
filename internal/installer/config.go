@@ -143,7 +143,6 @@ func defaultServerConfig() (*apiv1.ServerConfig, error) {
 	return &apiv1.ServerConfig{
 		Cluster: &apiv1.ServerConfig_Cluster{
 			KubeConfig: filepath.Join(dir, "kubeconfig.yml"),
-			Host:       "0.0.0.0",
 			VpnPortRange: &apiv1.ServerConfig_Cluster_VpnPortRange{
 				FromPort: 30001,
 				ToPort:   30005,
