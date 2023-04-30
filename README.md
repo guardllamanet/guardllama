@@ -49,7 +49,11 @@ This software wouldn't have been possible without the incredible work of several
 
 ## Support :speech_balloon:
 
-Need help with GuardLlama? Check out the [documentation](https://guardllama.net/docs/intro) or open an issue on GitHub.
+Need help with GuardLlama?
+
+- Explore the [documentation](https://guardllama.net/docs).
+- Stayed updated with our [Twitter](https://twitter.com/guardllamanet).
+- Join the conversation in our [Discord](https://discord.guardllama.net) community.
 
 ---
 
