@@ -39,10 +39,10 @@ func newExternalIP() *externalip.Consensus {
 		},
 		nil,
 	)
-	eip.AddVoter(newIPV4HTTPSource("https://checkip.amazonaws.com/"), 1)
-	eip.AddVoter(newIPV4HTTPSource("https://myexternalip.com/raw"), 1)
-	eip.AddVoter(newIPV4HTTPSource("https://ipinfo.io/ip"), 1)
-	eip.AddVoter(newIPV4HTTPSource("http://whatismyip.akamai.com/"), 1)
+	_ = eip.AddVoter(newIPV4HTTPSource("https://checkip.amazonaws.com/"), 1)
+	_ = eip.AddVoter(newIPV4HTTPSource("https://myexternalip.com/raw"), 1)
+	_ = eip.AddVoter(newIPV4HTTPSource("https://ipinfo.io/ip"), 1)
+	_ = eip.AddVoter(newIPV4HTTPSource("http://whatismyip.akamai.com/"), 1)
 
 	return eip
 }
