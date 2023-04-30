@@ -110,7 +110,7 @@ func InstallCharts(ctx context.Context, cfg *apiv1.ServerConfig) error {
 		redirectHttps bool
 	)
 
-	if cfg.Cluster.GetK3S() != nil {
+	if cfg.Cluster.GetK3D() == nil {
 		// for k3s, set to machine ip if host is empty
 		if host == "" {
 			host = util.MachineIP()
