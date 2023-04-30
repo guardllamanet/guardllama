@@ -9,8 +9,9 @@ import (
 	"strings"
 
 	"github.com/guardllamanet/guardllama/internal/log"
+	"github.com/guardllamanet/guardllama/internal/util"
 	v1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
-	"github.com/k3d-io/k3d/v5/cmd/util"
+	k3dutil "github.com/k3d-io/k3d/v5/cmd/util"
 	"github.com/k3d-io/k3d/v5/pkg/client"
 	"github.com/k3d-io/k3d/v5/pkg/config"
 	ctypes "github.com/k3d-io/k3d/v5/pkg/config/types"
@@ -100,7 +101,7 @@ func (k *K3d) Ensure(ctx context.Context) error {
 		}
 	}
 
-	freePort, err := util.GetFreePort()
+	freePort, err := k3dutil.GetFreePort()
 	if err != nil {
 		return err
 	}
@@ -135,8 +136,10 @@ func (k *K3d) Ensure(ctx context.Context) error {
 			Port:        fmt.Sprintf("%s:%d-%d:%d-%d/%s", k.host, pr.FromPort, pr.ToPort, pr.FromPort, pr.ToPort, pr.Protocol),
 			NodeFilters: []string{"server:0:direct"},
 		})
+
+		fromPort, toPort := util.VPNPortRange(k.vpnPortRange)
 		extraArgs = append(extraArgs, v1alpha4.K3sArgWithNodeFilters{
-			Arg:         fmt.Sprintf("--kube-apiserver-arg=service-node-port-range=%d-%d", k.vpnPortRange.FromPort, k.vpnPortRange.ToPort+2), // Add 2 to account for traefik port 80 & 443
+			Arg:         fmt.Sprintf("--kube-apiserver-arg=service-node-port-range=%d-%d", fromPort, toPort),
 			NodeFilters: []string{"all"},
 		})
 	}

@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"github.com/guardllamanet/guardllama/internal/log"
+	"github.com/guardllamanet/guardllama/internal/util"
 	v1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
 )
 
@@ -91,6 +92,7 @@ func (k *K3s) Ensure(ctx context.Context) error {
 		return err
 	}
 
+	fromPort, toPort := util.VPNPortRange(k.vpnPortRange)
 	cmd := exec.CommandContext(
 		ctx,
 		"/bin/sh",
@@ -102,7 +104,7 @@ func (k *K3s) Ensure(ctx context.Context) error {
 		"--disable",
 		"metrics-server",
 		"--kube-apiserver-arg",
-		fmt.Sprintf("service-node-port-range=%d-%d", k.vpnPortRange.FromPort, k.vpnPortRange.ToPort),
+		fmt.Sprintf("service-node-port-range=%d-%d", fromPort, toPort),
 	)
 
 	cmd.Env = os.Environ()
