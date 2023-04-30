@@ -101,7 +101,7 @@ func trackRunE(runE func(*cobra.Command, []string) error) func(*cobra.Command, [
 
 		defer func() {
 			if trackEvent != nil {
-				if e := trackEvent.CaptureErrAndReport(err); e != nil {
+				if err := trackEvent.CaptureErrAndReport(err); err != nil {
 					logger.Debug("error sending telemetry", "error", err.Error())
 				}
 			}
