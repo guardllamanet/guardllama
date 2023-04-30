@@ -97,3 +97,11 @@ jobs:
             *.args.BUILD_VERSION=${{ env.tag_name }}
             *.args.BUILD_DATE=${{ env.build_date }}
             *.platform=linux/arm64,linux/amd64
+  acceptance_test:
+    name: Acceptance Test
+    needs: [goreleaser, docker]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install GuardLlama
+        run: |
+          curl -sfL https://get.guardllama.net | sh -
