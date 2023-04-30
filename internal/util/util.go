@@ -10,13 +10,7 @@ import (
 // MachineIP returns the external ip if it's available,
 // otherwise falls back to local ip.
 func MachineIP() string {
-	eip := externalip.DefaultConsensus(
-		&externalip.ConsensusConfig{
-			Timeout: 5 * time.Second,
-		},
-		nil,
-	)
-
+	eip := newExternalIP()
 	externalIP, err := eip.ExternalIP()
 	if err != nil {
 		localIP, err := outboundIP()
@@ -28,6 +22,21 @@ func MachineIP() string {
 	}
 
 	return externalIP.String()
+}
+
+func newExternalIP() *externalip.Consensus {
+	eip := externalip.NewConsensus(
+		&externalip.ConsensusConfig{
+			Timeout: 5 * time.Second,
+		},
+		nil,
+	)
+	eip.AddVoter(externalip.NewHTTPSource("https://checkip.amazonaws.com/"), 1)
+	eip.AddVoter(externalip.NewHTTPSource("https://myexternalip.com/raw"), 1)
+	eip.AddVoter(externalip.NewHTTPSource("https://ipinfo.io/ip"), 1)
+	eip.AddVoter(externalip.NewHTTPSource("http://whatismyip.akamai.com/"), 1)
+
+	return eip
 }
 
 func outboundIP() (net.IP, error) {
