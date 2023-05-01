@@ -10,11 +10,11 @@ import (
 
 // Writer returns an io.PipeWriter that writes to the logger.
 // Ref implementation: https://github.com/sirupsen/logrus/blob/f8bf7650dccb756cea26edaf9217aab85500fe07/writer.go#L27-L55
-func (l *Logger) Writer() *io.PipeWriter {
+func (l *Logger) Writer(level slog.Level) *io.PipeWriter {
 	reader, writer := io.Pipe()
 
 	var printFunc func(msg string, args ...any)
-	switch level.Level() {
+	switch level {
 	case slog.LevelDebug:
 		printFunc = l.Debug
 	case slog.LevelError:

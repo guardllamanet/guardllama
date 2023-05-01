@@ -13,6 +13,7 @@ import (
 	"github.com/guardllamanet/guardllama/internal/log"
 	"github.com/guardllamanet/guardllama/internal/util"
 	v1 "github.com/guardllamanet/guardllama/proto/gen/api/v1"
+	"golang.org/x/exp/slog"
 )
 
 const (
@@ -112,7 +113,7 @@ func (k *K3s) Ensure(ctx context.Context) error {
 		cmd.Env = append(cmd.Env, fmt.Sprintf("INSTALL_K3S_VERSION=%s", k.k3sVersion))
 	}
 
-	w := k.logger.Writer()
+	w := k.logger.Writer(slog.LevelDebug)
 	defer w.Close()
 
 	cmd.Stdout = w
@@ -147,7 +148,7 @@ func (k *K3s) Destroy(ctx context.Context) error {
 		return fmt.Errorf("k3s uninstall script does not exist")
 	}
 
-	w := k.logger.Writer()
+	w := k.logger.Writer(slog.LevelDebug)
 	defer w.Close()
 
 	cmd := exec.CommandContext(
