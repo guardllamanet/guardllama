@@ -244,6 +244,8 @@ func (r *TunnelReconciler) upsertTunnelDeploy(ctx context.Context, tun *glmv1.Tu
 		},
 	}
 	deployFn := func() error {
+		lockdownPublicDNS(deploy)
+
 		deploy.Spec.Selector = &metav1.LabelSelector{
 			MatchLabels: labels,
 		}
@@ -450,7 +452,12 @@ func (r *TunnelReconciler) upsertTunnelService(ctx context.Context, tun *glmv1.T
 }
 
 func (r *TunnelReconciler) upsertAGHInitialConfig(ctx context.Context, tun *glmv1.Tunnel) (controllerutil.OperationResult, error) {
-	cfg, err := adGuardHomeConfig(tun.Spec.DNS.AdGuardHome)
+	var unboundSvc corev1.Service
+	if err := r.Get(ctx, types.NamespacedName{Name: "unbound", Namespace: "unbound"}, &unboundSvc); err != nil {
+		return controllerutil.OperationResultNone, err
+	}
+
+	cfg, err := adGuardHomeConfig(tun.Spec.DNS.AdGuardHome, unboundSvc.Spec.ClusterIPs)
 	if err != nil {
 		return controllerutil.OperationResultNone, err
 	}
@@ -552,6 +559,8 @@ func (r *TunnelReconciler) upsertAGHDeploy(ctx context.Context, tun *glmv1.Tunne
 		},
 	}
 	deployFn := func() error {
+		lockdownPublicDNS(deploy)
+
 		deploy.Spec.Selector = &metav1.LabelSelector{
 			MatchLabels: labels,
 		}
@@ -907,6 +916,17 @@ func (r *TunnelReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Owns(&corev1.Service{}).
 		Owns(&corev1.ConfigMap{}).
 		Complete(r)
+}
+
+func lockdownPublicDNS(deploy *appsv1.Deployment) {
+	deploy.Spec.Template.Spec.DNSPolicy = corev1.DNSNone
+	deploy.Spec.Template.Spec.DNSConfig = &corev1.PodDNSConfig{
+		Nameservers: []string{
+			"1.1.1.1",
+			"8.8.8.8",
+			"9.9.9.10",
+		},
+	}
 }
 
 func labelsTunnelDeploy(tun *glmv1.Tunnel) map[string]string {
