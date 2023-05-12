@@ -36,7 +36,9 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - udp://unbound.unbound
+    {{- range $dns := .UpstreamDNS }}
+    - udp://{{ $dns }}
+    {{- end}}
   upstream_dns_file: ""
   bootstrap_dns:
     - 9.9.9.10
@@ -70,7 +72,7 @@ dns:
   handle_ddr: true
   ipset: []
   ipset_file: ""
-{{- if deref_bool .FilteringEnabled }}
+{{- if .FilteringEnabled }}
   filtering_enabled: true
   filters_update_interval: 24
 {{- else }}
@@ -169,21 +171,24 @@ schema_version: 17`
 
 var (
 	tmpl = template.Must(template.New("AdGuardHome.yaml").
-		Funcs(template.FuncMap{
-			"deref_bool": func(t *bool) bool {
-				if t == nil {
-					return true
-				}
-
-				return *t
-			},
-		}).
 		Parse(adGuardHomeConfigTmpl))
 )
 
-func adGuardHomeConfig(cfg *glmv1.AdGuardHomeSpec) (string, error) {
+type adGuardHomeSpec struct {
+	UpstreamDNS      []string
+	FilteringEnabled bool
+	BlockLists       []glmv1.AdGuardHomeBlockList
+}
+
+func adGuardHomeConfig(cfg *glmv1.AdGuardHomeSpec, uptreamDNS []string) (string, error) {
+	spec := adGuardHomeSpec{
+		UpstreamDNS:      uptreamDNS,
+		FilteringEnabled: cfg.FilteringEnabled == nil || *cfg.FilteringEnabled,
+		BlockLists:       cfg.BlockLists,
+	}
+
 	buf := bytes.NewBuffer(nil)
-	if err := tmpl.Execute(buf, cfg); err != nil {
+	if err := tmpl.Execute(buf, spec); err != nil {
 		return "", err
 	}
 
