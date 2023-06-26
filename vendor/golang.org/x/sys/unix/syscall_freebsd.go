@@ -325,6 +325,18 @@ func PtraceSingleStep(pid int) (err error) {
 	return ptrace(PT_STEP, pid, 1, 0)
 }
 
+func Dup3(oldfd, newfd, flags int) error {
+	if oldfd == newfd || flags&^O_CLOEXEC != 0 {
+		return EINVAL
+	}
+	how := F_DUP2FD
+	if flags&O_CLOEXEC != 0 {
+		how = F_DUP2FD_CLOEXEC
+	}
+	_, err := fcntl(oldfd, how, newfd)
+	return err
+}
+
 /*
  * Exposed directly
  */
@@ -421,7 +433,6 @@ func PtraceSingleStep(pid int) (err error) {
 //sysnb	Setreuid(ruid int, euid int) (err error)
 //sysnb	Setresgid(rgid int, egid int, sgid int) (err error)
 //sysnb	Setresuid(ruid int, euid int, suid int) (err error)
-//sysnb	Setrlimit(which int, lim *Rlimit) (err error)
 //sysnb	Setsid() (pid int, err error)
 //sysnb	Settimeofday(tp *Timeval) (err error)
 //sysnb	Setuid(uid int) (err error)
