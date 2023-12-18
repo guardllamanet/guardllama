@@ -32,7 +32,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/pflag v1.0.5
 	go4.org v0.0.0-20230225012048-214862532bf5
-	golang.org/x/crypto v0.14.0
+	golang.org/x/crypto v0.17.0
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29
 	golang.org/x/oauth2 v0.7.0
 	golang.org/x/sync v0.1.0
@@ -211,9 +211,9 @@ require (
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616 // indirect
 	golang.org/x/mod v0.9.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/term v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
 	golang.zx2c4.com/wintun v0.0.0-20230126152724-0fa3db229ce2 // indirect
